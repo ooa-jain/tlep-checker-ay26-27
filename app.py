@@ -237,6 +237,47 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
+# Authentication Security Lock
+APP_PASSWORD = os.environ.get("PORTAL_PASSWORD", "null")
+
+if "authenticated" not in st.session_state:
+    st.session_state["authenticated"] = False
+
+if not st.session_state["authenticated"]:
+    # Suppress sidebar display while portal is locked
+    st.markdown("""
+    <style>
+        [data-testid="stSidebar"] { display: none !important; }
+        [data-testid="collapsedControl"] { display: none !important; }
+    </style>
+    """, unsafe_allow_html=True)
+
+    _, col_auth, _ = st.columns([1, 1.2, 1])
+    with col_auth:
+        st.markdown("""
+        <div style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 14px; padding: 36px 32px 24px 32px; box-shadow: 0 10px 25px rgba(15, 41, 74, 0.08); margin-top: 50px;">
+            <div style="text-align: center; margin-bottom: 24px;">
+                <div style="font-size: 0.8rem; font-weight: 800; letter-spacing: 0.12em; color: #1E3A8A; text-transform: uppercase;">Office of Academics</div>
+                <div style="font-size: 1.45rem; font-weight: 800; color: #0F294A; margin-top: 4px; letter-spacing: -0.02em;">TLEP Compliance Portal</div>
+                <div style="font-size: 0.85rem; color: #64748B; margin-top: 4px;">AY 2026–27 • Quality Assurance Division</div>
+                <div style="margin-top: 14px; display: inline-block; background: #EFF6FF; color: #1D4ED8; font-size: 0.75rem; font-weight: 700; padding: 4px 12px; border-radius: 12px; border: 1px solid #DBEAFE;">PORTAL ACCESS LOCKED</div>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+
+        with st.form("auth_form", clear_on_submit=False):
+            entered_pwd = st.text_input("Security Access Password", type="password", placeholder="Enter portal password")
+            submitted = st.form_submit_button("UNLOCK SYSTEM", use_container_width=True, type="primary")
+
+            if submitted:
+                if entered_pwd == APP_PASSWORD:
+                    st.session_state["authenticated"] = True
+                    st.rerun()
+                else:
+                    st.error("Authentication failed. Invalid password.")
+
+    st.stop()
+
 # Sidebar Navigation
 with st.sidebar:
     st.markdown("""
@@ -267,6 +308,9 @@ with st.sidebar:
     
     st.divider()
     st.caption("Verified OOA Template Baseline • Zero Fabricated Data")
+    if st.button("LOCK PORTAL", use_container_width=True):
+        st.session_state["authenticated"] = False
+        st.rerun()
 
 # Top Navigation Header Banner
 st.markdown("""
