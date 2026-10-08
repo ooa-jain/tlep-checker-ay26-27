@@ -15,6 +15,8 @@ tests/test_data/
 tests/test_batch_data/
 tests/test_audit.db
 *.log
+*.db
+data/*.db
 
 # Sensitive credentials
 .env
