@@ -19,7 +19,7 @@ from models.schemas import StatusEnum
 # Page Configuration
 st.set_page_config(
     page_title="OOA TLEP Compliance Portal — AY 2026–27",
-    page_icon="🏛️",
+    page_icon=None,
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -240,7 +240,7 @@ st.markdown("""
 with st.sidebar:
     st.markdown("""
     <div style="text-align: center; padding: 12px 0 16px 0;">
-        <div style="font-size: 2.2rem; margin-bottom: 4px;">🏛️</div>
+        <div style="font-size: 0.95rem; font-weight: 800; letter-spacing: 0.1em; color: #1E3A8A; margin-bottom: 6px;">OOA QUALITY ASSURANCE</div>
         <div style="font-weight: 800; font-size: 1.15rem; color: #0F294A; letter-spacing: -0.01em;">OFFICE OF ACADEMICS</div>
         <div style="font-size: 0.78rem; font-weight: 600; color: #64748B; letter-spacing: 0.05em; text-transform: uppercase;">Quality Assurance Division</div>
     </div>
@@ -248,7 +248,7 @@ with st.sidebar:
     
     mode = st.radio(
         "Navigation Mode:",
-        ["📄 Single Course Review", "🏢 Institutional Portfolio (2000+)"],
+        ["Single Course Review", "Institutional Portfolio (2,000+ Courses)"],
         index=0
     )
     
@@ -257,7 +257,7 @@ with st.sidebar:
     st.markdown("**Standards:** `49 Official Criteria`")
     st.markdown("**Audit Engine:** `Deterministic + AI Hybrid`")
     
-    with st.expander("⚙️ Advanced AI Settings"):
+    with st.expander("Advanced AI Settings"):
         api_key_input = st.text_input(
             "API Key (Optional)",
             type="password",
@@ -265,14 +265,14 @@ with st.sidebar:
         )
     
     st.divider()
-    st.caption("🔒 Verified OOA Template Baseline • Zero Fabricated Data")
+    st.caption("Verified OOA Template Baseline • Zero Fabricated Data")
 
 # Top Navigation Header Banner
 st.markdown("""
 <div class="top-nav">
     <div>
         <div class="top-nav-title">
-            <span>🏛️</span> OOA Academic Compliance Portal
+            OOA Academic Compliance Portal
         </div>
         <div class="top-nav-subtitle">
             Teaching-Learning and Evaluation Plan (TLEP) Quality Assurance Engine • AY 2026–27
@@ -287,7 +287,7 @@ st.markdown("""
 # =========================================================================
 # MODE 1: SINGLE COURSE TLEP REVIEW
 # =========================================================================
-if mode == "📄 Single Course Review":
+if mode == "Single Course Review":
     st.markdown("""
     <div style="margin-bottom: 16px;">
         <h3 style="font-size: 1.35rem; font-weight: 700; color: #0F172A; margin: 0;">Single Course Compliance Audit</h3>
@@ -304,7 +304,7 @@ if mode == "📄 Single Course Review":
     if uploaded_file is not None:
         col_btn, _ = st.columns([1.5, 4])
         with col_btn:
-            check_clicked = st.button("🚀 EXECUTE COMPLIANCE AUDIT", use_container_width=True, type="primary")
+            check_clicked = st.button("EXECUTE COMPLIANCE AUDIT", use_container_width=True, type="primary")
             
         if check_clicked or "last_result" in st.session_state:
             if check_clicked:
@@ -331,7 +331,7 @@ if mode == "📄 Single Course Review":
             if major_issues_count == 0 and needs_revision_count == 0:
                 st.markdown(f"""
                 <div class="verdict-card verdict-green">
-                    <div style="font-size: 1.8rem;">🟢</div>
+                    <div style="font-size: 0.75rem; font-weight: 800; padding: 4px 8px; border-radius: 4px; background: #15803D; color: #FFFFFF; letter-spacing: 0.05em; text-align: center;">PASS</div>
                     <div>
                         <div class="verdict-title">APPROVED FOR BOARD OF STUDIES (Score: {result.compliance_percentage}%)</div>
                         <div class="verdict-desc">
@@ -343,7 +343,7 @@ if mode == "📄 Single Course Review":
             elif major_issues_count == 0:
                 st.markdown(f"""
                 <div class="verdict-card verdict-yellow">
-                    <div style="font-size: 1.8rem;">🟡</div>
+                    <div style="font-size: 0.75rem; font-weight: 800; padding: 4px 8px; border-radius: 4px; background: #B45309; color: #FFFFFF; letter-spacing: 0.05em; text-align: center;">REVISION</div>
                     <div>
                         <div class="verdict-title">CONDITIONAL APPROVAL — MINOR EDITS REQUIRED (Score: {result.compliance_percentage}%)</div>
                         <div class="verdict-desc">
@@ -355,7 +355,7 @@ if mode == "📄 Single Course Review":
             else:
                 st.markdown(f"""
                 <div class="verdict-card verdict-red">
-                    <div style="font-size: 1.8rem;">🔴</div>
+                    <div style="font-size: 0.75rem; font-weight: 800; padding: 4px 8px; border-radius: 4px; background: #B91C1C; color: #FFFFFF; letter-spacing: 0.05em; text-align: center;">REWORK</div>
                     <div>
                         <div class="verdict-title">REWORK REQUIRED — MAJOR DEFICIENCIES DETECTED (Score: {result.compliance_percentage}%)</div>
                         <div class="verdict-desc">
@@ -401,7 +401,7 @@ if mode == "📄 Single Course Review":
             # Export Button
             report_bytes = generate_excel_report(result)
             st.download_button(
-                label="📥 Download Official 6-Sheet Audit Report (.xlsx)",
+                label="Download Official 6-Sheet Audit Report (.xlsx)",
                 data=report_bytes,
                 file_name=f"OOA_TLEP_Audit_{result.file_name}_{result.review_id}.xlsx",
                 mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
@@ -412,29 +412,29 @@ if mode == "📄 Single Course Review":
 
             # Progressive Tabs
             tab_plain, tab_hours, tab_outcomes, tab_full_audit, tab_areas = st.tabs([
-                "⚡ Faculty Action Checklist",
-                "⏱️ Learning Hours & Credits",
-                "🎯 Outcome & Assessment Alignment",
-                "📋 Official 49-Parameter Audit",
-                "📊 Area Breakdown"
+                "Faculty Action Checklist",
+                "Learning Hours & Credits",
+                "Outcome & Assessment Alignment",
+                "Official 49-Parameter Audit",
+                "Area Breakdown"
             ])
 
             actionable_findings = [f for f in result.parameter_findings if f.status in [StatusEnum.NEEDS_REVISION, StatusEnum.MAJOR_REVISION, StatusEnum.NON_COMPLIANT]]
 
             # TAB 1: Faculty Action Checklist
             with tab_plain:
-                st.markdown("#### ⚡ Priority Department Action Items")
+                st.markdown("#### Priority Department Action Items")
                 st.caption("Consolidated actionable list for the course facilitator and department head.")
                 
                 simplified_items = [simplify_finding(f) for f in actionable_findings]
                 if not simplified_items:
-                    st.success("🎉 Complete Compliance: No corrective actions are required for this course.")
+                    st.success("Complete Compliance: No corrective actions are required for this course.")
                 else:
                     high_fixes = [item for item in simplified_items if item["priority"] == "High" or item["status"] in ["Major Revision", "Non-Compliant"]]
                     other_fixes = [item for item in simplified_items if item not in high_fixes]
                     
                     if high_fixes:
-                        st.markdown("##### 🚨 Critical Blockers (Must Fix for BoS Sign-Off)")
+                        st.markdown("##### Critical Blockers (Must Fix for BoS Sign-Off)")
                         for fix in high_fixes:
                             st.markdown(f"""
                             <div class="action-card action-card-high">
@@ -446,18 +446,18 @@ if mode == "📄 Single Course Review":
                                     <div>
                                         <div style="font-size: 0.8rem; font-weight: 700; color: #64748B; text-transform: uppercase;">Observation / Deficiency</div>
                                         <div style="font-size: 0.95rem; color: #334155; margin-top: 2px;">{fix['what_is_wrong']}</div>
-                                        <div style="font-size: 0.8rem; color: #94A3B8; margin-top: 4px;">📍 Location: <code>{fix['where']}</code></div>
+                                        <div style="font-size: 0.8rem; color: #94A3B8; margin-top: 4px;">Location: <code>{fix['where']}</code></div>
                                     </div>
                                     <div style="background: #F8FAFC; border-radius: 8px; padding: 10px 14px; border: 1px dashed #CBD5E1;">
                                         <div style="font-size: 0.8rem; font-weight: 700; color: #0284C7; text-transform: uppercase;">Required Action</div>
-                                        <div style="font-size: 0.95rem; font-weight: 600; color: #0F172A; margin-top: 2px;">👉 {fix['what_to_do']}</div>
+                                        <div style="font-size: 0.95rem; font-weight: 600; color: #0F172A; margin-top: 2px;">{fix['what_to_do']}</div>
                                     </div>
                                 </div>
                             </div>
                             """, unsafe_allow_html=True)
                             
                     if other_fixes:
-                        st.markdown("##### ✏️ Recommended Adjustments (Quality Refinements)")
+                        st.markdown("##### Recommended Adjustments (Quality Refinements)")
                         for fix in other_fixes:
                             st.markdown(f"""
                             <div class="action-card">
@@ -469,11 +469,11 @@ if mode == "📄 Single Course Review":
                                     <div>
                                         <div style="font-size: 0.8rem; font-weight: 700; color: #64748B; text-transform: uppercase;">Observation / Deficiency</div>
                                         <div style="font-size: 0.95rem; color: #334155; margin-top: 2px;">{fix['what_is_wrong']}</div>
-                                        <div style="font-size: 0.8rem; color: #94A3B8; margin-top: 4px;">📍 Location: <code>{fix['where']}</code></div>
+                                        <div style="font-size: 0.8rem; color: #94A3B8; margin-top: 4px;">Location: <code>{fix['where']}</code></div>
                                     </div>
                                     <div style="background: #F8FAFC; border-radius: 8px; padding: 10px 14px; border: 1px dashed #CBD5E1;">
                                         <div style="font-size: 0.8rem; font-weight: 700; color: #0284C7; text-transform: uppercase;">Required Action</div>
-                                        <div style="font-size: 0.95rem; font-weight: 600; color: #0F172A; margin-top: 2px;">👉 {fix['what_to_do']}</div>
+                                        <div style="font-size: 0.95rem; font-weight: 600; color: #0F172A; margin-top: 2px;">{fix['what_to_do']}</div>
                                     </div>
                                 </div>
                             </div>
@@ -481,17 +481,17 @@ if mode == "📄 Single Course Review":
 
             # TAB 2: Hours & Credits
             with tab_hours:
-                st.markdown("#### ⏱️ Credit & Contact Hours Validation (Sheet 5)")
+                st.markdown("#### Credit & Contact Hours Validation (Sheet 5)")
                 st.caption("Reconciles approved curriculum credits, L-T-P-E distribution, session contact hours, and notional learning hours.")
                 hours_display = []
                 for hr in result.hours_validation_rows:
-                    status_icon = "✅" if hr.status == StatusEnum.COMPLIANT else ("⚠️" if hr.status == StatusEnum.NEEDS_REVISION else "❌")
+                    # Status values
                     hours_display.append({
                         "Parameter": str(hr.parameter),
                         "Approved Curriculum": str(hr.approved) if hr.approved is not None else "-",
                         "As per TLEP": str(hr.tlep) if hr.tlep is not None else "-",
                         "Variance": str(hr.variance) if hr.variance is not None else "-",
-                        "Status": f"{status_icon} {hr.status.value}",
+                        "Status": hr.status.value,
                         "Remarks": str(hr.remarks) if hr.remarks else "",
                         "Required Action": str(hr.action_required) if hr.action_required else "-"
                     })
@@ -499,7 +499,7 @@ if mode == "📄 Single Course Review":
 
             # TAB 3: Outcomes vs Assessments
             with tab_outcomes:
-                st.markdown("#### 🎯 Course Outcome Alignment Matrix")
+                st.markdown("#### Course Outcome Alignment Matrix")
                 st.caption("Verifies that every Course Outcome (CO) is explicitly taught in class sessions and evaluated in assessments.")
                 c_info = result.normalized_tlep
                 if c_info and c_info.course_outcomes:
@@ -511,8 +511,8 @@ if mode == "📄 Single Course Review":
                             "CO ID": co.id,
                             "Course Outcome Statement": co.statement,
                             "Cognitive Level (BTL)": co.btl or "Not specified",
-                            "Taught in Sessions": f"✅ {len(taught_in)} Sessions" if taught_in else "❌ 0 Sessions Mapped",
-                            "Evaluated in Assessments": f"✅ {len(tested_in)} Assessments" if tested_in else "❌ Unassessed Outcome"
+                            "Taught in Sessions": f"{len(taught_in)} Sessions" if taught_in else "0 Sessions Mapped",
+                            "Evaluated in Assessments": f"{len(tested_in)} Assessments" if tested_in else "Unassessed Outcome"
                         })
                     st.dataframe(pd.DataFrame(co_matrix), use_container_width=True)
                 else:
@@ -520,7 +520,7 @@ if mode == "📄 Single Course Review":
 
             # TAB 4: Official 49-Parameter Audit
             with tab_full_audit:
-                st.markdown("#### 📋 Complete 49-Parameter Quality Assurance Audit")
+                st.markdown("#### Complete 49-Parameter Quality Assurance Audit")
                 st.caption("Official review criteria, traceable evidence locations, scoring, and confidence.")
                 
                 filter_choice = st.radio(
@@ -556,11 +556,11 @@ if mode == "📄 Single Course Review":
 
             # TAB 5: Area Breakdown
             with tab_areas:
-                st.markdown("#### 📊 Area-Wise Compliance Breakdown (Areas A–I)")
+                st.markdown("#### Area-Wise Compliance Breakdown (Areas A–I)")
                 area_summary = aggregate_area_breakdown(result.parameter_findings)
                 st.dataframe(pd.DataFrame(area_summary), use_container_width=True)
     else:
-        st.info("👆 Upload an individual course TLEP file above to begin the official audit.")
+        st.info("Upload an individual course TLEP file above to begin the official audit.")
 
 # =========================================================================
 # MODE 2: INSTITUTIONAL PORTFOLIO (2000+ COURSES)
@@ -573,18 +573,18 @@ else:
     </div>
     """, unsafe_allow_html=True)
 
-    p_tab1, p_tab2 = st.tabs(["📊 Portfolio Analytics & Leaderboard", "📥 Batch Ingestion (Google Drive & ZIP)"])
+    p_tab1, p_tab2 = st.tabs(["Portfolio Analytics & Leaderboard", "Batch Ingestion (Google Drive & ZIP)"])
 
     # Batch Ingestion Tab
     with p_tab2:
         st.markdown("#### Ingest Course TLEPs at Scale")
         ingest_method = st.radio(
             "Select Source:",
-            ["☁️ Google Drive Folder Link", "📁 Upload Multiple Files / ZIP"],
+            ["Google Drive Folder Link", "Upload Multiple Files / ZIP"],
             horizontal=True
         )
 
-        if ingest_method == "☁️ Google Drive Folder Link":
+        if ingest_method == "Google Drive Folder Link":
             st.markdown("##### Google Drive Integration")
             st.caption("Provide a shared Google Drive folder containing course files or nested department/programme folders.")
             
@@ -601,11 +601,11 @@ else:
             with col_gd3:
                 gen_consolidated = st.checkbox("Generate department tabs", value=True)
                 
-            with st.expander("🔐 Drive Credentials (Optional for Public Folders)"):
+            with st.expander("Drive Credentials (Optional for Public Folders)"):
                 gdrive_api_key = st.text_input("Google Drive API Key", type="password")
                 sa_file = st.file_uploader("Or Upload Service Account JSON", type=["json"])
                 
-            if st.button("🚀 INGEST & AUDIT GOOGLE DRIVE FOLDER", type="primary"):
+            if st.button("INGEST & AUDIT GOOGLE DRIVE FOLDER", type="primary"):
                 if not gdrive_url:
                     st.error("Please enter a valid Google Drive folder link.")
                 else:
@@ -654,7 +654,7 @@ else:
                                     
                                 results = process_batch_files(downloaded_files, progress_callback=on_audit_progress, api_key=api_key_input)
                                 p_bar.progress(1.0)
-                                status_box.success(f"🎉 Successfully audited all {len(results)} courses from Google Drive! Check Analytics tab.")
+                                status_box.success(f"Successfully audited all {len(results)} courses from Google Drive. Check Analytics tab.")
                                 
                         except PermissionError as pe:
                             st.error(f"Access Denied: {str(pe)}")
@@ -674,7 +674,7 @@ else:
             )
             
             if batch_upload:
-                if st.button("🚀 INGEST & AUDIT BATCH NOW", type="primary"):
+                if st.button("INGEST & AUDIT BATCH NOW", type="primary"):
                     progress_bar = st.progress(0.0)
                     status_text = st.empty()
                     
@@ -696,13 +696,13 @@ else:
                     else:
                         results = process_batch_files(all_paths, progress_callback=on_progress, api_key=api_key_input)
                         
-                    status_text.success(f"✅ Processed {len(results)} courses successfully! Check Analytics tab.")
+                    status_text.success(f"Processed {len(results)} courses successfully. Check Analytics tab.")
 
     # Portfolio Analytics Tab
     with p_tab1:
         audits = get_all_audits()
         if not audits:
-            st.info("ℹ️ No courses have been audited yet. Ingest a batch or Google Drive folder to view institutional performance.")
+            st.info("No courses have been audited yet. Ingest a batch or Google Drive folder to view institutional performance.")
         else:
             df_audits = pd.DataFrame(audits)
             
@@ -746,7 +746,7 @@ else:
             # Master Download Button
             consolidated_bytes = generate_consolidated_report(audits)
             st.download_button(
-                label="📥 Download Master Institutional Audit Rollup (All Departments .xlsx)",
+                label="Download Master Institutional Audit Rollup (All Departments .xlsx)",
                 data=consolidated_bytes,
                 file_name="OOA_Institutional_TLEP_Rollup_AY_2026_27.xlsx",
                 mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
@@ -756,7 +756,7 @@ else:
             st.divider()
 
             # Filters: School -> Department -> Programme -> Semester
-            st.markdown("#### 🔍 Institutional Drill-Down")
+            st.markdown("#### Institutional Drill-Down")
             f_col0, f_col1, f_col2, f_col3 = st.columns(4)
             
             school_col = "school" if "school" in df_audits.columns else None
@@ -790,13 +790,13 @@ else:
                 filtered_df = filtered_df[filtered_df["semester"] == sel_sem]
 
             # Department Leaderboard
-            st.markdown("#### 🏆 Department Performance Leaderboard")
+            st.markdown("#### Department Performance Leaderboard")
             dept_summary = get_audit_summary_by_department()
             if dept_summary:
                 st.dataframe(pd.DataFrame(dept_summary), use_container_width=True)
 
             # Course Records Table
-            st.markdown(f"#### 📚 Course Compliance Records ({len(filtered_df)} Courses)")
+            st.markdown(f"#### Course Compliance Records ({len(filtered_df)} Courses)")
             view_cols = ["course_code", "course_title", "school", "department", "programme", "semester", "compliance_pct", "overall_status", "major_revision_count", "needs_revision_count"]
             available_cols = [c for c in view_cols if c in filtered_df.columns]
             st.dataframe(
@@ -820,7 +820,7 @@ else:
                 dept_records = filtered_df.to_dict('records')
                 dept_bytes = generate_consolidated_report(dept_records)
                 st.download_button(
-                    label=f"📥 Download {sel_dept} Report Only (.xlsx)",
+                    label=f"Download {sel_dept} Report Only (.xlsx)",
                     data=dept_bytes,
                     file_name=f"OOA_Audit_{sel_dept.replace(' ', '_')}.xlsx",
                     mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",

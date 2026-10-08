@@ -4,7 +4,7 @@ Production-grade, evidence-based academic quality assurance compliance checker f
 
 ---
 
-## 📋 Source of Truth
+## Source of Truth
 - **Official Workbook**: [`OOA_TLEP_Review_Checklist_AY_2026-27.xlsx`](file:///C:/coding/tlep%20checker/OOA_TLEP_Review_Checklist_AY_2026-27.xlsx)
 - **Official Review Areas**: 9 Areas (A to I)
 - **Official Parameters**: Exactly 49 Parameters
@@ -23,7 +23,7 @@ Production-grade, evidence-based academic quality assurance compliance checker f
 
 ---
 
-## 🏗️ Project Architecture
+## Project Architecture
 
 ```text
 tlep-checker/
@@ -59,7 +59,7 @@ tlep-checker/
 
 ---
 
-## 🛠 Project Roadmap & Execution Progress
+## Project Roadmap & Execution Progress
 
 - [x] **Step 1: Inspect & Parse Official Excel Checklist**
   - Inspected all 5 sheets: `Instructions`, `TLEP Review Checklist`, `Dashboard`, `CO-PO Review`, `Hours Validation`.
@@ -77,7 +77,7 @@ tlep-checker/
 - [x] **Step 6: AI Academic Review Engine**
   - Qualitative checks (CO action verbs, Bloom's Taxonomy alignment, syllabus depth, pedagogy suitability, rubrics) in [`engine/ai_engine.py`](file:///C:/coding/tlep%20checker/engine/ai_engine.py) with offline heuristic fallback.
 - [x] **Step 7: Cross-Validation & Relationship Graph Engine**
-  - Relational consistency: Course ➔ Module ➔ Topic ➔ Session ➔ CO ➔ BTL ➔ PO/PSO ➔ Assessment ➔ Rubric in [`engine/cross_validation.py`](file:///C:/coding/tlep%20checker/engine/cross_validation.py).
+  - Relational consistency: Course  Module  Topic  Session  CO  BTL  PO/PSO  Assessment  Rubric in [`engine/cross_validation.py`](file:///C:/coding/tlep%20checker/engine/cross_validation.py).
 - [x] **Step 8: Learning Hours & Credit Validation Module**
   - Full comparison: Approved vs TLEP vs Module vs Session vs Synchronous/Asynchronous/Notional hours in [`engine/hours_validation.py`](file:///C:/coding/tlep%20checker/engine/hours_validation.py).
 - [x] **Step 9: Scoring & Aggregation Engine**
@@ -108,7 +108,7 @@ tlep-checker/
 
 ---
 
-## 🌐 Cloud Deployment & Institutional Access
+## Cloud Deployment & Institutional Access
 
 The repository is published on GitHub:
 * **GitHub Repository**: [https://github.com/ooa-jain/tlep-checker-ay26-27](https://github.com/ooa-jain/tlep-checker-ay26-27)
@@ -126,7 +126,7 @@ To host this so everyone across departments and leadership can access it with a 
 
 ---
 
-## 🚀 Running Locally
+## Running Locally
 
 The application is actively running live on your workstation at:
 * **Local URL**: [http://localhost:8501](http://localhost:8501)
