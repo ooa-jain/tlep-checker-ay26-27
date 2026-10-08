@@ -487,13 +487,13 @@ if mode == "📄 Single Course Review":
                 for hr in result.hours_validation_rows:
                     status_icon = "✅" if hr.status == StatusEnum.COMPLIANT else ("⚠️" if hr.status == StatusEnum.NEEDS_REVISION else "❌")
                     hours_display.append({
-                        "Parameter": hr.parameter,
-                        "Approved Curriculum": hr.approved if hr.approved is not None else "-",
-                        "As per TLEP": hr.tlep if hr.tlep is not None else "-",
-                        "Variance": hr.variance,
+                        "Parameter": str(hr.parameter),
+                        "Approved Curriculum": str(hr.approved) if hr.approved is not None else "-",
+                        "As per TLEP": str(hr.tlep) if hr.tlep is not None else "-",
+                        "Variance": str(hr.variance) if hr.variance is not None else "-",
                         "Status": f"{status_icon} {hr.status.value}",
-                        "Remarks": hr.remarks,
-                        "Required Action": hr.action_required or "-"
+                        "Remarks": str(hr.remarks) if hr.remarks else "",
+                        "Required Action": str(hr.action_required) if hr.action_required else "-"
                     })
                 st.dataframe(pd.DataFrame(hours_display), use_container_width=True)
 
