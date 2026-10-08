@@ -108,12 +108,30 @@ tlep-checker/
 
 ---
 
-## 🚀 How to Run the Web Application
+## 🌐 Cloud Deployment & Institutional Access
 
-The application is actively running live at:
+The repository is published on GitHub:
+* **GitHub Repository**: [https://github.com/ooa-jain/tlep-checker-ay26-27](https://github.com/ooa-jain/tlep-checker-ay26-27)
+
+### Deploying to Streamlit Community Cloud (Free & Instant)
+To host this so everyone across departments and leadership can access it with a permanent web link:
+1. Navigate to [share.streamlit.io](https://share.streamlit.io) and log in with the `ooa-jain` GitHub account.
+2. Click **New app**.
+3. Fill in:
+   - **Repository**: `ooa-jain/tlep-checker-ay26-27`
+   - **Branch**: `master`
+   - **Main file path**: `app.py`
+4. Click **Deploy!**
+5. You will receive an instant public institutional URL (e.g., `https://tlep-checker-ay26-27.streamlit.app`).
+
+---
+
+## 🚀 Running Locally
+
+The application is actively running live on your workstation at:
 * **Local URL**: [http://localhost:8501](http://localhost:8501)
 
-Or start manually via terminal:
+Or start manually in your terminal:
 ```powershell
 streamlit run app.py
 ```
