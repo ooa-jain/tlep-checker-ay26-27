@@ -1,7 +1,7 @@
 """
-OOA TLEP Compliance Review System
-AY 2026–27
+OOA TLEP Compliance Review System — AY 2026–27
 Institutional Scale Edition — Single Course Review & 2000+ Course Portfolio Manager
+Enterprise Executive UI
 """
 
 import streamlit as st
@@ -16,95 +16,299 @@ from engine.batch_processor import process_batch_files, extract_and_process_zip
 from engine.db import get_all_audits, get_audit_summary_by_department
 from models.schemas import StatusEnum
 
+# Page Configuration
 st.set_page_config(
-    page_title="OOA TLEP Checker — AY 2026–27",
-    page_icon="🎓",
+    page_title="OOA TLEP Compliance Portal — AY 2026–27",
+    page_icon="🏛️",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
-# Custom Styles
+# Enterprise Academic Design System
 st.markdown("""
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
 <style>
-    .main-title {
-        font-size: 2.1rem;
+    /* Global Typography & Background */
+    html, body, [class*="css"] {
+        font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+    
+    .stApp {
+        background-color: #F8FAFC;
+    }
+    
+    /* Top Navigation Banner */
+    .top-nav {
+        background: linear-gradient(135deg, #0F294A 0%, #1A365D 50%, #2A4365 100%);
+        border-radius: 12px;
+        padding: 22px 28px;
+        margin-bottom: 24px;
+        color: white;
+        box-shadow: 0 4px 20px rgba(15, 41, 74, 0.12);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .top-nav-title {
+        font-size: 1.85rem;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        margin: 0;
+        color: #FFFFFF;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    .top-nav-subtitle {
+        font-size: 0.95rem;
+        color: #CBD5E1;
+        margin-top: 4px;
+        font-weight: 500;
+    }
+    .top-nav-badge {
+        background: rgba(255, 255, 255, 0.15);
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        backdrop-filter: blur(8px);
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 0.82rem;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: #F8FAFC;
+    }
+
+    /* Executive Verdict Banners */
+    .verdict-card {
+        border-radius: 12px;
+        padding: 20px 24px;
+        margin-bottom: 22px;
+        box-shadow: 0 4px 14px rgba(0,0,0,0.03);
+        border: 1px solid transparent;
+        display: flex;
+        align-items: flex-start;
+        gap: 16px;
+    }
+    .verdict-green {
+        background: #F0FDF4;
+        border-color: #BBF7D0;
+        border-left: 6px solid #16A34A;
+    }
+    .verdict-yellow {
+        background: #FEFCE8;
+        border-color: #FEF08A;
+        border-left: 6px solid #CA8A04;
+    }
+    .verdict-red {
+        background: #FEF2F2;
+        border-color: #FECACA;
+        border-left: 6px solid #DC2626;
+    }
+    
+    .verdict-title {
+        font-size: 1.25rem;
         font-weight: 700;
-        color: #1F497D;
-        margin-bottom: 0.2rem;
+        margin: 0 0 4px 0;
     }
-    .sub-title {
+    .verdict-green .verdict-title { color: #15803D; }
+    .verdict-yellow .verdict-title { color: #A16207; }
+    .verdict-red .verdict-title { color: #B91C1C; }
+    
+    .verdict-desc {
+        margin: 0;
+        font-size: 0.98rem;
+        color: #334155;
+        line-height: 1.5;
+    }
+
+    /* Stat KPI Cards */
+    .kpi-container {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 14px;
+        margin-bottom: 22px;
+    }
+    .kpi-card {
+        background: #FFFFFF;
+        border: 1px solid #E2E8F0;
+        border-radius: 10px;
+        padding: 16px 18px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .kpi-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 12px rgba(0,0,0,0.05);
+    }
+    .kpi-label {
+        font-size: 0.82rem;
+        font-weight: 600;
+        color: #64748B;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+        margin-bottom: 6px;
+    }
+    .kpi-value {
+        font-size: 1.75rem;
+        font-weight: 800;
+        color: #0F172A;
+        line-height: 1.1;
+    }
+    .kpi-sub {
+        font-size: 0.8rem;
+        color: #94A3B8;
+        margin-top: 4px;
+    }
+
+    /* Action Item Cards (Tab 1) */
+    .action-card {
+        background: #FFFFFF;
+        border: 1px solid #E2E8F0;
+        border-radius: 10px;
+        padding: 18px 20px;
+        margin-bottom: 14px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+        border-left: 5px solid #0284C7;
+    }
+    .action-card-high {
+        border-left-color: #DC2626;
+        background: #FFFBFB;
+    }
+    .action-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+    .action-card-title {
         font-size: 1.05rem;
-        color: #555;
-        margin-bottom: 1.2rem;
+        font-weight: 700;
+        color: #0F172A;
+        margin: 0;
     }
-    .verdict-box-green {
-        background-color: #E8F5E9;
-        border-left: 6px solid #2E7D32;
-        padding: 14px 18px;
-        border-radius: 8px;
-        margin-bottom: 15px;
+    .badge-urgent {
+        background: #FEE2E2;
+        color: #991B1B;
+        padding: 3px 10px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
     }
-    .verdict-box-yellow {
-        background-color: #FFFDE7;
-        border-left: 6px solid #FBC02D;
-        padding: 14px 18px;
-        border-radius: 8px;
-        margin-bottom: 15px;
+    .badge-minor {
+        background: #FEF3C7;
+        color: #92400E;
+        padding: 3px 10px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
     }
-    .verdict-box-red {
-        background-color: #FFEBEE;
-        border-left: 6px solid #C62828;
-        padding: 14px 18px;
-        border-radius: 8px;
-        margin-bottom: 15px;
+    
+    /* Clean Sidebar Styling */
+    section[data-testid="stSidebar"] {
+        background-color: #FFFFFF;
+        border-right: 1px solid #E2E8F0;
+    }
+    
+    /* Tabs Navigation Styling */
+    .stTabs [data-baseweb="tab-list"] {
+        gap: 8px;
+        border-bottom: 1px solid #E2E8F0;
+        padding-bottom: 6px;
+    }
+    .stTabs [data-baseweb="tab"] {
+        border-radius: 6px;
+        padding: 8px 16px;
+        font-weight: 600;
+        font-size: 0.92rem;
+        color: #475569;
+    }
+    .stTabs [aria-selected="true"] {
+        background-color: #EFF6FF !important;
+        color: #1D4ED8 !important;
     }
 </style>
 """, unsafe_allow_html=True)
 
-# Sidebar: Operation Mode Switcher
+# Sidebar Navigation
 with st.sidebar:
-    st.image("https://img.icons8.com/color/96/000000/diploma.png", width=64)
-    st.title("OOA TLEP Review")
-    st.markdown("**Academic Year 2026–27**")
+    st.markdown("""
+    <div style="text-align: center; padding: 12px 0 16px 0;">
+        <div style="font-size: 2.2rem; margin-bottom: 4px;">🏛️</div>
+        <div style="font-weight: 800; font-size: 1.15rem; color: #0F294A; letter-spacing: -0.01em;">OFFICE OF ACADEMICS</div>
+        <div style="font-size: 0.78rem; font-weight: 600; color: #64748B; letter-spacing: 0.05em; text-transform: uppercase;">Quality Assurance Division</div>
+    </div>
+    """, unsafe_allow_html=True)
     
     mode = st.radio(
-        "Select Operation Mode:",
-        ["📄 Single Course Review", "🏢 Department & Institutional Portfolio (2000+)"],
+        "Navigation Mode:",
+        ["📄 Single Course Review", "🏢 Institutional Portfolio (2000+)"],
         index=0
     )
     
     st.divider()
-    st.subheader("⚙️ Settings")
-    api_key_input = st.text_input(
-        "AI Key (Optional)",
-        type="password",
-        help="Optional: If left blank, runs using high-speed deterministic rules and academic heuristic algorithms."
-    )
+    st.markdown("**Academic Year:** `AY 2026–27`")
+    st.markdown("**Standards:** `49 Official Criteria`")
+    st.markdown("**Audit Engine:** `Deterministic + AI Hybrid`")
+    
+    with st.expander("⚙️ Advanced AI Settings"):
+        api_key_input = st.text_input(
+            "API Key (Optional)",
+            type="password",
+            help="Optional: If blank, system executes using high-speed deterministic rules and academic heuristic algorithms."
+        )
     
     st.divider()
-    st.caption("Office of Academics (OOA) • Official Quality Assurance Standard")
+    st.caption("🔒 Verified OOA Template Baseline • Zero Fabricated Data")
+
+# Top Navigation Header Banner
+st.markdown("""
+<div class="top-nav">
+    <div>
+        <div class="top-nav-title">
+            <span>🏛️</span> OOA Academic Compliance Portal
+        </div>
+        <div class="top-nav-subtitle">
+            Teaching-Learning and Evaluation Plan (TLEP) Quality Assurance Engine • AY 2026–27
+        </div>
+    </div>
+    <div class="top-nav-badge">
+        Official OOA Standard
+    </div>
+</div>
+""", unsafe_allow_html=True)
 
 # =========================================================================
 # MODE 1: SINGLE COURSE TLEP REVIEW
 # =========================================================================
 if mode == "📄 Single Course Review":
-    st.markdown('<div class="main-title">🎓 Single Course TLEP Review</div>', unsafe_allow_html=True)
-    st.markdown('<div class="sub-title">Audit an individual course syllabus and session plan against all 49 OOA criteria.</div>', unsafe_allow_html=True)
+    st.markdown("""
+    <div style="margin-bottom: 16px;">
+        <h3 style="font-size: 1.35rem; font-weight: 700; color: #0F172A; margin: 0;">Single Course Compliance Audit</h3>
+        <p style="color: #64748B; margin: 2px 0 0 0; font-size: 0.95rem;">Upload a department-submitted course TLEP file to conduct an evidence-based audit against all 49 parameters.</p>
+    </div>
+    """, unsafe_allow_html=True)
 
     uploaded_file = st.file_uploader(
         "Upload Course TLEP Document (XLSX, DOCX, or PDF)",
         type=["xlsx", "xls", "docx", "pdf"],
-        help="Drag and drop an individual course TLEP file here."
+        help="Upload the official department Course TLEP."
     )
 
     if uploaded_file is not None:
-        col_btn, _ = st.columns([1, 4])
+        col_btn, _ = st.columns([1.5, 4])
         with col_btn:
-            check_clicked = st.button("🚀 REVIEW COURSE TLEP", use_container_width=True, type="primary")
+            check_clicked = st.button("🚀 EXECUTE COMPLIANCE AUDIT", use_container_width=True, type="primary")
             
         if check_clicked or "last_result" in st.session_state:
             if check_clicked:
-                with st.spinner("Analyzing course against 49 official criteria, validating contact hours, and checking outcomes..."):
+                with st.spinner("Analyzing document structure, executing 49-parameter checks, and verifying hours..."):
                     suffix = os.path.splitext(uploaded_file.name)[1]
                     with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tmp:
                         tmp.write(uploaded_file.getbuffer())
@@ -120,114 +324,183 @@ if mode == "📄 Single Course Review":
 
             result = st.session_state["last_result"]
 
-            # Executive Verdict
-            st.divider()
+            # Executive Decision Banner
             major_issues_count = result.major_revision_count + result.non_compliant_count
             needs_revision_count = result.needs_revision_count
             
             if major_issues_count == 0 and needs_revision_count == 0:
                 st.markdown(f"""
-                <div class="verdict-box-green">
-                    <h3 style="color: #2E7D32; margin: 0 0 6px 0;">🟢 READY FOR SIGN-OFF (Score: {result.compliance_percentage}%)</h3>
-                    <p style="margin: 0; color: #1B5E20; font-size: 1.05rem;">
-                        <strong>Verdict:</strong> All 49 academic quality parameters are compliant. This course TLEP is ready for Board of Studies (BoS) submission.
-                    </p>
+                <div class="verdict-card verdict-green">
+                    <div style="font-size: 1.8rem;">🟢</div>
+                    <div>
+                        <div class="verdict-title">APPROVED FOR BOARD OF STUDIES (Score: {result.compliance_percentage}%)</div>
+                        <div class="verdict-desc">
+                            All 49 academic quality parameters meet prescribed compliance standards. Course syllabus, hours, outcomes, and assessment schemes are mathematically and pedagogically aligned.
+                        </div>
+                    </div>
                 </div>
                 """, unsafe_allow_html=True)
             elif major_issues_count == 0:
                 st.markdown(f"""
-                <div class="verdict-box-yellow">
-                    <h3 style="color: #F57F17; margin: 0 0 6px 0;">🟡 MINOR ADJUSTMENTS NEEDED (Score: {result.compliance_percentage}%)</h3>
-                    <p style="margin: 0; color: #E65100; font-size: 1.05rem;">
-                        <strong>Verdict:</strong> Course is sound, but has <strong>{needs_revision_count} minor items</strong> to fix before final sign-off.
-                    </p>
+                <div class="verdict-card verdict-yellow">
+                    <div style="font-size: 1.8rem;">🟡</div>
+                    <div>
+                        <div class="verdict-title">CONDITIONAL APPROVAL — MINOR EDITS REQUIRED (Score: {result.compliance_percentage}%)</div>
+                        <div class="verdict-desc">
+                            The academic framework is sound, but requires <strong>{needs_revision_count} minor correction(s)</strong> (e.g., academic year tagging, reading citations, or BTL clarifications) prior to final sign-off.
+                        </div>
+                    </div>
                 </div>
                 """, unsafe_allow_html=True)
             else:
                 st.markdown(f"""
-                <div class="verdict-box-red">
-                    <h3 style="color: #C62828; margin: 0 0 6px 0;">🔴 REWORK REQUIRED BEFORE SUBMISSION (Score: {result.compliance_percentage}%)</h3>
-                    <p style="margin: 0; color: #B71C1C; font-size: 1.05rem;">
-                        <strong>Verdict:</strong> Found <strong>{major_issues_count} major issue(s)</strong> that must be resolved prior to submission.
-                    </p>
+                <div class="verdict-card verdict-red">
+                    <div style="font-size: 1.8rem;">🔴</div>
+                    <div>
+                        <div class="verdict-title">REWORK REQUIRED — MAJOR DEFICIENCIES DETECTED (Score: {result.compliance_percentage}%)</div>
+                        <div class="verdict-desc">
+                            Audit identified <strong>{major_issues_count} structural blocker(s)</strong> (such as unassessed outcomes, module hour mismatches, or missing session alignment) that must be resolved by the department before submission.
+                        </div>
+                    </div>
                 </div>
                 """, unsafe_allow_html=True)
 
-            col1, col2, col3, col4, col5 = st.columns(5)
-            with col1:
-                st.metric("Compliance Score", f"{result.compliance_percentage}%", delta=f"{result.score_obtained} / {result.maximum_score} pts")
-            with col2:
-                st.metric("Fully Approved", f"{result.compliant_count} / {result.applicable_parameters}")
-            with col3:
-                st.metric("Quick Fixes", result.needs_revision_count)
-            with col4:
-                st.metric("Major Blockers", major_issues_count)
-            with col5:
-                st.metric("Not Applicable (NA)", result.na_count)
+            # Executive KPI Cards
+            st.markdown(f"""
+            <div class="kpi-container">
+                <div class="kpi-card">
+                    <div class="kpi-label">Compliance Score</div>
+                    <div class="kpi-value" style="color: {'#15803D' if result.compliance_percentage >= 85 else ('#B45309' if result.compliance_percentage >= 70 else '#B91C1C')};">
+                        {result.compliance_percentage}%
+                    </div>
+                    <div class="kpi-sub">{result.score_obtained} / {result.maximum_score} Points</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Compliant Parameters</div>
+                    <div class="kpi-value" style="color: #15803D;">{result.compliant_count}</div>
+                    <div class="kpi-sub">Of {result.applicable_parameters} Applicable</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Minor Fixes</div>
+                    <div class="kpi-value" style="color: #B45309;">{result.needs_revision_count}</div>
+                    <div class="kpi-sub">1 Point Each</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Major Blockers</div>
+                    <div class="kpi-value" style="color: #B91C1C;">{major_issues_count}</div>
+                    <div class="kpi-sub">0 Points Each</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">NA Parameters</div>
+                    <div class="kpi-value" style="color: #64748B;">{result.na_count}</div>
+                    <div class="kpi-sub">Excluded from Score</div>
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
 
+            # Export Button
             report_bytes = generate_excel_report(result)
             st.download_button(
-                label="📥 Download Official OOA Excel Audit Report (.xlsx)",
+                label="📥 Download Official 6-Sheet Audit Report (.xlsx)",
                 data=report_bytes,
-                file_name=f"OOA_Course_Audit_{result.file_name}_{result.review_id}.xlsx",
+                file_name=f"OOA_TLEP_Audit_{result.file_name}_{result.review_id}.xlsx",
                 mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                 type="primary"
             )
 
-            st.divider()
+            st.write("")
 
             # Progressive Tabs
             tab_plain, tab_hours, tab_outcomes, tab_full_audit, tab_areas = st.tabs([
-                "⚡ 1. What To Fix (Plain English)",
-                "⏱️ 2. Class Hours & Workload",
-                "🎯 3. What's Taught vs What's Tested",
-                "📋 4. Complete 49-Parameter Audit",
-                "📊 5. Section-by-Section Scores"
+                "⚡ Faculty Action Checklist",
+                "⏱️ Learning Hours & Credits",
+                "🎯 Outcome & Assessment Alignment",
+                "📋 Official 49-Parameter Audit",
+                "📊 Area Breakdown"
             ])
 
             actionable_findings = [f for f in result.parameter_findings if f.status in [StatusEnum.NEEDS_REVISION, StatusEnum.MAJOR_REVISION, StatusEnum.NON_COMPLIANT]]
 
+            # TAB 1: Faculty Action Checklist
             with tab_plain:
-                st.subheader("⚡ Plain-English Fix Checklist")
+                st.markdown("#### ⚡ Priority Department Action Items")
+                st.caption("Consolidated actionable list for the course facilitator and department head.")
+                
                 simplified_items = [simplify_finding(f) for f in actionable_findings]
                 if not simplified_items:
-                    st.success("🎉 Amazing! There are zero action items. The entire plan is compliant.")
+                    st.success("🎉 Complete Compliance: No corrective actions are required for this course.")
                 else:
                     high_fixes = [item for item in simplified_items if item["priority"] == "High" or item["status"] in ["Major Revision", "Non-Compliant"]]
                     other_fixes = [item for item in simplified_items if item not in high_fixes]
+                    
                     if high_fixes:
-                        st.markdown("#### 🚨 Must-Fix Blockers (High Priority)")
+                        st.markdown("##### 🚨 Critical Blockers (Must Fix for BoS Sign-Off)")
                         for fix in high_fixes:
-                            st.error(f"**Fix {fix['friendly_name']}** (Checklist #{fix['parameter_id']})\n\n"
-                                     f"• **What's wrong:** {fix['what_is_wrong']}\n\n"
-                                     f"• **What to do:** 👉 **{fix['what_to_do']}**\n\n"
-                                     f"• **Location:** `{fix['where']}`")
+                            st.markdown(f"""
+                            <div class="action-card action-card-high">
+                                <div class="action-card-header">
+                                    <span class="action-card-title">{fix['friendly_name']} (Parameter #{fix['parameter_id']})</span>
+                                    <span class="badge-urgent">Critical Blocker</span>
+                                </div>
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 8px;">
+                                    <div>
+                                        <div style="font-size: 0.8rem; font-weight: 700; color: #64748B; text-transform: uppercase;">Observation / Deficiency</div>
+                                        <div style="font-size: 0.95rem; color: #334155; margin-top: 2px;">{fix['what_is_wrong']}</div>
+                                        <div style="font-size: 0.8rem; color: #94A3B8; margin-top: 4px;">📍 Location: <code>{fix['where']}</code></div>
+                                    </div>
+                                    <div style="background: #F8FAFC; border-radius: 8px; padding: 10px 14px; border: 1px dashed #CBD5E1;">
+                                        <div style="font-size: 0.8rem; font-weight: 700; color: #0284C7; text-transform: uppercase;">Required Action</div>
+                                        <div style="font-size: 0.95rem; font-weight: 600; color: #0F172A; margin-top: 2px;">👉 {fix['what_to_do']}</div>
+                                    </div>
+                                </div>
+                            </div>
+                            """, unsafe_allow_html=True)
+                            
                     if other_fixes:
-                        st.markdown("#### ✏️ Minor Enhancements & Clarifications")
+                        st.markdown("##### ✏️ Recommended Adjustments (Quality Refinements)")
                         for fix in other_fixes:
-                            st.warning(f"**Adjust {fix['friendly_name']}** (Checklist #{fix['parameter_id']})\n\n"
-                                       f"• **What's wrong:** {fix['what_is_wrong']}\n\n"
-                                       f"• **What to do:** 👉 **{fix['what_to_do']}**\n\n"
-                                       f"• **Location:** `{fix['where']}`")
+                            st.markdown(f"""
+                            <div class="action-card">
+                                <div class="action-card-header">
+                                    <span class="action-card-title">{fix['friendly_name']} (Parameter #{fix['parameter_id']})</span>
+                                    <span class="badge-minor">Minor Adjustment</span>
+                                </div>
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 8px;">
+                                    <div>
+                                        <div style="font-size: 0.8rem; font-weight: 700; color: #64748B; text-transform: uppercase;">Observation / Deficiency</div>
+                                        <div style="font-size: 0.95rem; color: #334155; margin-top: 2px;">{fix['what_is_wrong']}</div>
+                                        <div style="font-size: 0.8rem; color: #94A3B8; margin-top: 4px;">📍 Location: <code>{fix['where']}</code></div>
+                                    </div>
+                                    <div style="background: #F8FAFC; border-radius: 8px; padding: 10px 14px; border: 1px dashed #CBD5E1;">
+                                        <div style="font-size: 0.8rem; font-weight: 700; color: #0284C7; text-transform: uppercase;">Required Action</div>
+                                        <div style="font-size: 0.95rem; font-weight: 600; color: #0F172A; margin-top: 2px;">👉 {fix['what_to_do']}</div>
+                                    </div>
+                                </div>
+                            </div>
+                            """, unsafe_allow_html=True)
 
+            # TAB 2: Hours & Credits
             with tab_hours:
-                st.subheader("⏱️ Hours & Credit Workload Verification")
+                st.markdown("#### ⏱️ Credit & Contact Hours Validation (Sheet 5)")
+                st.caption("Reconciles approved curriculum credits, L-T-P-E distribution, session contact hours, and notional learning hours.")
                 hours_display = []
                 for hr in result.hours_validation_rows:
                     status_icon = "✅" if hr.status == StatusEnum.COMPLIANT else ("⚠️" if hr.status == StatusEnum.NEEDS_REVISION else "❌")
                     hours_display.append({
-                        "Item": hr.parameter,
-                        "In Curriculum": hr.approved if hr.approved is not None else "-",
-                        "In Submitted TLEP": hr.tlep if hr.tlep is not None else "-",
+                        "Parameter": hr.parameter,
+                        "Approved Curriculum": hr.approved if hr.approved is not None else "-",
+                        "As per TLEP": hr.tlep if hr.tlep is not None else "-",
                         "Variance": hr.variance,
                         "Status": f"{status_icon} {hr.status.value}",
-                        "Explanation": hr.remarks,
-                        "Action Needed": hr.action_required or "None"
+                        "Remarks": hr.remarks,
+                        "Required Action": hr.action_required or "-"
                     })
                 st.dataframe(pd.DataFrame(hours_display), use_container_width=True)
 
+            # TAB 3: Outcomes vs Assessments
             with tab_outcomes:
-                st.subheader("🎯 Learning Outcomes Alignment (End-to-End)")
+                st.markdown("#### 🎯 Course Outcome Alignment Matrix")
+                st.caption("Verifies that every Course Outcome (CO) is explicitly taught in class sessions and evaluated in assessments.")
                 c_info = result.normalized_tlep
                 if c_info and c_info.course_outcomes:
                     co_matrix = []
@@ -235,19 +508,39 @@ if mode == "📄 Single Course Review":
                         taught_in = [s.session_number for s in c_info.sessions if co.id.upper() in [x.upper() for x in s.co_mapped]]
                         tested_in = [a.component_name for a in c_info.assessments if co.id.upper() in [x.upper() for x in a.co_mapped]]
                         co_matrix.append({
-                            "Outcome ID": co.id,
-                            "What Students Will Learn": co.statement,
-                            "Cognitive Level (Bloom)": co.btl or "Not specified",
-                            "Taught in Classes?": f"✅ Yes ({len(taught_in)} classes)" if taught_in else "❌ No classes mapped",
-                            "Tested in Exams?": f"✅ Yes ({len(tested_in)} assessments)" if tested_in else "❌ Not evaluated"
+                            "CO ID": co.id,
+                            "Course Outcome Statement": co.statement,
+                            "Cognitive Level (BTL)": co.btl or "Not specified",
+                            "Taught in Sessions": f"✅ {len(taught_in)} Sessions" if taught_in else "❌ 0 Sessions Mapped",
+                            "Evaluated in Assessments": f"✅ {len(tested_in)} Assessments" if tested_in else "❌ Unassessed Outcome"
                         })
                     st.dataframe(pd.DataFrame(co_matrix), use_container_width=True)
                 else:
                     st.info("No Course Outcomes detected in the document to analyze.")
 
+            # TAB 4: Official 49-Parameter Audit
             with tab_full_audit:
-                st.subheader("📋 Official 49-Parameter Academic Review")
+                st.markdown("#### 📋 Complete 49-Parameter Quality Assurance Audit")
+                st.caption("Official review criteria, traceable evidence locations, scoring, and confidence.")
+                
+                filter_choice = st.radio(
+                    "Filter by Status:",
+                    ["All 49", "Compliant (Pass)", "Needs Revision (Minor)", "Major Revision (Blocker)", "Non-Compliant", "NA"],
+                    horizontal=True
+                )
+                
+                filter_map = {
+                    "Compliant (Pass)": StatusEnum.COMPLIANT,
+                    "Needs Revision (Minor)": StatusEnum.NEEDS_REVISION,
+                    "Major Revision (Blocker)": StatusEnum.MAJOR_REVISION,
+                    "Non-Compliant": StatusEnum.NON_COMPLIANT,
+                    "NA": StatusEnum.NA
+                }
+                
                 display_findings = result.parameter_findings
+                if filter_choice in filter_map:
+                    display_findings = [f for f in display_findings if f.status == filter_map[filter_choice]]
+                    
                 for f in display_findings:
                     status_color = "green" if f.status == StatusEnum.COMPLIANT else ("orange" if f.status == StatusEnum.NEEDS_REVISION else "red")
                     with st.expander(f"**#{f.parameter_id} [{f.review_area}] {f.parameter}** — :{status_color}[{f.status.value}] ({f.score if f.score is not None else 'NA'} pts)"):
@@ -261,35 +554,39 @@ if mode == "📄 Single Course Review":
                             for ev in f.evidence:
                                 st.code(f"Location: {ev.location}\nText: {ev.text}", language="text")
 
+            # TAB 5: Area Breakdown
             with tab_areas:
-                st.subheader("📊 Performance by OOA Review Area")
+                st.markdown("#### 📊 Area-Wise Compliance Breakdown (Areas A–I)")
                 area_summary = aggregate_area_breakdown(result.parameter_findings)
                 st.dataframe(pd.DataFrame(area_summary), use_container_width=True)
     else:
-        st.info("👆 Upload an individual course TLEP file above to begin.")
+        st.info("👆 Upload an individual course TLEP file above to begin the official audit.")
 
 # =========================================================================
 # MODE 2: INSTITUTIONAL PORTFOLIO (2000+ COURSES)
 # =========================================================================
 else:
-    st.markdown('<div class="main-title">🏢 Institutional TLEP Portfolio (2000+ Courses)</div>', unsafe_allow_html=True)
-    st.markdown('<div class="sub-title">Hierarchical compliance monitoring across Schools, Departments, Programmes, and Semesters.</div>', unsafe_allow_html=True)
+    st.markdown("""
+    <div style="margin-bottom: 16px;">
+        <h3 style="font-size: 1.35rem; font-weight: 700; color: #0F172A; margin: 0;">Institutional TLEP Portfolio (2,000+ Courses)</h3>
+        <p style="color: #64748B; margin: 2px 0 0 0; font-size: 0.95rem;">Hierarchical compliance monitoring across Schools, Departments, Programmes, and Semesters.</p>
+    </div>
+    """, unsafe_allow_html=True)
 
-    # Tabs: Upload Batch vs Portfolio Dashboard
-    p_tab1, p_tab2 = st.tabs(["📊 Portfolio Analytics & Drill-Down", "📥 Batch Upload / Process Folder"])
+    p_tab1, p_tab2 = st.tabs(["📊 Portfolio Analytics & Leaderboard", "📥 Batch Ingestion (Google Drive & ZIP)"])
 
+    # Batch Ingestion Tab
     with p_tab2:
-        st.subheader("Bulk Ingest Course TLEPs")
-        
+        st.markdown("#### Ingest Course TLEPs at Scale")
         ingest_method = st.radio(
-            "Select Batch Ingestion Source:",
+            "Select Source:",
             ["☁️ Google Drive Folder Link", "📁 Upload Multiple Files / ZIP"],
             horizontal=True
         )
 
         if ingest_method == "☁️ Google Drive Folder Link":
-            st.markdown("#### Google Drive TLEP Review")
-            st.caption("Provide a shared Google Drive folder link containing course TLEP files or department subfolders.")
+            st.markdown("##### Google Drive Integration")
+            st.caption("Provide a shared Google Drive folder containing course files or nested department/programme folders.")
             
             gdrive_url = st.text_input(
                 "Google Drive Folder Link:",
@@ -302,13 +599,13 @@ else:
             with col_gd2:
                 review_all = st.checkbox("Review all supported files", value=True)
             with col_gd3:
-                gen_consolidated = st.checkbox("Generate consolidated report", value=True)
+                gen_consolidated = st.checkbox("Generate department tabs", value=True)
                 
-            with st.expander("🔐 Google Drive Authentication (Optional for Public Folders)"):
+            with st.expander("🔐 Drive Credentials (Optional for Public Folders)"):
                 gdrive_api_key = st.text_input("Google Drive API Key", type="password")
                 sa_file = st.file_uploader("Or Upload Service Account JSON", type=["json"])
                 
-            if st.button("🚀 START GOOGLE DRIVE REVIEW", type="primary"):
+            if st.button("🚀 INGEST & AUDIT GOOGLE DRIVE FOLDER", type="primary"):
                 if not gdrive_url:
                     st.error("Please enter a valid Google Drive folder link.")
                 else:
@@ -316,7 +613,7 @@ else:
                     folder_id = extract_folder_id_from_url(gdrive_url)
                     
                     if not folder_id:
-                        st.error("Invalid Google Drive folder link format. Please provide a standard folder URL.")
+                        st.error("Invalid Google Drive folder link format.")
                     else:
                         sa_path = None
                         if sa_file:
@@ -338,7 +635,7 @@ else:
                             
                             def on_gd_progress(cur, tot, fname):
                                 p_bar.progress(cur / tot)
-                                status_box.text(f"Syncing from Drive ({cur}/{tot}): {fname}")
+                                status_box.text(f"Downloading from Drive ({cur}/{tot}): {fname}")
                                 
                             downloaded_files = connector.sync_and_download_folder(
                                 folder_id=folder_id,
@@ -357,7 +654,7 @@ else:
                                     
                                 results = process_batch_files(downloaded_files, progress_callback=on_audit_progress, api_key=api_key_input)
                                 p_bar.progress(1.0)
-                                status_box.success(f"🎉 Successfully audited all {len(results)} courses from Google Drive! View them in the Analytics tab.")
+                                status_box.success(f"🎉 Successfully audited all {len(results)} courses from Google Drive! Check Analytics tab.")
                                 
                         except PermissionError as pe:
                             st.error(f"Access Denied: {str(pe)}")
@@ -368,8 +665,8 @@ else:
                                 os.remove(sa_path)
 
         else:
-            st.markdown("#### Upload Multiple Files or ZIP Archive")
-            st.caption("Upload files directly or provide a zip file structured by `Department / Programme / Semester / Course.xlsx`.")
+            st.markdown("##### Upload Multiple Files or ZIP Archive")
+            st.caption("Upload files directly or provide a zip file structured by `School / Department / Programme / Semester / Course.xlsx`.")
             batch_upload = st.file_uploader(
                 "Upload Batch (Multiple Files or ZIP)",
                 type=["zip", "xlsx", "docx", "pdf"],
@@ -377,7 +674,7 @@ else:
             )
             
             if batch_upload:
-                if st.button("🚀 PROCESS BATCH NOW", type="primary"):
+                if st.button("🚀 INGEST & AUDIT BATCH NOW", type="primary"):
                     progress_bar = st.progress(0.0)
                     status_text = st.empty()
                     
@@ -399,38 +696,57 @@ else:
                     else:
                         results = process_batch_files(all_paths, progress_callback=on_progress, api_key=api_key_input)
                         
-                    status_text.success(f"✅ Processed {len(results)} courses successfully! Check the Analytics tab.")
+                    status_text.success(f"✅ Processed {len(results)} courses successfully! Check Analytics tab.")
 
+    # Portfolio Analytics Tab
     with p_tab1:
         audits = get_all_audits()
         if not audits:
-            st.info("No courses have been processed yet. Upload a batch or single TLEP to view institutional metrics.")
+            st.info("ℹ️ No courses have been audited yet. Ingest a batch or Google Drive folder to view institutional performance.")
         else:
             df_audits = pd.DataFrame(audits)
             
-            # Institutional High-Level KPIs
+            # High-Level KPIs
             tot_courses = len(df_audits)
             avg_comp = round(df_audits["compliance_pct"].mean(), 1)
             ready_count = (df_audits["overall_status"] == "Compliant").sum()
             minor_count = (df_audits["overall_status"] == "Needs Revision").sum()
             rework_count = (df_audits["overall_status"].isin(["Major Revision", "Non-Compliant"])).sum()
             
-            kpi_c1, kpi_c2, kpi_c3, kpi_c4, kpi_c5 = st.columns(5)
-            with kpi_c1:
-                st.metric("Total Courses", tot_courses)
-            with kpi_c2:
-                st.metric("Avg Compliance", f"{avg_comp}%")
-            with kpi_c3:
-                st.metric("Ready for BoS", ready_count)
-            with kpi_c4:
-                st.metric("Minor Edits Needed", minor_count)
-            with kpi_c5:
-                st.metric("Action Required", rework_count)
-                
-            # Download Master Consolidated Excel Report
+            st.markdown(f"""
+            <div class="kpi-container">
+                <div class="kpi-card">
+                    <div class="kpi-label">Total Courses Audited</div>
+                    <div class="kpi-value">{tot_courses}</div>
+                    <div class="kpi-sub">Across All Departments</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Average Compliance</div>
+                    <div class="kpi-value" style="color: {'#15803D' if avg_comp >= 85 else ('#B45309' if avg_comp >= 70 else '#B91C1C')};">{avg_comp}%</div>
+                    <div class="kpi-sub">Institutional Average</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Ready for BoS</div>
+                    <div class="kpi-value" style="color: #15803D;">{ready_count}</div>
+                    <div class="kpi-sub">Fully Compliant</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Minor Edits Needed</div>
+                    <div class="kpi-value" style="color: #B45309;">{minor_count}</div>
+                    <div class="kpi-sub">Conditional Revision</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Rework Required</div>
+                    <div class="kpi-value" style="color: #B91C1C;">{rework_count}</div>
+                    <div class="kpi-sub">Action Blockers</div>
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
+            
+            # Master Download Button
             consolidated_bytes = generate_consolidated_report(audits)
             st.download_button(
-                label="📥 Download Master Institutional Audit Rollup (.xlsx)",
+                label="📥 Download Master Institutional Audit Rollup (All Departments .xlsx)",
                 data=consolidated_bytes,
                 file_name="OOA_Institutional_TLEP_Rollup_AY_2026_27.xlsx",
                 mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
@@ -440,13 +756,13 @@ else:
             st.divider()
 
             # Filters: School -> Department -> Programme -> Semester
-            st.markdown("### 🔍 Institutional Filter & Drill-Down")
+            st.markdown("#### 🔍 Institutional Drill-Down")
             f_col0, f_col1, f_col2, f_col3 = st.columns(4)
             
             school_col = "school" if "school" in df_audits.columns else None
             school_list = ["All Schools"] + sorted(list(df_audits["school"].dropna().unique())) if school_col else ["All Schools"]
             with f_col0:
-                sel_school = st.selectbox("Filter by School / Faculty:", school_list)
+                sel_school = st.selectbox("School / Faculty:", school_list)
                 
             filtered_df = df_audits
             if school_col and sel_school != "All Schools":
@@ -454,32 +770,32 @@ else:
             
             dept_list = ["All Departments"] + sorted(list(filtered_df["department"].dropna().unique()))
             with f_col1:
-                sel_dept = st.selectbox("Filter by Department:", dept_list)
+                sel_dept = st.selectbox("Department:", dept_list)
                 
             if sel_dept != "All Departments":
                 filtered_df = filtered_df[filtered_df["department"] == sel_dept]
             
             prog_list = ["All Programmes"] + sorted(list(filtered_df["programme"].dropna().unique()))
             with f_col2:
-                sel_prog = st.selectbox("Filter by Programme:", prog_list)
+                sel_prog = st.selectbox("Programme:", prog_list)
                 
             if sel_prog != "All Programmes":
                 filtered_df = filtered_df[filtered_df["programme"] == sel_prog]
                 
             sem_list = ["All Semesters"] + sorted(list(filtered_df["semester"].dropna().unique()))
             with f_col3:
-                sel_sem = st.selectbox("Filter by Semester:", sem_list)
+                sel_sem = st.selectbox("Semester:", sem_list)
                 
             if sel_sem != "All Semesters":
                 filtered_df = filtered_df[filtered_df["semester"] == sel_sem]
 
-            # Department Summary Leaderboard
+            # Department Leaderboard
             st.markdown("#### 🏆 Department Performance Leaderboard")
             dept_summary = get_audit_summary_by_department()
             if dept_summary:
                 st.dataframe(pd.DataFrame(dept_summary), use_container_width=True)
 
-            # Course-by-Course Table
+            # Course Records Table
             st.markdown(f"#### 📚 Course Compliance Records ({len(filtered_df)} Courses)")
             view_cols = ["course_code", "course_title", "school", "department", "programme", "semester", "compliance_pct", "overall_status", "major_revision_count", "needs_revision_count"]
             available_cols = [c for c in view_cols if c in filtered_df.columns]
@@ -499,7 +815,7 @@ else:
                 use_container_width=True
             )
 
-            # Department-specific download button
+            # Isolated Department Download Button
             if sel_dept != "All Departments":
                 dept_records = filtered_df.to_dict('records')
                 dept_bytes = generate_consolidated_report(dept_records)
