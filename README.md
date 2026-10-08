@@ -91,8 +91,9 @@ tlep-checker/
   - Verified end-to-end execution on sample data via [`tests/test_pipeline.py`](file:///C:/coding/tlep%20checker/tests/test_pipeline.py) (100% test pass).
 - [x] **Step 13: Bulk TLEP Processing Engine & Institutional Portfolio (2000+ Courses)**
   - Implemented [`engine/batch_processor.py`](file:///C:/coding/tlep%20checker/engine/batch_processor.py) & [`engine/db.py`](file:///C:/coding/tlep%20checker/engine/db.py).
-  - Handles 4-tier academic hierarchy: `Department ➔ Programme ➔ Semester ➔ Course`.
-  - Added institutional dashboard with department drill-down, leaderboard, and master consolidated Excel export.
+  - Handles **5-tier institutional academic hierarchy**:
+    $$\text{School / Faculty} \longrightarrow \text{Department} \longrightarrow \text{Programme} \longrightarrow \text{Semester} \longrightarrow \text{Course (TLEP)}$$
+  - Added institutional dashboard with School/Department drill-down, leaderboard, and master consolidated Excel export.
   - Verified via [`tests/test_batch.py`](file:///C:/coding/tlep%20checker/tests/test_batch.py).
 - [x] **Step 14: Google Drive Folder Integration**
   - Implemented [`integrations/google_drive.py`](file:///C:/coding/tlep%20checker/integrations/google_drive.py).
