@@ -498,3 +498,15 @@ else:
                 }),
                 use_container_width=True
             )
+
+            # Department-specific download button
+            if sel_dept != "All Departments":
+                dept_records = filtered_df.to_dict('records')
+                dept_bytes = generate_consolidated_report(dept_records)
+                st.download_button(
+                    label=f"📥 Download {sel_dept} Report Only (.xlsx)",
+                    data=dept_bytes,
+                    file_name=f"OOA_Audit_{sel_dept.replace(' ', '_')}.xlsx",
+                    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                    type="secondary"
+                )
