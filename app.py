@@ -439,15 +439,25 @@ else:
             
             st.divider()
 
-            # Filters: Department -> Programme -> Semester
+            # Filters: School -> Department -> Programme -> Semester
             st.markdown("### 🔍 Institutional Filter & Drill-Down")
-            f_col1, f_col2, f_col3 = st.columns(3)
+            f_col0, f_col1, f_col2, f_col3 = st.columns(4)
             
-            dept_list = ["All Departments"] + sorted(list(df_audits["department"].dropna().unique()))
+            school_col = "school" if "school" in df_audits.columns else None
+            school_list = ["All Schools"] + sorted(list(df_audits["school"].dropna().unique())) if school_col else ["All Schools"]
+            with f_col0:
+                sel_school = st.selectbox("Filter by School / Faculty:", school_list)
+                
+            filtered_df = df_audits
+            if school_col and sel_school != "All Schools":
+                filtered_df = filtered_df[filtered_df["school"] == sel_school]
+            
+            dept_list = ["All Departments"] + sorted(list(filtered_df["department"].dropna().unique()))
             with f_col1:
                 sel_dept = st.selectbox("Filter by Department:", dept_list)
                 
-            filtered_df = df_audits if sel_dept == "All Departments" else df_audits[df_audits["department"] == sel_dept]
+            if sel_dept != "All Departments":
+                filtered_df = filtered_df[filtered_df["department"] == sel_dept]
             
             prog_list = ["All Programmes"] + sorted(list(filtered_df["programme"].dropna().unique()))
             with f_col2:
@@ -471,11 +481,13 @@ else:
 
             # Course-by-Course Table
             st.markdown(f"#### 📚 Course Compliance Records ({len(filtered_df)} Courses)")
-            view_cols = ["course_code", "course_title", "department", "programme", "semester", "compliance_pct", "overall_status", "major_revision_count", "needs_revision_count"]
+            view_cols = ["course_code", "course_title", "school", "department", "programme", "semester", "compliance_pct", "overall_status", "major_revision_count", "needs_revision_count"]
+            available_cols = [c for c in view_cols if c in filtered_df.columns]
             st.dataframe(
-                filtered_df[view_cols].rename(columns={
+                filtered_df[available_cols].rename(columns={
                     "course_code": "Code",
                     "course_title": "Course Title",
+                    "school": "School / Faculty",
                     "department": "Department",
                     "programme": "Programme",
                     "semester": "Semester",

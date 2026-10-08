@@ -41,6 +41,7 @@ class CourseInfo(BaseModel):
     ca_ese: Optional[str] = None  # e.g., "50:50" or "40:60"
     pass_marks: Optional[str] = None
     ese_marks: Optional[str] = None
+    school: Optional[str] = None
     department: Optional[str] = None
     programme: Optional[str] = None
     faculty_name: Optional[str] = None

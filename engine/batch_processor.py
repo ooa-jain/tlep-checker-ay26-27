@@ -19,11 +19,17 @@ def extract_hierarchy_from_path(file_path: str) -> Dict[str, str]:
     e.g. /Root/Department_of_Computer_Science/BTech_CSE/Semester_6/CS601.xlsx
     """
     parts = os.path.normpath(file_path).split(os.sep)
+    school = "Unassigned"
     dept = "Unassigned"
     prog = "Unassigned"
     sem = "Unassigned"
     
-    if len(parts) >= 4:
+    if len(parts) >= 5:
+        school = parts[-5].replace("_", " ")
+        dept = parts[-4].replace("_", " ")
+        prog = parts[-3].replace("_", " ")
+        sem = parts[-2].replace("_", " ")
+    elif len(parts) >= 4:
         dept = parts[-4].replace("_", " ")
         prog = parts[-3].replace("_", " ")
         sem = parts[-2].replace("_", " ")
@@ -33,7 +39,7 @@ def extract_hierarchy_from_path(file_path: str) -> Dict[str, str]:
     elif len(parts) == 2:
         dept = parts[-2].replace("_", " ")
         
-    return {"department": dept, "programme": prog, "semester": sem}
+    return {"school": school, "department": dept, "programme": prog, "semester": sem}
 
 
 def process_single_file_batch(
@@ -48,6 +54,7 @@ def process_single_file_batch(
     result: TLEPReviewResult = review_tlep_document(file_path, api_key=api_key)
     
     # Priority: Document header metadata > Folder path metadata
+    school = result.normalized_tlep.course_info.school or path_meta["school"]
     dept = result.normalized_tlep.course_info.department or path_meta["department"]
     prog = result.normalized_tlep.course_info.programme or path_meta["programme"]
     sem = result.normalized_tlep.course_info.semester or path_meta["semester"]
@@ -58,6 +65,7 @@ def process_single_file_batch(
         "review_id": result.review_id,
         "file_name": os.path.basename(file_path),
         "file_path": file_path,
+        "school": school,
         "department": dept,
         "programme": prog,
         "semester": sem,

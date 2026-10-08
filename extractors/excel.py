@@ -111,7 +111,11 @@ def extract_excel_tlep(file_path: str) -> NormalizedTLEP:
                     if val and val != cell_str:
                         course_info.ca_ese = val
                         
-                # Department / Programme
+                # School / Department / Programme
+                if ("school of" in c_lower or ("school" in c_lower and "high school" not in c_lower)) and not course_info.school:
+                    val = next_val if next_val else cell_str.split(":")[-1].strip()
+                    if val and val != cell_str:
+                        course_info.school = val
                 if "department" in c_lower and not course_info.department:
                     val = next_val if next_val else cell_str.split(":")[-1].strip()
                     if val and val != cell_str:

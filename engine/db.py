@@ -20,6 +20,7 @@ def init_db(db_path: str = DB_PATH):
         review_id TEXT PRIMARY KEY,
         file_name TEXT,
         file_path TEXT,
+        school TEXT,
         department TEXT,
         programme TEXT,
         semester TEXT,
@@ -48,16 +49,17 @@ def save_audit_result(result_dict: Dict[str, Any], db_path: str = DB_PATH):
     cur = conn.cursor()
     cur.execute("""
     INSERT OR REPLACE INTO course_audits (
-        review_id, file_name, file_path, department, programme, semester,
+        review_id, file_name, file_path, school, department, programme, semester,
         course_code, course_title, compliance_pct, overall_status,
         score_obtained, maximum_score, compliant_count, needs_revision_count,
         major_revision_count, critical_issues_count, critical_issues_json,
         action_plan_json, timestamp
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     """, (
         result_dict["review_id"],
         result_dict["file_name"],
         result_dict.get("file_path", ""),
+        result_dict.get("school", "Unassigned"),
         result_dict.get("department", "Unassigned"),
         result_dict.get("programme", "Unassigned"),
         result_dict.get("semester", "Unassigned"),

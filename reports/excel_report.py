@@ -267,7 +267,7 @@ def generate_consolidated_report(records: List[Dict[str, Any]], output_path: str
     
     ws.cell(1, 1, "OOA TLEP INSTITUTIONAL AUDIT ROLLUP — AY 2026–27").font = title_font
     
-    cols = ["Department", "Programme", "Semester", "Course Code", "Course Title", "Compliance %", "Status", "Score", "Max", "Blockers", "Quick Fixes", "File Name"]
+    cols = ["School", "Department", "Programme", "Semester", "Course Code", "Course Title", "Compliance %", "Status", "Score", "Max", "Blockers", "Quick Fixes", "File Name"]
     for c_idx, h in enumerate(cols, 1):
         cell = ws.cell(3, c_idx, h)
         cell.font = header_font
@@ -275,19 +275,20 @@ def generate_consolidated_report(records: List[Dict[str, Any]], output_path: str
         cell.alignment = Alignment(horizontal="center")
         
     for r_idx, r in enumerate(records, 4):
-        ws.cell(r_idx, 1, r.get("department", "Unassigned")).font = regular_font
-        ws.cell(r_idx, 2, r.get("programme", "Unassigned")).font = regular_font
-        ws.cell(r_idx, 3, r.get("semester", "-")).font = regular_font
-        ws.cell(r_idx, 4, r.get("course_code", "-")).font = bold_font
-        ws.cell(r_idx, 5, r.get("course_title", "-")).font = regular_font
-        ws.cell(r_idx, 6, f"{r.get('compliance_pct', 0.0)}%").font = bold_font
-        ws.cell(r_idx, 7, r.get("overall_status", "-")).font = bold_font
-        ws.cell(r_idx, 8, r.get("score_obtained", 0)).font = regular_font
-        ws.cell(r_idx, 9, r.get("maximum_score", 98)).font = regular_font
-        ws.cell(r_idx, 10, r.get("major_revision_count", 0)).font = regular_font
-        ws.cell(r_idx, 11, r.get("needs_revision_count", 0)).font = regular_font
-        ws.cell(r_idx, 12, r.get("file_name", "-")).font = regular_font
-        for c in range(1, 13):
+        ws.cell(r_idx, 1, r.get("school", "Unassigned")).font = regular_font
+        ws.cell(r_idx, 2, r.get("department", "Unassigned")).font = regular_font
+        ws.cell(r_idx, 3, r.get("programme", "Unassigned")).font = regular_font
+        ws.cell(r_idx, 4, r.get("semester", "-")).font = regular_font
+        ws.cell(r_idx, 5, r.get("course_code", "-")).font = bold_font
+        ws.cell(r_idx, 6, r.get("course_title", "-")).font = regular_font
+        ws.cell(r_idx, 7, f"{r.get('compliance_pct', 0.0)}%").font = bold_font
+        ws.cell(r_idx, 8, r.get("overall_status", "-")).font = bold_font
+        ws.cell(r_idx, 9, r.get("score_obtained", 0)).font = regular_font
+        ws.cell(r_idx, 10, r.get("maximum_score", 98)).font = regular_font
+        ws.cell(r_idx, 11, r.get("major_revision_count", 0)).font = regular_font
+        ws.cell(r_idx, 12, r.get("needs_revision_count", 0)).font = regular_font
+        ws.cell(r_idx, 13, r.get("file_name", "-")).font = regular_font
+        for c in range(1, 14):
             ws.cell(r_idx, c).border = thin_border
 
     # Auto-adjust column widths
