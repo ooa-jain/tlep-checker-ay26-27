@@ -84,6 +84,11 @@ tlep-checker/
   - Calculate exact scores, compliance %, area-wise breakdown, and audit metadata in [`engine/scoring.py`](file:///C:/coding/tlep%20checker/engine/scoring.py).
 - [x] **Step 10: Multi-Sheet Excel Audit Report**
   - Generates official multi-sheet downloadable audit reports in [`reports/excel_report.py`](file:///C:/coding/tlep%20checker/reports/excel_report.py).
+  - Consolidated Institutional Export includes:
+    1. **`Executive Summary`** with institutional KPIs and department performance leaderboard.
+    2. **`All Courses Master`** sorted by School, Department, Programme, and Semester.
+    3. **Dedicated Department Tabs** (e.g. `CSE`, `Management`, `Commerce`) for each department with course-specific findings and required actions.
+    4. **Department-Filtered Download Button** in the UI to export single department packages directly for HoDs.
 - [x] **Step 11: Single-TLEP Review Dashboard UI (Streamlit)**
   - Implemented interactive web UI in [`app.py`](file:///C:/coding/tlep%20checker/app.py) with drag-and-drop upload, filtering, KPI cards, hours table, CO-PO review, critical issues, and downloadable audit reports.
   - Added **Plain-English Jargon-Free Simplifier** ([`engine/simplifier.py`](file:///C:/coding/tlep%20checker/engine/simplifier.py)) and **3-Second Traffic Light Verdict** for fast faculty reviews.
