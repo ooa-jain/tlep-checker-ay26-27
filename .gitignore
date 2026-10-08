@@ -1,0 +1,26 @@
+# Bytecode & Cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyc
+
+# Virtual Environments
+venv/
+env/
+.venv/
+
+# Temporary and test data
+temp_batches/
+tests/test_data/
+tests/test_batch_data/
+tests/test_audit.db
+*.log
+
+# Sensitive credentials
+.env
+*.json.key
+service_account*.json
+
+# OS files
+.DS_Store
+Thumbs.db

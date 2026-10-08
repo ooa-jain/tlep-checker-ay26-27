@@ -1,0 +1,1618 @@
+{
+  "Instructions": {
+    "max_row": 17,
+    "max_col": 6,
+    "rows": [
+      {
+        "row": 1,
+        "values": [
+          "OOA TLEP Review Checklist – Instructions",
+          null,
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      {
+        "row": 3,
+        "values": [
+          "Purpose",
+          "Standardize OOA academic review of department-submitted TLEPs for AY 2026–27.",
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      {
+        "row": 4,
+        "values": [
+          "Basis",
+          "The review checklist is derived from the OOA TLEP template sections: Course Information, POs/PSOs, Course Objectives, COs/BTL, CO–PO mapping, Detailed Syllabus, Session Plan, Sessions Summary, Assessments and Assessment Rubrics.",
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      {
+        "row": 5,
+        "values": [
+          "Compliant",
+          "Requirement is complete, correct and academically aligned.",
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      {
+        "row": 6,
+        "values": [
+          "Needs Revision",
+          "Minor correction, clarification or formatting/content improvement is required.",
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      {
+        "row": 7,
+        "values": [
+          "Major Revision",
+          "Significant academic/structural correction is required before acceptance.",
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      {
+        "row": 8,
+        "values": [
+          "Non-Compliant",
+          "Requirement is absent or does not meet the prescribed requirement.",
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      {
+        "row": 9,
+        "values": [
+          "NA",
+          "Not applicable to the course. NA items are excluded from the score.",
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      {
+        "row": 10,
+        "values": [
+          "Scoring",
+          "Compliant = 2; Needs Revision = 1; Major Revision = 0; Non-Compliant = 0; NA and Not Reviewed are excluded from the denominator.",
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      {
+        "row": 11,
+        "values": [
+          "OOA principle",
+          "Review for both completeness and internal academic consistency. Do not treat completion of a field as evidence of academic alignment.",
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      {
+        "row": 12,
+        "values": [
+          "Key cross-checks",
+          "Course/Curriculum → Credits/L-T-P-E → Syllabus/Module Hours → Session Plan → Learning Hours → CO/BTL → CO–PO/PSO → Assessment/Weightage → Assessment–CO alignment.",
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      {
+        "row": 15,
+        "values": [
+          "Reviewer's final decision",
+          null,
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      {
+        "row": 16,
+        "values": [
+          "After completing the checklist, the reviewer should record key observations in the Remarks and Department Action Required columns and communicate the consolidated corrections to the department.",
+          null,
+          null,
+          null,
+          null,
+          null
+        ]
+      }
+    ]
+  },
+  "TLEP Review Checklist": {
+    "max_row": 53,
+    "max_col": 11,
+    "rows": [
+      {
+        "row": 1,
+        "values": [
+          "OOA – TLEP Academic Review Checklist | AY 2026–27",
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      {
+        "row": 2,
+        "values": [
+          "Basis: OOA Teaching-Learning and Evaluation Plan (TLEP) template shared with departments. Use this sheet for academic, alignment, completeness and internal-consistency review.",
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      {
+        "row": 3,
+        "values": [
+          "Department:",
+          null,
+          "Programme:",
+          null,
+          "Course:",
+          null,
+          "Reviewer:",
+          null,
+          "Review Date:",
+          null,
+          null
+        ]
+      },
+      {
+        "row": 4,
+        "values": [
+          "Sl. No.",
+          "Review Area",
+          "Parameter",
+          "OOA Review Criteria",
+          "Priority",
+          "Status",
+          "Score",
+          "OOA Remarks",
+          "Department Action Required",
+          "Reviewed By",
+          "Review Date"
+        ]
+      },
+      {
+        "row": 5,
+        "values": [
+          "1",
+          "A. Course Information & Curriculum Alignment",
+          "Course title",
+          "Course title matches the approved curriculum/course matrix.",
+          "High",
+          "Not Reviewed",
+          "=IF(F5=\"Compliant\",2,IF(F5=\"Needs Revision\",1,IF(F5=\"Major Revision\",0,IF(F5=\"Non-Compliant\",0,\"\"))))",
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      {
+        "row": 6,
+        "values": [
+          "2",
+          "A. Course Information & Curriculum Alignment",
+          "Course code",
+          "Course code exactly matches the approved curriculum/course matrix.",
+          "High",
+          "Not Reviewed",
+          "=IF(F6=\"Compliant\",2,IF(F6=\"Needs Revision\",1,IF(F6=\"Major Revision\",0,IF(F6=\"Non-Compliant\",0,\"\"))))",
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      {
+        "row": 7,
+        "values": [
+          "3",
+          "A. Course Information & Curriculum Alignment",
+          "Semester",
+          "Semester is correct as per the approved curriculum.",
+          "High",
+          "Not Reviewed",
+          "=IF(F7=\"Compliant\",2,IF(F7=\"Needs Revision\",1,IF(F7=\"Major Revision\",0,IF(F7=\"Non-Compliant\",0,\"\"))))",
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      {
+        "row": 8,
+        "values": [
+          "4",
+          "A. Course Information & Curriculum Alignment",
+          "Academic Year",
+          "Academic Year is stated as AY 2026–27.",
+          "Medium",
+          "Not Reviewed",
+          "=IF(F8=\"Compliant\",2,IF(F8=\"Needs Revision\",1,IF(F8=\"Major Revision\",0,IF(F8=\"Non-Compliant\",0,\"\"))))",
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      {
+        "row": 9,
+        "values": [
+          "5",
+          "A. Course Information & Curriculum Alignment",
+          "Credits",
+          "Credits match the approved curriculum.",
+          "High",
+          "Not Reviewed",
+          "=IF(F9=\"Compliant\",2,IF(F9=\"Needs Revision\",1,IF(F9=\"Major Revision\",0,IF(F9=\"Non-Compliant\",0,\"\"))))",
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      {
+        "row": 10,
+        "values": [
+          "6",
+          "A. Course Information & Curriculum Alignment",
+          "L-T-P-E structure",
+          "L-T-P-E structure matches the approved curriculum/course structure.",
+          "High",
+          "Not Reviewed",
+          "=IF(F10=\"Compliant\",2,IF(F10=\"Needs Revision\",1,IF(F10=\"Major Revision\",0,IF(F10=\"Non-Compliant\",0,\"\"))))",
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      {
+        "row": 11,
+        "values": [
+          "7",
+          "A. Course Information & Curriculum Alignment",
+          "CA : ESE",
+          "CA : ESE pattern matches the approved assessment scheme.",
+          "High",
+          "Not Reviewed",
+          "=IF(F11=\"Compliant\",2,IF(F11=\"Needs Revision\",1,IF(F11=\"Major Revision\",0,IF(F11=\"Non-Compliant\",0,\"\"))))",
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      {
+        "row": 12,
+        "values": [
+          "8",
+          "A. Course Information & Curriculum Alignment",
+          "Pass / ESE marks",
+          "Pass marks, aggregate pass marks and ESE marks are correctly stated.",
+          "Medium",
+          "Not Reviewed",
+          "=IF(F12=\"Compliant\",2,IF(F12=\"Needs Revision\",1,IF(F12=\"Major Revision\",0,IF(F12=\"Non-Compliant\",0,\"\"))))",
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      {
+        "row": 13,
+        "values": [
+          "9",
+          "B. Course Objectives & Outcomes",
+          "Course objectives",
+          "Objectives are clearly stated and relevant to the course.",
+          "Medium",
+          "Not Reviewed",
+          "=IF(F13=\"Compliant\",2,IF(F13=\"Needs Revision\",1,IF(F13=\"Major Revision\",0,IF(F13=\"Non-Compliant\",0,\"\"))))",
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      {
+        "row": 14,
+        "values": [
+          "10",
+          "B. Course Objectives & Outcomes",
+          "CO statements",
+          "All Course Outcomes are clearly stated and measurable.",
+          "High",
+          "Not Reviewed",
+          "=IF(F14=\"Compliant\",2,IF(F14=\"Needs Revision\",1,IF(F14=\"Major Revision\",0,IF(F14=\"Non-Compliant\",0,\"\"))))",
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      {
+        "row": 15,
+        "values": [
+          "11",
+          "B. Course Objectives & Outcomes",
+          "CO–BTL alignment",
+          "Bloom’s Taxonomy level is stated and is appropriate to the CO action verb.",
+          "High",
+          "Not Reviewed",
+          "=IF(F15=\"Compliant\",2,IF(F15=\"Needs Revision\",1,IF(F15=\"Major Revision\",0,IF(F15=\"Non-Compliant\",0,\"\"))))",
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      {
+        "row": 16,
+        "values": [
+          "12",
+          "B. Course Objectives & Outcomes",
+          "CO–syllabus alignment",
+          "Each CO is supported by the detailed syllabus/content.",
+          "High",
+          "Not Reviewed",
+          "=IF(F16=\"Compliant\",2,IF(F16=\"Needs Revision\",1,IF(F16=\"Major Revision\",0,IF(F16=\"Non-Compliant\",0,\"\"))))",
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      {
+        "row": 17,
+        "values": [
+          "13",
+          "B. Course Objectives & Outcomes",
+          "CO–session alignment",
+          "COs are appropriately represented in the session plan.",
+          "High",
+          "Not Reviewed",
+          "=IF(F17=\"Compliant\",2,IF(F17=\"Needs Revision\",1,IF(F17=\"Major Revision\",0,IF(F17=\"Non-Compliant\",0,\"\"))))",
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      {
+        "row": 18,
+        "values": [
+          "14",
+          "C. CO–PO/PSO Mapping",
+          "CO–PO mapping completeness",
+          "CO–PO mapping matrix is completed.",
+          "High",
+          "Not Reviewed",
+          "=IF(F18=\"Compliant\",2,IF(F18=\"Needs Revision\",1,IF(F18=\"Major Revision\",0,IF(F18=\"Non-Compliant\",0,\"\"))))",
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      {
+        "row": 19,
+        "values": [
+          "15",
+          "C. CO–PO/PSO Mapping",
+          "Mapping justification",
+          "Mapping levels (1/2/3) are academically meaningful and not mechanical.",
+          "High",
+          "Not Reviewed",
+          "=IF(F19=\"Compliant\",2,IF(F19=\"Needs Revision\",1,IF(F19=\"Major Revision\",0,IF(F19=\"Non-Compliant\",0,\"\"))))",
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      {
+        "row": 20,
+        "values": [
+          "16",
+          "C. CO–PO/PSO Mapping",
+          "PSO mapping",
+          "Relevant PSOs are mapped appropriately where applicable.",
+          "Medium",
+          "Not Reviewed",
+          "=IF(F20=\"Compliant\",2,IF(F20=\"Needs Revision\",1,IF(F20=\"Major Revision\",0,IF(F20=\"Non-Compliant\",0,\"\"))))",
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      {
+        "row": 21,
+        "values": [
+          "17",
+          "D. Detailed Syllabus",
+          "Approved syllabus match",
+          "Detailed syllabus matches the approved syllabus/module structure.",
+          "High",
+          "Not Reviewed",
+          "=IF(F21=\"Compliant\",2,IF(F21=\"Needs Revision\",1,IF(F21=\"Major Revision\",0,IF(F21=\"Non-Compliant\",0,\"\"))))",
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      {
+        "row": 22,
+        "values": [
+          "18",
+          "D. Detailed Syllabus",
+          "Module coverage",
+          "All approved modules/topics are included.",
+          "High",
+          "Not Reviewed",
+          "=IF(F22=\"Compliant\",2,IF(F22=\"Needs Revision\",1,IF(F22=\"Major Revision\",0,IF(F22=\"Non-Compliant\",0,\"\"))))",
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      {
+        "row": 23,
+        "values": [
+          "19",
+          "D. Detailed Syllabus",
+          "Module-wise hours",
+          "Hours are allocated to modules and are reasonable.",
+          "High",
+          "Not Reviewed",
+          "=IF(F23=\"Compliant\",2,IF(F23=\"Needs Revision\",1,IF(F23=\"Major Revision\",0,IF(F23=\"Non-Compliant\",0,\"\"))))",
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      {
+        "row": 24,
+        "values": [
+          "20",
+          "D. Detailed Syllabus",
+          "Module hours total",
+          "Total module hours reconcile with the planned course teaching/learning hours.",
+          "High",
+          "Not Reviewed",
+          "=IF(F24=\"Compliant\",2,IF(F24=\"Needs Revision\",1,IF(F24=\"Major Revision\",0,IF(F24=\"Non-Compliant\",0,\"\"))))",
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      {
+        "row": 25,
+        "values": [
+          "21",
+          "E. Session Plan",
+          "Session numbering",
+          "Session numbers are complete, sequential and without unexplained gaps.",
+          "Medium",
+          "Not Reviewed",
+          "=IF(F25=\"Compliant\",2,IF(F25=\"Needs Revision\",1,IF(F25=\"Major Revision\",0,IF(F25=\"Non-Compliant\",0,\"\"))))",
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      {
+        "row": 26,
+        "values": [
+          "22",
+          "E. Session Plan",
+          "Topic coverage",
+          "Session plan covers all syllabus topics/modules.",
+          "High",
+          "Not Reviewed",
+          "=IF(F26=\"Compliant\",2,IF(F26=\"Needs Revision\",1,IF(F26=\"Major Revision\",0,IF(F26=\"Non-Compliant\",0,\"\"))))",
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      {
+        "row": 27,
+        "values": [
+          "23",
+          "E. Session Plan",
+          "Topic–module alignment",
+          "Each session topic is assigned to the correct module.",
+          "Medium",
+          "Not Reviewed",
+          "=IF(F27=\"Compliant\",2,IF(F27=\"Needs Revision\",1,IF(F27=\"Major Revision\",0,IF(F27=\"Non-Compliant\",0,\"\"))))",
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      {
+        "row": 28,
+        "values": [
+          "24",
+          "E. Session Plan",
+          "Session hours",
+          "Session hours/duration are consistent with the stated course hours.",
+          "High",
+          "Not Reviewed",
+          "=IF(F28=\"Compliant\",2,IF(F28=\"Needs Revision\",1,IF(F28=\"Major Revision\",0,IF(F28=\"Non-Compliant\",0,\"\"))))",
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      {
+        "row": 29,
+        "values": [
+          "25",
+          "E. Session Plan",
+          "CO mapping in sessions",
+          "Each session is linked to the appropriate CO(s).",
+          "High",
+          "Not Reviewed",
+          "=IF(F29=\"Compliant\",2,IF(F29=\"Needs Revision\",1,IF(F29=\"Major Revision\",0,IF(F29=\"Non-Compliant\",0,\"\"))))",
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      {
+        "row": 30,
+        "values": [
+          "26",
+          "E. Session Plan",
+          "Pedagogy/activity",
+          "Pedagogy and learning activities are stated and appropriate to the topic/CO/BTL.",
+          "High",
+          "Not Reviewed",
+          "=IF(F30=\"Compliant\",2,IF(F30=\"Needs Revision\",1,IF(F30=\"Major Revision\",0,IF(F30=\"Non-Compliant\",0,\"\"))))",
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      {
+        "row": 31,
+        "values": [
+          "27",
+          "E. Session Plan",
+          "Mode of delivery",
+          "L/T/P/E and synchronous/asynchronous mode are correctly indicated.",
+          "Medium",
+          "Not Reviewed",
+          "=IF(F31=\"Compliant\",2,IF(F31=\"Needs Revision\",1,IF(F31=\"Major Revision\",0,IF(F31=\"Non-Compliant\",0,\"\"))))",
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      {
+        "row": 32,
+        "values": [
+          "28",
+          "E. Session Plan",
+          "Readings/references",
+          "Relevant readings/references are provided where appropriate.",
+          "Medium",
+          "Not Reviewed",
+          "=IF(F32=\"Compliant\",2,IF(F32=\"Needs Revision\",1,IF(F32=\"Major Revision\",0,IF(F32=\"Non-Compliant\",0,\"\"))))",
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      {
+        "row": 33,
+        "values": [
+          "29",
+          "F. Learning Hours & Credit Validation",
+          "L-T-P-E vs session distribution",
+          "Session distribution is consistent with the prescribed L-T-P-E structure.",
+          "High",
+          "Not Reviewed",
+          "=IF(F33=\"Compliant\",2,IF(F33=\"Needs Revision\",1,IF(F33=\"Major Revision\",0,IF(F33=\"Non-Compliant\",0,\"\"))))",
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      {
+        "row": 34,
+        "values": [
+          "30",
+          "F. Learning Hours & Credit Validation",
+          "Synchronous hours",
+          "Total synchronous hours are correctly calculated.",
+          "High",
+          "Not Reviewed",
+          "=IF(F34=\"Compliant\",2,IF(F34=\"Needs Revision\",1,IF(F34=\"Major Revision\",0,IF(F34=\"Non-Compliant\",0,\"\"))))",
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      {
+        "row": 35,
+        "values": [
+          "31",
+          "F. Learning Hours & Credit Validation",
+          "Asynchronous hours",
+          "Total asynchronous hours are correctly calculated.",
+          "High",
+          "Not Reviewed",
+          "=IF(F35=\"Compliant\",2,IF(F35=\"Needs Revision\",1,IF(F35=\"Major Revision\",0,IF(F35=\"Non-Compliant\",0,\"\"))))",
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      {
+        "row": 36,
+        "values": [
+          "32",
+          "F. Learning Hours & Credit Validation",
+          "Notional hours",
+          "Total notional hours reconcile with the course design/credit expectations.",
+          "High",
+          "Not Reviewed",
+          "=IF(F36=\"Compliant\",2,IF(F36=\"Needs Revision\",1,IF(F36=\"Major Revision\",0,IF(F36=\"Non-Compliant\",0,\"\"))))",
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      {
+        "row": 37,
+        "values": [
+          "33",
+          "G. Learning Resources",
+          "Basic textbooks",
+          "Basic texts are listed and relevant to the course.",
+          "Medium",
+          "Not Reviewed",
+          "=IF(F37=\"Compliant\",2,IF(F37=\"Needs Revision\",1,IF(F37=\"Major Revision\",0,IF(F37=\"Non-Compliant\",0,\"\"))))",
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      {
+        "row": 38,
+        "values": [
+          "34",
+          "G. Learning Resources",
+          "Reference books",
+          "Reference books are relevant and adequate.",
+          "Medium",
+          "Not Reviewed",
+          "=IF(F38=\"Compliant\",2,IF(F38=\"Needs Revision\",1,IF(F38=\"Major Revision\",0,IF(F38=\"Non-Compliant\",0,\"\"))))",
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      {
+        "row": 39,
+        "values": [
+          "35",
+          "G. Learning Resources",
+          "Other reading material",
+          "Additional reading/learning resources are provided where appropriate.",
+          "Low",
+          "Not Reviewed",
+          "=IF(F39=\"Compliant\",2,IF(F39=\"Needs Revision\",1,IF(F39=\"Major Revision\",0,IF(F39=\"Non-Compliant\",0,\"\"))))",
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      {
+        "row": 40,
+        "values": [
+          "36",
+          "H. Assessment",
+          "Assessment components",
+          "All assessment components are listed.",
+          "High",
+          "Not Reviewed",
+          "=IF(F40=\"Compliant\",2,IF(F40=\"Needs Revision\",1,IF(F40=\"Major Revision\",0,IF(F40=\"Non-Compliant\",0,\"\"))))",
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      {
+        "row": 41,
+        "values": [
+          "37",
+          "H. Assessment",
+          "Assessment weightage",
+          "Assessment weightages are correct and total appropriately.",
+          "High",
+          "Not Reviewed",
+          "=IF(F41=\"Compliant\",2,IF(F41=\"Needs Revision\",1,IF(F41=\"Major Revision\",0,IF(F41=\"Non-Compliant\",0,\"\"))))",
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      {
+        "row": 42,
+        "values": [
+          "38",
+          "H. Assessment",
+          "CA : ESE consistency",
+          "Assessment scheme is consistent with Course Information and approved regulations.",
+          "High",
+          "Not Reviewed",
+          "=IF(F42=\"Compliant\",2,IF(F42=\"Needs Revision\",1,IF(F42=\"Major Revision\",0,IF(F42=\"Non-Compliant\",0,\"\"))))",
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      {
+        "row": 43,
+        "values": [
+          "39",
+          "H. Assessment",
+          "Formative/summative",
+          "Assessment is correctly classified as formative/summative/UE as applicable.",
+          "Medium",
+          "Not Reviewed",
+          "=IF(F43=\"Compliant\",2,IF(F43=\"Needs Revision\",1,IF(F43=\"Major Revision\",0,IF(F43=\"Non-Compliant\",0,\"\"))))",
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      {
+        "row": 44,
+        "values": [
+          "40",
+          "H. Assessment",
+          "Frequency",
+          "Assessment frequency is clearly indicated.",
+          "Medium",
+          "Not Reviewed",
+          "=IF(F44=\"Compliant\",2,IF(F44=\"Needs Revision\",1,IF(F44=\"Major Revision\",0,IF(F44=\"Non-Compliant\",0,\"\"))))",
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      {
+        "row": 45,
+        "values": [
+          "41",
+          "H. Assessment",
+          "Assessment–CO mapping",
+          "Each assessment is mapped to relevant CO(s).",
+          "High",
+          "Not Reviewed",
+          "=IF(F45=\"Compliant\",2,IF(F45=\"Needs Revision\",1,IF(F45=\"Major Revision\",0,IF(F45=\"Non-Compliant\",0,\"\"))))",
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      {
+        "row": 46,
+        "values": [
+          "42",
+          "H. Assessment",
+          "CO coverage",
+          "All important COs are adequately assessed.",
+          "High",
+          "Not Reviewed",
+          "=IF(F46=\"Compliant\",2,IF(F46=\"Needs Revision\",1,IF(F46=\"Major Revision\",0,IF(F46=\"Non-Compliant\",0,\"\"))))",
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      {
+        "row": 47,
+        "values": [
+          "43",
+          "H. Assessment",
+          "Assessment–BTL alignment",
+          "Assessment method/questions are appropriate to the intended BTL.",
+          "High",
+          "Not Reviewed",
+          "=IF(F47=\"Compliant\",2,IF(F47=\"Needs Revision\",1,IF(F47=\"Major Revision\",0,IF(F47=\"Non-Compliant\",0,\"\"))))",
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      {
+        "row": 48,
+        "values": [
+          "44",
+          "H. Assessment",
+          "Assessment description",
+          "Assessment description, type and requirements are clearly stated.",
+          "Medium",
+          "Not Reviewed",
+          "=IF(F48=\"Compliant\",2,IF(F48=\"Needs Revision\",1,IF(F48=\"Major Revision\",0,IF(F48=\"Non-Compliant\",0,\"\"))))",
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      {
+        "row": 49,
+        "values": [
+          "45",
+          "H. Assessment",
+          "Rubrics",
+          "Rubrics/criteria are provided where applicable and are measurable.",
+          "Medium",
+          "Not Reviewed",
+          "=IF(F49=\"Compliant\",2,IF(F49=\"Needs Revision\",1,IF(F49=\"Major Revision\",0,IF(F49=\"Non-Compliant\",0,\"\"))))",
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      {
+        "row": 50,
+        "values": [
+          "46",
+          "I. Overall Internal Consistency",
+          "Course data consistency",
+          "Course Information, curriculum, syllabus and TLEP are internally consistent.",
+          "High",
+          "Not Reviewed",
+          "=IF(F50=\"Compliant\",2,IF(F50=\"Needs Revision\",1,IF(F50=\"Major Revision\",0,IF(F50=\"Non-Compliant\",0,\"\"))))",
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      {
+        "row": 51,
+        "values": [
+          "47",
+          "I. Overall Internal Consistency",
+          "Syllabus–session consistency",
+          "Detailed syllabus, module hours and session plan reconcile.",
+          "High",
+          "Not Reviewed",
+          "=IF(F51=\"Compliant\",2,IF(F51=\"Needs Revision\",1,IF(F51=\"Major Revision\",0,IF(F51=\"Non-Compliant\",0,\"\"))))",
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      {
+        "row": 52,
+        "values": [
+          "48",
+          "I. Overall Internal Consistency",
+          "CO–teaching–assessment consistency",
+          "COs are taught, mapped in sessions and assessed.",
+          "High",
+          "Not Reviewed",
+          "=IF(F52=\"Compliant\",2,IF(F52=\"Needs Revision\",1,IF(F52=\"Major Revision\",0,IF(F52=\"Non-Compliant\",0,\"\"))))",
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      {
+        "row": 53,
+        "values": [
+          "49",
+          "I. Overall Internal Consistency",
+          "Overall completeness",
+          "No major section/field required by the TLEP template is missing.",
+          "High",
+          "Not Reviewed",
+          "=IF(F53=\"Compliant\",2,IF(F53=\"Needs Revision\",1,IF(F53=\"Major Revision\",0,IF(F53=\"Non-Compliant\",0,\"\"))))",
+          null,
+          null,
+          null,
+          null
+        ]
+      }
+    ]
+  },
+  "Dashboard": {
+    "max_row": 24,
+    "max_col": 6,
+    "rows": [
+      {
+        "row": 1,
+        "values": [
+          "OOA TLEP Review Dashboard",
+          null,
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      {
+        "row": 3,
+        "values": [
+          "Total Review Parameters",
+          "=COUNTA('TLEP Review Checklist'!C5:C53)",
+          null,
+          "Status",
+          "Meaning",
+          null
+        ]
+      },
+      {
+        "row": 4,
+        "values": [
+          "Compliant",
+          "=COUNTIF('TLEP Review Checklist'!F5:F53,\"Compliant\")",
+          null,
+          "Compliant",
+          "Complete and academically aligned",
+          null
+        ]
+      },
+      {
+        "row": 5,
+        "values": [
+          "Needs Revision",
+          "=COUNTIF('TLEP Review Checklist'!F5:F53,\"Needs Revision\")",
+          null,
+          "Needs Revision",
+          "Minor correction / clarification required",
+          null
+        ]
+      },
+      {
+        "row": 6,
+        "values": [
+          "Major Revision",
+          "=COUNTIF('TLEP Review Checklist'!F5:F53,\"Major Revision\")",
+          null,
+          "Major Revision",
+          "Significant academic or structural correction required",
+          null
+        ]
+      },
+      {
+        "row": 7,
+        "values": [
+          "Non-Compliant",
+          "=COUNTIF('TLEP Review Checklist'!F5:F53,\"Non-Compliant\")",
+          null,
+          "Non-Compliant",
+          "Does not meet prescribed requirement",
+          null
+        ]
+      },
+      {
+        "row": 8,
+        "values": [
+          "Not Reviewed",
+          "=COUNTIF('TLEP Review Checklist'!F5:F53,\"Not Reviewed\")",
+          null,
+          "NA",
+          "Not applicable; excluded from score",
+          null
+        ]
+      },
+      {
+        "row": 9,
+        "values": [
+          "NA",
+          "=COUNTIF('TLEP Review Checklist'!F5:F53,\"NA\")",
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      {
+        "row": 10,
+        "values": [
+          "Applicable Parameters",
+          "=B3-B8",
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      {
+        "row": 11,
+        "values": [
+          "Score Obtained",
+          "=SUM('TLEP Review Checklist'!G5:G53)",
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      {
+        "row": 12,
+        "values": [
+          "Maximum Score",
+          "=B9*2",
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      {
+        "row": 13,
+        "values": [
+          "Compliance %",
+          "=IF(B10=0,0,B11/B12)",
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      {
+        "row": 16,
+        "values": [
+          "Recommended OOA Review Flow",
+          null,
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      {
+        "row": 17,
+        "values": [
+          "1. Verify Course Information against approved curriculum/course matrix.",
+          null,
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      {
+        "row": 18,
+        "values": [
+          "2. Review COs, BTL and CO–PO/PSO mapping.",
+          null,
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      {
+        "row": 19,
+        "values": [
+          "3. Verify detailed syllabus and module-wise hours.",
+          null,
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      {
+        "row": 20,
+        "values": [
+          "4. Validate session plan against syllabus, COs, pedagogy and learning hours.",
+          null,
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      {
+        "row": 21,
+        "values": [
+          "5. Validate synchronous/asynchronous/notional hours.",
+          null,
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      {
+        "row": 22,
+        "values": [
+          "6. Review textbooks, references and session-wise readings.",
+          null,
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      {
+        "row": 23,
+        "values": [
+          "7. Review assessment scheme, weightage, CO mapping and rubrics.",
+          null,
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      {
+        "row": 24,
+        "values": [
+          "8. Record remarks and department action required for every non-compliant item.",
+          null,
+          null,
+          null,
+          null,
+          null
+        ]
+      }
+    ]
+  },
+  "CO-PO Review": {
+    "max_row": 15,
+    "max_col": 8,
+    "rows": [
+      {
+        "row": 1,
+        "values": [
+          "CO–PO / PSO Mapping Review",
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      {
+        "row": 3,
+        "values": [
+          "CO",
+          "CO Statement",
+          "BTL",
+          "PO/PSO",
+          "Mapping (3/2/1/-)",
+          "Justification / Evidence",
+          "OOA Status",
+          "Remarks"
+        ]
+      },
+      {
+        "row": 4,
+        "values": [
+          "CO1",
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      {
+        "row": 5,
+        "values": [
+          "CO2",
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      {
+        "row": 6,
+        "values": [
+          "CO3",
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      {
+        "row": 7,
+        "values": [
+          "CO4",
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      {
+        "row": 8,
+        "values": [
+          "CO5",
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      {
+        "row": 9,
+        "values": [
+          "CO6",
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      {
+        "row": 10,
+        "values": [
+          "CO7",
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      {
+        "row": 11,
+        "values": [
+          "CO8",
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      {
+        "row": 12,
+        "values": [
+          "CO9",
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      {
+        "row": 13,
+        "values": [
+          "CO10",
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      {
+        "row": 14,
+        "values": [
+          "CO11",
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      {
+        "row": 15,
+        "values": [
+          "CO12",
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ]
+      }
+    ]
+  },
+  "Hours Validation": {
+    "max_row": 15,
+    "max_col": 8,
+    "rows": [
+      {
+        "row": 1,
+        "values": [
+          "TLEP Learning Hours & Credit Validation",
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      {
+        "row": 3,
+        "values": [
+          "Parameter",
+          "As per Approved Curriculum",
+          "As per TLEP",
+          "Variance",
+          "OOA Status",
+          "Remarks",
+          "Evidence / Page",
+          "Action Required"
+        ]
+      },
+      {
+        "row": 4,
+        "values": [
+          "Credits",
+          null,
+          null,
+          "=IF(OR(B4=\"\",C4=\"\"),\"\",C4-B4)",
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      {
+        "row": 5,
+        "values": [
+          "L-T-P-E",
+          null,
+          null,
+          "=IF(OR(B5=\"\",C5=\"\"),\"\",C5-B5)",
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      {
+        "row": 6,
+        "values": [
+          "Lecture hours",
+          null,
+          null,
+          "=IF(OR(B6=\"\",C6=\"\"),\"\",C6-B6)",
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      {
+        "row": 7,
+        "values": [
+          "Tutorial hours",
+          null,
+          null,
+          "=IF(OR(B7=\"\",C7=\"\"),\"\",C7-B7)",
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      {
+        "row": 8,
+        "values": [
+          "Practical hours",
+          null,
+          null,
+          "=IF(OR(B8=\"\",C8=\"\"),\"\",C8-B8)",
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      {
+        "row": 9,
+        "values": [
+          "Experiential Synchronous hours",
+          null,
+          null,
+          "=IF(OR(B9=\"\",C9=\"\"),\"\",C9-B9)",
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      {
+        "row": 10,
+        "values": [
+          "Experiential Asynchronous hours",
+          null,
+          null,
+          "=IF(OR(B10=\"\",C10=\"\"),\"\",C10-B10)",
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      {
+        "row": 11,
+        "values": [
+          "Total Synchronous hours",
+          null,
+          null,
+          "=IF(OR(B11=\"\",C11=\"\"),\"\",C11-B11)",
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      {
+        "row": 12,
+        "values": [
+          "Total Asynchronous hours",
+          null,
+          null,
+          "=IF(OR(B12=\"\",C12=\"\"),\"\",C12-B12)",
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      {
+        "row": 13,
+        "values": [
+          "Total Notional hours",
+          null,
+          null,
+          "=IF(OR(B13=\"\",C13=\"\"),\"\",C13-B13)",
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      {
+        "row": 14,
+        "values": [
+          "Total Module hours",
+          null,
+          null,
+          "=IF(OR(B14=\"\",C14=\"\"),\"\",C14-B14)",
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      {
+        "row": 15,
+        "values": [
+          "Total Session Plan hours",
+          null,
+          null,
+          "=IF(OR(B15=\"\",C15=\"\"),\"\",C15-B15)",
+          null,
+          null,
+          null,
+          null
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,693 @@
+{
+  "title": "OOA TLEP Academic Review Checklist | AY 2026–27",
+  "version": "AY 2026–27",
+  "source_file": "OOA_TLEP_Review_Checklist_AY_2026-27.xlsx",
+  "total_parameters": 49,
+  "scoring_system": {
+    "Compliant": 2,
+    "Needs Revision": 1,
+    "Major Revision": 0,
+    "Non-Compliant": 0,
+    "NA": "Excluded from numerator and denominator",
+    "Not Reviewed": "Excluded from numerator and denominator"
+  },
+  "score_calculation": {
+    "applicable_parameters": "Total Parameters - NA Parameters - Not Reviewed Parameters",
+    "max_score": "Applicable Parameters * 2",
+    "compliance_percentage": "(Obtained Score / Maximum Score) * 100"
+  },
+  "sheets": [
+    "Instructions",
+    "TLEP Review Checklist",
+    "Dashboard",
+    "CO-PO Review",
+    "Hours Validation"
+  ],
+  "instructions": [
+    {
+      "row": 1,
+      "content": "OOA TLEP Review Checklist – Instructions"
+    },
+    {
+      "row": 3,
+      "content": "Purpose : Standardize OOA academic review of department-submitted TLEPs for AY 2026–27."
+    },
+    {
+      "row": 4,
+      "content": "Basis : The review checklist is derived from the OOA TLEP template sections: Course Information, POs/PSOs, Course Objectives, COs/BTL, CO–PO mapping, Detailed Syllabus, Session Plan, Sessions Summary, Assessments and Assessment Rubrics."
+    },
+    {
+      "row": 5,
+      "content": "Compliant : Requirement is complete, correct and academically aligned."
+    },
+    {
+      "row": 6,
+      "content": "Needs Revision : Minor correction, clarification or formatting/content improvement is required."
+    },
+    {
+      "row": 7,
+      "content": "Major Revision : Significant academic/structural correction is required before acceptance."
+    },
+    {
+      "row": 8,
+      "content": "Non-Compliant : Requirement is absent or does not meet the prescribed requirement."
+    },
+    {
+      "row": 9,
+      "content": "NA : Not applicable to the course. NA items are excluded from the score."
+    },
+    {
+      "row": 10,
+      "content": "Scoring : Compliant = 2; Needs Revision = 1; Major Revision = 0; Non-Compliant = 0; NA and Not Reviewed are excluded from the denominator."
+    },
+    {
+      "row": 11,
+      "content": "OOA principle : Review for both completeness and internal academic consistency. Do not treat completion of a field as evidence of academic alignment."
+    },
+    {
+      "row": 12,
+      "content": "Key cross-checks : Course/Curriculum → Credits/L-T-P-E → Syllabus/Module Hours → Session Plan → Learning Hours → CO/BTL → CO–PO/PSO → Assessment/Weightage → Assessment–CO alignment."
+    },
+    {
+      "row": 15,
+      "content": "Reviewer's final decision"
+    },
+    {
+      "row": 16,
+      "content": "After completing the checklist, the reviewer should record key observations in the Remarks and Department Action Required columns and communicate the consolidated corrections to the department."
+    }
+  ],
+  "hours_validation_parameters": [
+    {
+      "row": 4,
+      "parameter": "Credits",
+      "variance_formula": "=IF(OR(B4=\"\",C4=\"\"),\"\",C4-B4)"
+    },
+    {
+      "row": 5,
+      "parameter": "L-T-P-E",
+      "variance_formula": "=IF(OR(B5=\"\",C5=\"\"),\"\",C5-B5)"
+    },
+    {
+      "row": 6,
+      "parameter": "Lecture hours",
+      "variance_formula": "=IF(OR(B6=\"\",C6=\"\"),\"\",C6-B6)"
+    },
+    {
+      "row": 7,
+      "parameter": "Tutorial hours",
+      "variance_formula": "=IF(OR(B7=\"\",C7=\"\"),\"\",C7-B7)"
+    },
+    {
+      "row": 8,
+      "parameter": "Practical hours",
+      "variance_formula": "=IF(OR(B8=\"\",C8=\"\"),\"\",C8-B8)"
+    },
+    {
+      "row": 9,
+      "parameter": "Experiential Synchronous hours",
+      "variance_formula": "=IF(OR(B9=\"\",C9=\"\"),\"\",C9-B9)"
+    },
+    {
+      "row": 10,
+      "parameter": "Experiential Asynchronous hours",
+      "variance_formula": "=IF(OR(B10=\"\",C10=\"\"),\"\",C10-B10)"
+    },
+    {
+      "row": 11,
+      "parameter": "Total Synchronous hours",
+      "variance_formula": "=IF(OR(B11=\"\",C11=\"\"),\"\",C11-B11)"
+    },
+    {
+      "row": 12,
+      "parameter": "Total Asynchronous hours",
+      "variance_formula": "=IF(OR(B12=\"\",C12=\"\"),\"\",C12-B12)"
+    },
+    {
+      "row": 13,
+      "parameter": "Total Notional hours",
+      "variance_formula": "=IF(OR(B13=\"\",C13=\"\"),\"\",C13-B13)"
+    },
+    {
+      "row": 14,
+      "parameter": "Total Module hours",
+      "variance_formula": "=IF(OR(B14=\"\",C14=\"\"),\"\",C14-B14)"
+    },
+    {
+      "row": 15,
+      "parameter": "Total Session Plan hours",
+      "variance_formula": "=IF(OR(B15=\"\",C15=\"\"),\"\",C15-B15)"
+    }
+  ],
+  "copo_review_headers": [
+    "CO",
+    "CO Statement",
+    "BTL",
+    "PO/PSO",
+    "Mapping (3/2/1/-)",
+    "Justification / Evidence",
+    "OOA Status",
+    "Remarks"
+  ],
+  "parameters": [
+    {
+      "parameter_id": 1,
+      "review_area": "A. Course Information & Curriculum Alignment",
+      "parameter": "Course title",
+      "criterion": "Course title matches the approved curriculum/course matrix.",
+      "priority": "High",
+      "validation_type": "deterministic",
+      "default_status": "Not Reviewed",
+      "score_formula": "=IF(F5=\"Compliant\",2,IF(F5=\"Needs Revision\",1,IF(F5=\"Major Revision\",0,IF(F5=\"Non-Compliant\",0,\"\"))))",
+      "row_index": 5
+    },
+    {
+      "parameter_id": 2,
+      "review_area": "A. Course Information & Curriculum Alignment",
+      "parameter": "Course code",
+      "criterion": "Course code exactly matches the approved curriculum/course matrix.",
+      "priority": "High",
+      "validation_type": "deterministic",
+      "default_status": "Not Reviewed",
+      "score_formula": "=IF(F6=\"Compliant\",2,IF(F6=\"Needs Revision\",1,IF(F6=\"Major Revision\",0,IF(F6=\"Non-Compliant\",0,\"\"))))",
+      "row_index": 6
+    },
+    {
+      "parameter_id": 3,
+      "review_area": "A. Course Information & Curriculum Alignment",
+      "parameter": "Semester",
+      "criterion": "Semester is correct as per the approved curriculum.",
+      "priority": "High",
+      "validation_type": "deterministic",
+      "default_status": "Not Reviewed",
+      "score_formula": "=IF(F7=\"Compliant\",2,IF(F7=\"Needs Revision\",1,IF(F7=\"Major Revision\",0,IF(F7=\"Non-Compliant\",0,\"\"))))",
+      "row_index": 7
+    },
+    {
+      "parameter_id": 4,
+      "review_area": "A. Course Information & Curriculum Alignment",
+      "parameter": "Academic Year",
+      "criterion": "Academic Year is stated as AY 2026–27.",
+      "priority": "Medium",
+      "validation_type": "deterministic",
+      "default_status": "Not Reviewed",
+      "score_formula": "=IF(F8=\"Compliant\",2,IF(F8=\"Needs Revision\",1,IF(F8=\"Major Revision\",0,IF(F8=\"Non-Compliant\",0,\"\"))))",
+      "row_index": 8
+    },
+    {
+      "parameter_id": 5,
+      "review_area": "A. Course Information & Curriculum Alignment",
+      "parameter": "Credits",
+      "criterion": "Credits match the approved curriculum.",
+      "priority": "High",
+      "validation_type": "deterministic",
+      "default_status": "Not Reviewed",
+      "score_formula": "=IF(F9=\"Compliant\",2,IF(F9=\"Needs Revision\",1,IF(F9=\"Major Revision\",0,IF(F9=\"Non-Compliant\",0,\"\"))))",
+      "row_index": 9
+    },
+    {
+      "parameter_id": 6,
+      "review_area": "A. Course Information & Curriculum Alignment",
+      "parameter": "L-T-P-E structure",
+      "criterion": "L-T-P-E structure matches the approved curriculum/course structure.",
+      "priority": "High",
+      "validation_type": "deterministic",
+      "default_status": "Not Reviewed",
+      "score_formula": "=IF(F10=\"Compliant\",2,IF(F10=\"Needs Revision\",1,IF(F10=\"Major Revision\",0,IF(F10=\"Non-Compliant\",0,\"\"))))",
+      "row_index": 10
+    },
+    {
+      "parameter_id": 7,
+      "review_area": "A. Course Information & Curriculum Alignment",
+      "parameter": "CA : ESE",
+      "criterion": "CA : ESE pattern matches the approved assessment scheme.",
+      "priority": "High",
+      "validation_type": "deterministic",
+      "default_status": "Not Reviewed",
+      "score_formula": "=IF(F11=\"Compliant\",2,IF(F11=\"Needs Revision\",1,IF(F11=\"Major Revision\",0,IF(F11=\"Non-Compliant\",0,\"\"))))",
+      "row_index": 11
+    },
+    {
+      "parameter_id": 8,
+      "review_area": "A. Course Information & Curriculum Alignment",
+      "parameter": "Pass / ESE marks",
+      "criterion": "Pass marks, aggregate pass marks and ESE marks are correctly stated.",
+      "priority": "Medium",
+      "validation_type": "deterministic",
+      "default_status": "Not Reviewed",
+      "score_formula": "=IF(F12=\"Compliant\",2,IF(F12=\"Needs Revision\",1,IF(F12=\"Major Revision\",0,IF(F12=\"Non-Compliant\",0,\"\"))))",
+      "row_index": 12
+    },
+    {
+      "parameter_id": 9,
+      "review_area": "B. Course Objectives & Outcomes",
+      "parameter": "Course objectives",
+      "criterion": "Objectives are clearly stated and relevant to the course.",
+      "priority": "Medium",
+      "validation_type": "ai",
+      "default_status": "Not Reviewed",
+      "score_formula": "=IF(F13=\"Compliant\",2,IF(F13=\"Needs Revision\",1,IF(F13=\"Major Revision\",0,IF(F13=\"Non-Compliant\",0,\"\"))))",
+      "row_index": 13
+    },
+    {
+      "parameter_id": 10,
+      "review_area": "B. Course Objectives & Outcomes",
+      "parameter": "CO statements",
+      "criterion": "All Course Outcomes are clearly stated and measurable.",
+      "priority": "High",
+      "validation_type": "ai",
+      "default_status": "Not Reviewed",
+      "score_formula": "=IF(F14=\"Compliant\",2,IF(F14=\"Needs Revision\",1,IF(F14=\"Major Revision\",0,IF(F14=\"Non-Compliant\",0,\"\"))))",
+      "row_index": 14
+    },
+    {
+      "parameter_id": 11,
+      "review_area": "B. Course Objectives & Outcomes",
+      "parameter": "CO–BTL alignment",
+      "criterion": "Bloom’s Taxonomy level is stated and is appropriate to the CO action verb.",
+      "priority": "High",
+      "validation_type": "ai",
+      "default_status": "Not Reviewed",
+      "score_formula": "=IF(F15=\"Compliant\",2,IF(F15=\"Needs Revision\",1,IF(F15=\"Major Revision\",0,IF(F15=\"Non-Compliant\",0,\"\"))))",
+      "row_index": 15
+    },
+    {
+      "parameter_id": 12,
+      "review_area": "B. Course Objectives & Outcomes",
+      "parameter": "CO–syllabus alignment",
+      "criterion": "Each CO is supported by the detailed syllabus/content.",
+      "priority": "High",
+      "validation_type": "hybrid",
+      "default_status": "Not Reviewed",
+      "score_formula": "=IF(F16=\"Compliant\",2,IF(F16=\"Needs Revision\",1,IF(F16=\"Major Revision\",0,IF(F16=\"Non-Compliant\",0,\"\"))))",
+      "row_index": 16
+    },
+    {
+      "parameter_id": 13,
+      "review_area": "B. Course Objectives & Outcomes",
+      "parameter": "CO–session alignment",
+      "criterion": "COs are appropriately represented in the session plan.",
+      "priority": "High",
+      "validation_type": "hybrid",
+      "default_status": "Not Reviewed",
+      "score_formula": "=IF(F17=\"Compliant\",2,IF(F17=\"Needs Revision\",1,IF(F17=\"Major Revision\",0,IF(F17=\"Non-Compliant\",0,\"\"))))",
+      "row_index": 17
+    },
+    {
+      "parameter_id": 14,
+      "review_area": "C. CO–PO/PSO Mapping",
+      "parameter": "CO–PO mapping completeness",
+      "criterion": "CO–PO mapping matrix is completed.",
+      "priority": "High",
+      "validation_type": "deterministic",
+      "default_status": "Not Reviewed",
+      "score_formula": "=IF(F18=\"Compliant\",2,IF(F18=\"Needs Revision\",1,IF(F18=\"Major Revision\",0,IF(F18=\"Non-Compliant\",0,\"\"))))",
+      "row_index": 18
+    },
+    {
+      "parameter_id": 15,
+      "review_area": "C. CO–PO/PSO Mapping",
+      "parameter": "Mapping justification",
+      "criterion": "Mapping levels (1/2/3) are academically meaningful and not mechanical.",
+      "priority": "High",
+      "validation_type": "ai",
+      "default_status": "Not Reviewed",
+      "score_formula": "=IF(F19=\"Compliant\",2,IF(F19=\"Needs Revision\",1,IF(F19=\"Major Revision\",0,IF(F19=\"Non-Compliant\",0,\"\"))))",
+      "row_index": 19
+    },
+    {
+      "parameter_id": 16,
+      "review_area": "C. CO–PO/PSO Mapping",
+      "parameter": "PSO mapping",
+      "criterion": "Relevant PSOs are mapped appropriately where applicable.",
+      "priority": "Medium",
+      "validation_type": "hybrid",
+      "default_status": "Not Reviewed",
+      "score_formula": "=IF(F20=\"Compliant\",2,IF(F20=\"Needs Revision\",1,IF(F20=\"Major Revision\",0,IF(F20=\"Non-Compliant\",0,\"\"))))",
+      "row_index": 20
+    },
+    {
+      "parameter_id": 17,
+      "review_area": "D. Detailed Syllabus",
+      "parameter": "Approved syllabus match",
+      "criterion": "Detailed syllabus matches the approved syllabus/module structure.",
+      "priority": "High",
+      "validation_type": "hybrid",
+      "default_status": "Not Reviewed",
+      "score_formula": "=IF(F21=\"Compliant\",2,IF(F21=\"Needs Revision\",1,IF(F21=\"Major Revision\",0,IF(F21=\"Non-Compliant\",0,\"\"))))",
+      "row_index": 21
+    },
+    {
+      "parameter_id": 18,
+      "review_area": "D. Detailed Syllabus",
+      "parameter": "Module coverage",
+      "criterion": "All approved modules/topics are included.",
+      "priority": "High",
+      "validation_type": "hybrid",
+      "default_status": "Not Reviewed",
+      "score_formula": "=IF(F22=\"Compliant\",2,IF(F22=\"Needs Revision\",1,IF(F22=\"Major Revision\",0,IF(F22=\"Non-Compliant\",0,\"\"))))",
+      "row_index": 22
+    },
+    {
+      "parameter_id": 19,
+      "review_area": "D. Detailed Syllabus",
+      "parameter": "Module-wise hours",
+      "criterion": "Hours are allocated to modules and are reasonable.",
+      "priority": "High",
+      "validation_type": "deterministic",
+      "default_status": "Not Reviewed",
+      "score_formula": "=IF(F23=\"Compliant\",2,IF(F23=\"Needs Revision\",1,IF(F23=\"Major Revision\",0,IF(F23=\"Non-Compliant\",0,\"\"))))",
+      "row_index": 23
+    },
+    {
+      "parameter_id": 20,
+      "review_area": "D. Detailed Syllabus",
+      "parameter": "Module hours total",
+      "criterion": "Total module hours reconcile with the planned course teaching/learning hours.",
+      "priority": "High",
+      "validation_type": "deterministic",
+      "default_status": "Not Reviewed",
+      "score_formula": "=IF(F24=\"Compliant\",2,IF(F24=\"Needs Revision\",1,IF(F24=\"Major Revision\",0,IF(F24=\"Non-Compliant\",0,\"\"))))",
+      "row_index": 24
+    },
+    {
+      "parameter_id": 21,
+      "review_area": "E. Session Plan",
+      "parameter": "Session numbering",
+      "criterion": "Session numbers are complete, sequential and without unexplained gaps.",
+      "priority": "Medium",
+      "validation_type": "deterministic",
+      "default_status": "Not Reviewed",
+      "score_formula": "=IF(F25=\"Compliant\",2,IF(F25=\"Needs Revision\",1,IF(F25=\"Major Revision\",0,IF(F25=\"Non-Compliant\",0,\"\"))))",
+      "row_index": 25
+    },
+    {
+      "parameter_id": 22,
+      "review_area": "E. Session Plan",
+      "parameter": "Topic coverage",
+      "criterion": "Session plan covers all syllabus topics/modules.",
+      "priority": "High",
+      "validation_type": "hybrid",
+      "default_status": "Not Reviewed",
+      "score_formula": "=IF(F26=\"Compliant\",2,IF(F26=\"Needs Revision\",1,IF(F26=\"Major Revision\",0,IF(F26=\"Non-Compliant\",0,\"\"))))",
+      "row_index": 26
+    },
+    {
+      "parameter_id": 23,
+      "review_area": "E. Session Plan",
+      "parameter": "Topic–module alignment",
+      "criterion": "Each session topic is assigned to the correct module.",
+      "priority": "Medium",
+      "validation_type": "hybrid",
+      "default_status": "Not Reviewed",
+      "score_formula": "=IF(F27=\"Compliant\",2,IF(F27=\"Needs Revision\",1,IF(F27=\"Major Revision\",0,IF(F27=\"Non-Compliant\",0,\"\"))))",
+      "row_index": 27
+    },
+    {
+      "parameter_id": 24,
+      "review_area": "E. Session Plan",
+      "parameter": "Session hours",
+      "criterion": "Session hours/duration are consistent with the stated course hours.",
+      "priority": "High",
+      "validation_type": "deterministic",
+      "default_status": "Not Reviewed",
+      "score_formula": "=IF(F28=\"Compliant\",2,IF(F28=\"Needs Revision\",1,IF(F28=\"Major Revision\",0,IF(F28=\"Non-Compliant\",0,\"\"))))",
+      "row_index": 28
+    },
+    {
+      "parameter_id": 25,
+      "review_area": "E. Session Plan",
+      "parameter": "CO mapping in sessions",
+      "criterion": "Each session is linked to the appropriate CO(s).",
+      "priority": "High",
+      "validation_type": "hybrid",
+      "default_status": "Not Reviewed",
+      "score_formula": "=IF(F29=\"Compliant\",2,IF(F29=\"Needs Revision\",1,IF(F29=\"Major Revision\",0,IF(F29=\"Non-Compliant\",0,\"\"))))",
+      "row_index": 29
+    },
+    {
+      "parameter_id": 26,
+      "review_area": "E. Session Plan",
+      "parameter": "Pedagogy/activity",
+      "criterion": "Pedagogy and learning activities are stated and appropriate to the topic/CO/BTL.",
+      "priority": "High",
+      "validation_type": "ai",
+      "default_status": "Not Reviewed",
+      "score_formula": "=IF(F30=\"Compliant\",2,IF(F30=\"Needs Revision\",1,IF(F30=\"Major Revision\",0,IF(F30=\"Non-Compliant\",0,\"\"))))",
+      "row_index": 30
+    },
+    {
+      "parameter_id": 27,
+      "review_area": "E. Session Plan",
+      "parameter": "Mode of delivery",
+      "criterion": "L/T/P/E and synchronous/asynchronous mode are correctly indicated.",
+      "priority": "Medium",
+      "validation_type": "deterministic",
+      "default_status": "Not Reviewed",
+      "score_formula": "=IF(F31=\"Compliant\",2,IF(F31=\"Needs Revision\",1,IF(F31=\"Major Revision\",0,IF(F31=\"Non-Compliant\",0,\"\"))))",
+      "row_index": 31
+    },
+    {
+      "parameter_id": 28,
+      "review_area": "E. Session Plan",
+      "parameter": "Readings/references",
+      "criterion": "Relevant readings/references are provided where appropriate.",
+      "priority": "Medium",
+      "validation_type": "hybrid",
+      "default_status": "Not Reviewed",
+      "score_formula": "=IF(F32=\"Compliant\",2,IF(F32=\"Needs Revision\",1,IF(F32=\"Major Revision\",0,IF(F32=\"Non-Compliant\",0,\"\"))))",
+      "row_index": 32
+    },
+    {
+      "parameter_id": 29,
+      "review_area": "F. Learning Hours & Credit Validation",
+      "parameter": "L-T-P-E vs session distribution",
+      "criterion": "Session distribution is consistent with the prescribed L-T-P-E structure.",
+      "priority": "High",
+      "validation_type": "deterministic",
+      "default_status": "Not Reviewed",
+      "score_formula": "=IF(F33=\"Compliant\",2,IF(F33=\"Needs Revision\",1,IF(F33=\"Major Revision\",0,IF(F33=\"Non-Compliant\",0,\"\"))))",
+      "row_index": 33
+    },
+    {
+      "parameter_id": 30,
+      "review_area": "F. Learning Hours & Credit Validation",
+      "parameter": "Synchronous hours",
+      "criterion": "Total synchronous hours are correctly calculated.",
+      "priority": "High",
+      "validation_type": "deterministic",
+      "default_status": "Not Reviewed",
+      "score_formula": "=IF(F34=\"Compliant\",2,IF(F34=\"Needs Revision\",1,IF(F34=\"Major Revision\",0,IF(F34=\"Non-Compliant\",0,\"\"))))",
+      "row_index": 34
+    },
+    {
+      "parameter_id": 31,
+      "review_area": "F. Learning Hours & Credit Validation",
+      "parameter": "Asynchronous hours",
+      "criterion": "Total asynchronous hours are correctly calculated.",
+      "priority": "High",
+      "validation_type": "deterministic",
+      "default_status": "Not Reviewed",
+      "score_formula": "=IF(F35=\"Compliant\",2,IF(F35=\"Needs Revision\",1,IF(F35=\"Major Revision\",0,IF(F35=\"Non-Compliant\",0,\"\"))))",
+      "row_index": 35
+    },
+    {
+      "parameter_id": 32,
+      "review_area": "F. Learning Hours & Credit Validation",
+      "parameter": "Notional hours",
+      "criterion": "Total notional hours reconcile with the course design/credit expectations.",
+      "priority": "High",
+      "validation_type": "deterministic",
+      "default_status": "Not Reviewed",
+      "score_formula": "=IF(F36=\"Compliant\",2,IF(F36=\"Needs Revision\",1,IF(F36=\"Major Revision\",0,IF(F36=\"Non-Compliant\",0,\"\"))))",
+      "row_index": 36
+    },
+    {
+      "parameter_id": 33,
+      "review_area": "G. Learning Resources",
+      "parameter": "Basic textbooks",
+      "criterion": "Basic texts are listed and relevant to the course.",
+      "priority": "Medium",
+      "validation_type": "ai",
+      "default_status": "Not Reviewed",
+      "score_formula": "=IF(F37=\"Compliant\",2,IF(F37=\"Needs Revision\",1,IF(F37=\"Major Revision\",0,IF(F37=\"Non-Compliant\",0,\"\"))))",
+      "row_index": 37
+    },
+    {
+      "parameter_id": 34,
+      "review_area": "G. Learning Resources",
+      "parameter": "Reference books",
+      "criterion": "Reference books are relevant and adequate.",
+      "priority": "Medium",
+      "validation_type": "ai",
+      "default_status": "Not Reviewed",
+      "score_formula": "=IF(F38=\"Compliant\",2,IF(F38=\"Needs Revision\",1,IF(F38=\"Major Revision\",0,IF(F38=\"Non-Compliant\",0,\"\"))))",
+      "row_index": 38
+    },
+    {
+      "parameter_id": 35,
+      "review_area": "G. Learning Resources",
+      "parameter": "Other reading material",
+      "criterion": "Additional reading/learning resources are provided where appropriate.",
+      "priority": "Low",
+      "validation_type": "ai",
+      "default_status": "Not Reviewed",
+      "score_formula": "=IF(F39=\"Compliant\",2,IF(F39=\"Needs Revision\",1,IF(F39=\"Major Revision\",0,IF(F39=\"Non-Compliant\",0,\"\"))))",
+      "row_index": 39
+    },
+    {
+      "parameter_id": 36,
+      "review_area": "H. Assessment",
+      "parameter": "Assessment components",
+      "criterion": "All assessment components are listed.",
+      "priority": "High",
+      "validation_type": "deterministic",
+      "default_status": "Not Reviewed",
+      "score_formula": "=IF(F40=\"Compliant\",2,IF(F40=\"Needs Revision\",1,IF(F40=\"Major Revision\",0,IF(F40=\"Non-Compliant\",0,\"\"))))",
+      "row_index": 40
+    },
+    {
+      "parameter_id": 37,
+      "review_area": "H. Assessment",
+      "parameter": "Assessment weightage",
+      "criterion": "Assessment weightages are correct and total appropriately.",
+      "priority": "High",
+      "validation_type": "deterministic",
+      "default_status": "Not Reviewed",
+      "score_formula": "=IF(F41=\"Compliant\",2,IF(F41=\"Needs Revision\",1,IF(F41=\"Major Revision\",0,IF(F41=\"Non-Compliant\",0,\"\"))))",
+      "row_index": 41
+    },
+    {
+      "parameter_id": 38,
+      "review_area": "H. Assessment",
+      "parameter": "CA : ESE consistency",
+      "criterion": "Assessment scheme is consistent with Course Information and approved regulations.",
+      "priority": "High",
+      "validation_type": "deterministic",
+      "default_status": "Not Reviewed",
+      "score_formula": "=IF(F42=\"Compliant\",2,IF(F42=\"Needs Revision\",1,IF(F42=\"Major Revision\",0,IF(F42=\"Non-Compliant\",0,\"\"))))",
+      "row_index": 42
+    },
+    {
+      "parameter_id": 39,
+      "review_area": "H. Assessment",
+      "parameter": "Formative/summative",
+      "criterion": "Assessment is correctly classified as formative/summative/UE as applicable.",
+      "priority": "Medium",
+      "validation_type": "hybrid",
+      "default_status": "Not Reviewed",
+      "score_formula": "=IF(F43=\"Compliant\",2,IF(F43=\"Needs Revision\",1,IF(F43=\"Major Revision\",0,IF(F43=\"Non-Compliant\",0,\"\"))))",
+      "row_index": 43
+    },
+    {
+      "parameter_id": 40,
+      "review_area": "H. Assessment",
+      "parameter": "Frequency",
+      "criterion": "Assessment frequency is clearly indicated.",
+      "priority": "Medium",
+      "validation_type": "deterministic",
+      "default_status": "Not Reviewed",
+      "score_formula": "=IF(F44=\"Compliant\",2,IF(F44=\"Needs Revision\",1,IF(F44=\"Major Revision\",0,IF(F44=\"Non-Compliant\",0,\"\"))))",
+      "row_index": 44
+    },
+    {
+      "parameter_id": 41,
+      "review_area": "H. Assessment",
+      "parameter": "Assessment–CO mapping",
+      "criterion": "Each assessment is mapped to relevant CO(s).",
+      "priority": "High",
+      "validation_type": "hybrid",
+      "default_status": "Not Reviewed",
+      "score_formula": "=IF(F45=\"Compliant\",2,IF(F45=\"Needs Revision\",1,IF(F45=\"Major Revision\",0,IF(F45=\"Non-Compliant\",0,\"\"))))",
+      "row_index": 45
+    },
+    {
+      "parameter_id": 42,
+      "review_area": "H. Assessment",
+      "parameter": "CO coverage",
+      "criterion": "All important COs are adequately assessed.",
+      "priority": "High",
+      "validation_type": "hybrid",
+      "default_status": "Not Reviewed",
+      "score_formula": "=IF(F46=\"Compliant\",2,IF(F46=\"Needs Revision\",1,IF(F46=\"Major Revision\",0,IF(F46=\"Non-Compliant\",0,\"\"))))",
+      "row_index": 46
+    },
+    {
+      "parameter_id": 43,
+      "review_area": "H. Assessment",
+      "parameter": "Assessment–BTL alignment",
+      "criterion": "Assessment method/questions are appropriate to the intended BTL.",
+      "priority": "High",
+      "validation_type": "ai",
+      "default_status": "Not Reviewed",
+      "score_formula": "=IF(F47=\"Compliant\",2,IF(F47=\"Needs Revision\",1,IF(F47=\"Major Revision\",0,IF(F47=\"Non-Compliant\",0,\"\"))))",
+      "row_index": 47
+    },
+    {
+      "parameter_id": 44,
+      "review_area": "H. Assessment",
+      "parameter": "Assessment description",
+      "criterion": "Assessment description, type and requirements are clearly stated.",
+      "priority": "Medium",
+      "validation_type": "ai",
+      "default_status": "Not Reviewed",
+      "score_formula": "=IF(F48=\"Compliant\",2,IF(F48=\"Needs Revision\",1,IF(F48=\"Major Revision\",0,IF(F48=\"Non-Compliant\",0,\"\"))))",
+      "row_index": 48
+    },
+    {
+      "parameter_id": 45,
+      "review_area": "H. Assessment",
+      "parameter": "Rubrics",
+      "criterion": "Rubrics/criteria are provided where applicable and are measurable.",
+      "priority": "Medium",
+      "validation_type": "ai",
+      "default_status": "Not Reviewed",
+      "score_formula": "=IF(F49=\"Compliant\",2,IF(F49=\"Needs Revision\",1,IF(F49=\"Major Revision\",0,IF(F49=\"Non-Compliant\",0,\"\"))))",
+      "row_index": 49
+    },
+    {
+      "parameter_id": 46,
+      "review_area": "I. Overall Internal Consistency",
+      "parameter": "Course data consistency",
+      "criterion": "Course Information, curriculum, syllabus and TLEP are internally consistent.",
+      "priority": "High",
+      "validation_type": "hybrid",
+      "default_status": "Not Reviewed",
+      "score_formula": "=IF(F50=\"Compliant\",2,IF(F50=\"Needs Revision\",1,IF(F50=\"Major Revision\",0,IF(F50=\"Non-Compliant\",0,\"\"))))",
+      "row_index": 50
+    },
+    {
+      "parameter_id": 47,
+      "review_area": "I. Overall Internal Consistency",
+      "parameter": "Syllabus–session consistency",
+      "criterion": "Detailed syllabus, module hours and session plan reconcile.",
+      "priority": "High",
+      "validation_type": "hybrid",
+      "default_status": "Not Reviewed",
+      "score_formula": "=IF(F51=\"Compliant\",2,IF(F51=\"Needs Revision\",1,IF(F51=\"Major Revision\",0,IF(F51=\"Non-Compliant\",0,\"\"))))",
+      "row_index": 51
+    },
+    {
+      "parameter_id": 48,
+      "review_area": "I. Overall Internal Consistency",
+      "parameter": "CO–teaching–assessment consistency",
+      "criterion": "COs are taught, mapped in sessions and assessed.",
+      "priority": "High",
+      "validation_type": "hybrid",
+      "default_status": "Not Reviewed",
+      "score_formula": "=IF(F52=\"Compliant\",2,IF(F52=\"Needs Revision\",1,IF(F52=\"Major Revision\",0,IF(F52=\"Non-Compliant\",0,\"\"))))",
+      "row_index": 52
+    },
+    {
+      "parameter_id": 49,
+      "review_area": "I. Overall Internal Consistency",
+      "parameter": "Overall completeness",
+      "criterion": "No major section/field required by the TLEP template is missing.",
+      "priority": "High",
+      "validation_type": "hybrid",
+      "default_status": "Not Reviewed",
+      "score_formula": "=IF(F53=\"Compliant\",2,IF(F53=\"Needs Revision\",1,IF(F53=\"Major Revision\",0,IF(F53=\"Non-Compliant\",0,\"\"))))",
+      "row_index": 53
+    }
+  ]
+}
