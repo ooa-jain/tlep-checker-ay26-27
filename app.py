@@ -14,7 +14,8 @@ from engine.scoring import aggregate_area_breakdown
 from engine.simplifier import simplify_finding
 from engine.batch_processor import process_batch_files, extract_and_process_zip
 from engine.db import get_all_audits, get_audit_summary_by_department
-from engine.index_scraper import audit_index_inventory, generate_index_reconciliation_excel
+from engine.index_scraper import audit_index_inventory, generate_index_reconciliation_excel, audit_directory_or_batch, is_index_file
+from integrations.google_drive import GoogleDriveConnector, extract_folder_id_from_url, parse_drive_url_type
 from models.schemas import StatusEnum
 
 # Page Configuration
@@ -618,140 +619,16 @@ else:
     </div>
     """, unsafe_allow_html=True)
 
-    p_tab1, p_tab2, p_tab3 = st.tabs([
+    p_tab1, p_tab2 = st.tabs([
         "Portfolio Analytics & Leaderboard", 
-        "Batch Ingestion (Google Drive & ZIP)",
-        "Index Scraping & Inventory Reconciliation"
+        "Batch Ingestion & Master Index Reconciliation (Drive, ZIP, Indexes)"
     ])
-
-    # Batch Ingestion Tab
-    with p_tab2:
-        st.markdown("#### Ingest Course TLEPs at Scale")
-        ingest_method = st.radio(
-            "Select Source:",
-            ["Google Drive Folder Link", "Upload Multiple Files / ZIP"],
-            horizontal=True
-        )
-
-        if ingest_method == "Google Drive Folder Link":
-            st.markdown("##### Google Drive Integration")
-            st.caption("Provide a shared Google Drive folder containing course files or nested department/programme folders.")
-            
-            gdrive_url = st.text_input(
-                "Google Drive Folder Link:",
-                placeholder="https://drive.google.com/drive/folders/1A2B3C4D5E6F..."
-            )
-            
-            col_gd1, col_gd2, col_gd3 = st.columns(3)
-            with col_gd1:
-                inc_subfolders = st.checkbox("Include subfolders (Dept/Prog)", value=True)
-            with col_gd2:
-                review_all = st.checkbox("Review all supported files", value=True)
-            with col_gd3:
-                gen_consolidated = st.checkbox("Generate department tabs", value=True)
-                
-            with st.expander("Drive Credentials (Optional for Public Folders)"):
-                gdrive_api_key = st.text_input("Google Drive API Key", type="password")
-                sa_file = st.file_uploader("Or Upload Service Account JSON", type=["json"])
-                
-            if st.button("INGEST & AUDIT GOOGLE DRIVE FOLDER", type="primary"):
-                if not gdrive_url:
-                    st.error("Please enter a valid Google Drive folder link.")
-                else:
-                    from integrations.google_drive import extract_folder_id_from_url, GoogleDriveConnector
-                    folder_id = extract_folder_id_from_url(gdrive_url)
-                    
-                    if not folder_id:
-                        st.error("Invalid Google Drive folder link format.")
-                    else:
-                        sa_path = None
-                        if sa_file:
-                            sa_tmp = tempfile.NamedTemporaryFile(delete=False, suffix=".json")
-                            sa_tmp.write(sa_file.getbuffer())
-                            sa_path = sa_tmp.name
-                            
-                        try:
-                            connector = GoogleDriveConnector(
-                                service_account_json_path=sa_path,
-                                api_key=gdrive_api_key or os.environ.get("GOOGLE_DRIVE_API_KEY")
-                            )
-                            
-                            status_box = st.empty()
-                            p_bar = st.progress(0.0)
-                            
-                            status_box.info(f"Connecting to Google Drive folder `{folder_id}`...")
-                            temp_sync_dir = tempfile.mkdtemp()
-                            
-                            def on_gd_progress(cur, tot, fname):
-                                p_bar.progress(cur / tot)
-                                status_box.text(f"Downloading from Drive ({cur}/{tot}): {fname}")
-                                
-                            downloaded_files = connector.sync_and_download_folder(
-                                folder_id=folder_id,
-                                target_dir=temp_sync_dir,
-                                include_subfolders=inc_subfolders,
-                                progress_callback=on_gd_progress
-                            )
-                            
-                            if not downloaded_files:
-                                st.warning("No supported TLEP documents (.xlsx, .docx, .pdf) found in this Drive folder.")
-                            else:
-                                status_box.info(f"Auditing {len(downloaded_files)} courses from Google Drive...")
-                                def on_audit_progress(cur, tot, fname):
-                                    p_bar.progress(cur / tot)
-                                    status_box.text(f"Auditing course ({cur}/{tot}): {fname}")
-                                    
-                                results = process_batch_files(downloaded_files, progress_callback=on_audit_progress, api_key=api_key_input)
-                                p_bar.progress(1.0)
-                                status_box.success(f"Successfully audited all {len(results)} courses from Google Drive. Check Analytics tab.")
-                                
-                        except PermissionError as pe:
-                            st.error(f"Access Denied: {str(pe)}")
-                        except Exception as ex:
-                            st.error(f"Error accessing Google Drive: {str(ex)}")
-                        finally:
-                            if sa_path and os.path.exists(sa_path):
-                                os.remove(sa_path)
-
-        else:
-            st.markdown("##### Upload Multiple Files or ZIP Archive")
-            st.caption("Upload files directly or provide a zip file structured by `School / Department / Programme / Semester / Course.xlsx`.")
-            batch_upload = st.file_uploader(
-                "Upload Batch (Multiple Files or ZIP)",
-                type=["zip", "xlsx", "docx", "pdf"],
-                accept_multiple_files=True
-            )
-            
-            if batch_upload:
-                if st.button("INGEST & AUDIT BATCH NOW", type="primary"):
-                    progress_bar = st.progress(0.0)
-                    status_text = st.empty()
-                    
-                    temp_dir = tempfile.mkdtemp()
-                    all_paths = []
-                    
-                    for f in batch_upload:
-                        dest = os.path.join(temp_dir, f.name)
-                        with open(dest, "wb") as buffer:
-                            buffer.write(f.getbuffer())
-                        all_paths.append(dest)
-                        
-                    def on_progress(cur, tot, fname):
-                        progress_bar.progress(cur / tot)
-                        status_text.text(f"Processing ({cur}/{tot}): {fname}")
-                        
-                    if len(all_paths) == 1 and all_paths[0].endswith(".zip"):
-                        results = extract_and_process_zip(all_paths[0], progress_callback=on_progress, api_key=api_key_input)
-                    else:
-                        results = process_batch_files(all_paths, progress_callback=on_progress, api_key=api_key_input)
-                        
-                    status_text.success(f"Processed {len(results)} courses successfully. Check Analytics tab.")
 
     # Portfolio Analytics Tab
     with p_tab1:
         audits = get_all_audits()
         if not audits:
-            st.info("No courses have been audited yet. Ingest a batch or Google Drive folder to view institutional performance.")
+            st.info("No courses have been audited yet. Ingest a batch, index, or Google Drive folder to view institutional performance.")
         else:
             df_audits = pd.DataFrame(audits)
             
@@ -876,147 +753,308 @@ else:
                     type="secondary"
                 )
 
-    # TAB 3: Master Index & Inventory Reconciliation
-    with p_tab3:
-        st.markdown("#### Master Index File Scraping & Inventory Reconciliation")
-        st.caption(
-            "Upload a departmental curriculum master index or course catalog (.xlsx or .docx). "
-            "The system scrapes embedded hyperlinks, local references, and Google Drive links, checks document availability, "
-            "and audits all accessible course TLEPs against the official 49-parameter checklist."
+    # TAB 2: Batch Ingestion & Master Index Reconciliation
+    with p_tab2:
+        st.markdown("""
+        <div style="margin-bottom: 14px;">
+            <h4 style="font-size: 1.25rem; font-weight: 700; color: #0F172A; margin: 0;">Institutional Intake & Master Index Reconciliation</h4>
+            <p style="color: #64748B; margin: 3px 0 0 0; font-size: 0.93rem;">
+                Ingest departmental course portfolios at scale. Provide a Google Drive folder link, Master Index spreadsheet (Google Sheet or Excel), 
+                or upload a batch of course files or ZIP archive. The engine reconciles curriculum indexes, checks document availability, 
+                downloads referenced files from Google Drive, and executes the official 49-parameter audit.
+            </p>
+        </div>
+        """, unsafe_allow_html=True)
+
+        ingest_method = st.radio(
+            "Select Intake Source:",
+            ["Google Drive (Folder or Master Index Sheet)", "Upload Files (Master Index, Course TLEPs, or ZIP Archive)"],
+            horizontal=True
         )
 
-        idx_file = st.file_uploader(
-            "Upload Master Index File (.xlsx, .xls, .docx)",
-            type=["xlsx", "xls", "docx"],
-            help="Upload an index workbook or table containing course codes and TLEP links."
-        )
+        mode_options_map = {
+            "Auto-Detect (Reconcile Indexes or Audit Direct Courses)": "auto",
+            "Master Index Reconciliation (Scrape links & reconcile inventory)": "index",
+            "Direct Course Documents (Audit standalone TLEPs)": "courses"
+        }
 
-        col_ix1, col_ix2 = st.columns([2, 1])
-        with col_ix1:
-            idx_drive_key = st.text_input(
-                "Google Drive API Key (Optional)",
-                type="password",
-                help="Optional: If links point to Google Drive files requiring API authentication."
+        # Source 1: Google Drive Integration
+        if ingest_method == "Google Drive (Folder or Master Index Sheet)":
+            st.markdown("##### Google Drive Ingestion")
+            st.caption("Provide a shared Google Drive folder containing course files or index sheets, OR a direct Google Sheet / Master Index link.")
+            
+            gdrive_url = st.text_input(
+                "Google Drive Link (Folder, Google Sheet, or Document):",
+                placeholder="https://drive.google.com/drive/folders/1A2B... or https://docs.google.com/spreadsheets/d/1X2Y..."
             )
-        with col_ix2:
-            st.write("")
-            st.write("")
-            execute_idx_btn = st.button("EXECUTE INDEX SCRAPE & AUDIT", type="primary", use_container_width=True)
-
-        if execute_idx_btn and idx_file:
-            progress_bar = st.progress(0.0)
-            status_box = st.empty()
-
-            suffix = os.path.splitext(idx_file.name)[1]
-            with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tmp_idx:
-                tmp_idx.write(idx_file.getbuffer())
-                tmp_idx_path = tmp_idx.name
-
-            try:
-                def on_idx_progress(cur, tot, desc):
-                    progress_bar.progress(cur / tot)
-                    status_box.text(f"Auditing Course Document ({cur}/{tot}): {desc}")
-
-                drive_conn = None
-                if idx_drive_key:
-                    drive_conn = GoogleDriveConnector(api_key=idx_drive_key)
-
-                summary = audit_index_inventory(
-                    index_file_path=tmp_idx_path,
-                    gdrive_connector=drive_conn,
-                    progress_callback=on_idx_progress,
-                    api_key=api_key_input
+            
+            col_gd1, col_gd2 = st.columns([2, 1])
+            with col_gd1:
+                selected_mode_label = st.selectbox(
+                    "Ingestion Strategy:",
+                    list(mode_options_map.keys()),
+                    index=0,
+                    help="Auto-Detect will inspect downloaded files for curriculum indexes; if found, it scrapes embedded course links and reconciles inventory."
                 )
-                st.session_state["index_inventory_summary"] = summary
-                status_box.success("Index reconciliation and automated compliance audit completed successfully.")
-            except Exception as e:
-                status_box.error(f"Error processing index file: {str(e)}")
-            finally:
-                if os.path.exists(tmp_idx_path):
-                    os.remove(tmp_idx_path)
+            with col_gd2:
+                inc_subfolders = st.checkbox("Include subfolders (Dept/Prog)", value=True)
+                
+            with st.expander("Drive Credentials (Optional for Public Folders & Sheets)"):
+                gdrive_api_key = st.text_input("Google Drive API Key", type="password")
+                sa_file = st.file_uploader("Or Upload Service Account JSON", type=["json"], key="gd_sa_json")
+                
+            if st.button("INGEST & RECONCILE FROM GOOGLE DRIVE", type="primary"):
+                if not gdrive_url.strip():
+                    st.error("Please enter a valid Google Drive link.")
+                else:
+                    sa_path = None
+                    if sa_file:
+                        sa_tmp = tempfile.NamedTemporaryFile(delete=False, suffix=".json")
+                        sa_tmp.write(sa_file.getbuffer())
+                        sa_path = sa_tmp.name
+                        
+                    try:
+                        connector = GoogleDriveConnector(
+                            service_account_json_path=sa_path,
+                            api_key=gdrive_api_key or os.environ.get("GOOGLE_DRIVE_API_KEY")
+                        )
+                        
+                        status_box = st.empty()
+                        p_bar = st.progress(0.0)
+                        
+                        status_box.info("Connecting to Google Drive and fetching resources...")
+                        temp_sync_dir = tempfile.mkdtemp(prefix="tlep_gdrive_sync_")
+                        
+                        def on_gd_progress(cur, tot, fname):
+                            p_bar.progress(cur / tot)
+                            status_box.text(f"Fetching from Drive ({cur}/{tot}): {fname}")
+                            
+                        res_type, downloaded_files = connector.fetch_drive_resource(
+                            url_or_id=gdrive_url,
+                            target_dir=temp_sync_dir,
+                            include_subfolders=inc_subfolders,
+                            progress_callback=on_gd_progress
+                        )
+                        
+                        if not downloaded_files:
+                            status_box.warning("No supported documents (.xlsx, .docx, .pdf) found in this Drive resource.")
+                        else:
+                            status_box.info(f"Auditing & reconciling {len(downloaded_files)} files from Google Drive...")
+                            
+                            def on_audit_prog(cur, tot, fname):
+                                p_bar.progress(cur / tot)
+                                status_box.text(f"Auditing ({cur}/{tot}): {fname}")
+                                
+                            unified_result = audit_directory_or_batch(
+                                files_or_dir=downloaded_files,
+                                base_dir=temp_sync_dir,
+                                gdrive_connector=connector,
+                                mode=mode_options_map[selected_mode_label],
+                                progress_callback=on_audit_prog,
+                                api_key=api_key_input
+                            )
+                            p_bar.progress(1.0)
+                            st.session_state["unified_batch_result"] = unified_result
+                            status_box.success("Google Drive ingestion and compliance reconciliation completed successfully.")
+                            
+                    except PermissionError as pe:
+                        st.error(f"Access Denied: {str(pe)}")
+                    except Exception as ex:
+                        st.error(f"Error accessing Google Drive: {str(ex)}")
+                    finally:
+                        if sa_path and os.path.exists(sa_path):
+                            os.remove(sa_path)
 
-        if "index_inventory_summary" in st.session_state:
-            inv = st.session_state["index_inventory_summary"]
-            entries = inv.get("entries", [])
-
-            tot_listed = inv.get("total_listed_in_index", 0)
-            tot_avail = inv.get("total_documents_available", 0)
-            tot_missing = inv.get("total_documents_missing", 0)
-            tot_inacc = inv.get("total_inaccessible", 0)
-            tot_audited = inv.get("total_audited", 0)
-            sub_rate = inv.get("submission_rate_pct", 0.0)
-
-            st.markdown(f"""
-            <div class="kpi-container">
-                <div class="kpi-card">
-                    <div class="kpi-label">Courses in Index</div>
-                    <div class="kpi-value">{tot_listed}</div>
-                    <div class="kpi-sub">Total Cataloged</div>
-                </div>
-                <div class="kpi-card">
-                    <div class="kpi-label">Documents Available</div>
-                    <div class="kpi-value" style="color: #15803D;">{tot_avail}</div>
-                    <div class="kpi-sub">Ready & Audited</div>
-                </div>
-                <div class="kpi-card">
-                    <div class="kpi-label">Missing / Not Submitted</div>
-                    <div class="kpi-value" style="color: #B91C1C;">{tot_missing}</div>
-                    <div class="kpi-sub">Pending Facilitator</div>
-                </div>
-                <div class="kpi-card">
-                    <div class="kpi-label">Inaccessible Links</div>
-                    <div class="kpi-value" style="color: #B45309;">{tot_inacc}</div>
-                    <div class="kpi-sub">Access / URL Error</div>
-                </div>
-                <div class="kpi-card">
-                    <div class="kpi-label">Submission Rate</div>
-                    <div class="kpi-value">{sub_rate}%</div>
-                    <div class="kpi-sub">Department Intake</div>
-                </div>
-            </div>
-            """, unsafe_allow_html=True)
-
-            reconciliation_bytes = generate_index_reconciliation_excel(inv)
-            st.download_button(
-                label="Download Index Reconciliation & Compliance Report (.xlsx)",
-                data=reconciliation_bytes,
-                file_name="OOA_Index_Inventory_Reconciliation.xlsx",
-                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                type="primary"
+        # Source 2: Upload Multiple Files, Indexes, or ZIP
+        else:
+            st.markdown("##### Upload Files, Master Index, or ZIP Archive")
+            st.caption("Upload a Master Index spreadsheet (.xlsx, .docx), individual course files, or a ZIP archive containing curriculum folders.")
+            batch_upload = st.file_uploader(
+                "Upload Batch (Master Index, Course TLEPs, or ZIP)",
+                type=["zip", "xlsx", "xls", "docx", "pdf"],
+                accept_multiple_files=True,
+                key="batch_file_uploader"
             )
+            
+            col_up1, col_up2 = st.columns([2, 1])
+            with col_up1:
+                selected_up_mode_label = st.selectbox(
+                    "Ingestion Strategy:",
+                    list(mode_options_map.keys()),
+                    index=0,
+                    help="Auto-Detect automatically checks uploaded files for index spreadsheets with course links."
+                )
+            with col_up2:
+                up_drive_key = st.text_input(
+                    "Drive API Key (Optional)",
+                    type="password",
+                    help="Optional: If index files contain Google Drive links requiring API access."
+                )
 
+            if batch_upload:
+                if st.button("INGEST & RECONCILE BATCH NOW", type="primary"):
+                    progress_bar = st.progress(0.0)
+                    status_text = st.empty()
+                    
+                    import zipfile
+                    temp_dir = tempfile.mkdtemp(prefix="tlep_batch_upload_")
+                    all_paths = []
+                    
+                    for f in batch_upload:
+                        dest = os.path.join(temp_dir, f.name)
+                        with open(dest, "wb") as buffer:
+                            buffer.write(f.getbuffer())
+                        all_paths.append(dest)
+                        
+                    # If single zip file, extract it
+                    if len(all_paths) == 1 and all_paths[0].endswith(".zip"):
+                        status_text.info(f"Extracting ZIP archive: {os.path.basename(all_paths[0])}...")
+                        extract_dir = os.path.join(temp_dir, "extracted")
+                        os.makedirs(extract_dir, exist_ok=True)
+                        with zipfile.ZipFile(all_paths[0], 'r') as z:
+                            z.extractall(extract_dir)
+                        scan_target = extract_dir
+                    else:
+                        scan_target = temp_dir
+                        
+                    def on_upload_prog(cur, tot, fname):
+                        progress_bar.progress(cur / tot)
+                        status_text.text(f"Auditing & Reconciling ({cur}/{tot}): {fname}")
+                        
+                    drive_conn = GoogleDriveConnector(api_key=up_drive_key) if up_drive_key else GoogleDriveConnector()
+                    
+                    unified_result = audit_directory_or_batch(
+                        files_or_dir=scan_target,
+                        base_dir=scan_target,
+                        gdrive_connector=drive_conn,
+                        mode=mode_options_map[selected_up_mode_label],
+                        progress_callback=on_upload_prog,
+                        api_key=api_key_input
+                    )
+                    progress_bar.progress(1.0)
+                    st.session_state["unified_batch_result"] = unified_result
+                    status_text.success("Batch ingestion and document audit completed successfully.")
+
+        # Unified Result Display (Reconciliation KPIs, Excel Download, & Tables)
+        if "unified_batch_result" in st.session_state:
+            res = st.session_state["unified_batch_result"]
             st.divider()
 
-            # Filter table
-            st.markdown("#### Course Document Reconciliation Table")
-            inv_filter = st.radio(
-                "Filter Inventory Records:",
-                ["All Courses", "Documents Available", "Missing / Not Submitted", "Inaccessible Links"],
-                horizontal=True
-            )
+            if res.get("type") == "index_inventory":
+                inv = res.get("inventory_summary", {})
+                entries = inv.get("entries", [])
+                tot_listed = inv.get("total_listed_in_index", 0)
+                tot_avail = inv.get("total_documents_available", 0)
+                tot_missing = inv.get("total_documents_missing", 0)
+                tot_inacc = inv.get("total_inaccessible", 0)
+                tot_audited = inv.get("total_audited", 0)
+                sub_rate = inv.get("submission_rate_pct", 0.0)
 
-            filtered_entries = entries
-            if inv_filter == "Documents Available":
-                filtered_entries = [e for e in entries if e.availability_status == "Available"]
-            elif inv_filter == "Missing / Not Submitted":
-                filtered_entries = [e for e in entries if "Missing" in e.availability_status]
-            elif inv_filter == "Inaccessible Links":
-                filtered_entries = [e for e in entries if e.availability_status not in ["Available"] and "Missing" not in e.availability_status]
+                st.markdown("#### Master Index & Document Inventory Reconciliation")
+                st.caption(f"Reconciled from Master Index: `{os.path.basename(res.get('primary_index_path', 'Index File'))}`")
 
-            rows_data = []
-            for e in filtered_entries:
-                rows_data.append({
-                    "Index Row": e.row_number,
-                    "Course Code": e.course_code,
-                    "Course Title": e.course_title,
-                    "Department": e.department,
-                    "Facilitator": e.faculty,
-                    "Document Status": e.availability_status,
-                    "Link / Path": e.target_url_or_path or e.raw_reference or "None",
-                    "Audit Status": e.audit_status or "Not Audited",
-                    "Score %": f"{e.compliance_percentage}%" if e.compliance_percentage is not None else "-",
-                    "Detail / Deficiencies": e.error_detail or ("Compliant" if e.audit_status == "Compliant" else "")
-                })
+                st.markdown(f"""
+                <div class="kpi-container">
+                    <div class="kpi-card">
+                        <div class="kpi-label">Courses in Index</div>
+                        <div class="kpi-value">{tot_listed}</div>
+                        <div class="kpi-sub">Total Cataloged</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-label">Documents Available</div>
+                        <div class="kpi-value" style="color: #15803D;">{tot_avail}</div>
+                        <div class="kpi-sub">Audited & Verified</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-label">Missing / Not Submitted</div>
+                        <div class="kpi-value" style="color: #B91C1C;">{tot_missing}</div>
+                        <div class="kpi-sub">Pending Facilitator</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-label">Inaccessible Links</div>
+                        <div class="kpi-value" style="color: #B45309;">{tot_inacc}</div>
+                        <div class="kpi-sub">URL / Access Error</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-label">Submission Rate</div>
+                        <div class="kpi-value">{sub_rate}%</div>
+                        <div class="kpi-sub">Department Intake</div>
+                    </div>
+                </div>
+                """, unsafe_allow_html=True)
 
-            st.dataframe(pd.DataFrame(rows_data), use_container_width=True)
+                col_dl1, col_dl2 = st.columns(2)
+                with col_dl1:
+                    reconciliation_bytes = generate_index_reconciliation_excel(inv)
+                    st.download_button(
+                        label="Download Master Index Reconciliation Report (.xlsx)",
+                        data=reconciliation_bytes,
+                        file_name="OOA_Index_Inventory_Reconciliation.xlsx",
+                        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                        type="primary",
+                        use_container_width=True
+                    )
+                with col_dl2:
+                    current_audits = get_all_audits()
+                    if current_audits:
+                        rollup_bytes = generate_consolidated_report(current_audits)
+                        st.download_button(
+                            label="Download Full Institutional Audit Rollup (.xlsx)",
+                            data=rollup_bytes,
+                            file_name="OOA_Institutional_TLEP_Rollup.xlsx",
+                            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                            type="secondary",
+                            use_container_width=True
+                        )
+
+                st.markdown("#### Course Document Reconciliation Table")
+                inv_filter = st.radio(
+                    "Filter Inventory Records:",
+                    ["All Courses", "Documents Available", "Missing / Not Submitted", "Inaccessible Links"],
+                    horizontal=True
+                )
+
+                filtered_entries = entries
+                if inv_filter == "Documents Available":
+                    filtered_entries = [e for e in entries if e.availability_status == "Available"]
+                elif inv_filter == "Missing / Not Submitted":
+                    filtered_entries = [e for e in entries if "Missing" in e.availability_status]
+                elif inv_filter == "Inaccessible Links":
+                    filtered_entries = [e for e in entries if e.availability_status not in ["Available"] and "Missing" not in e.availability_status]
+
+                rows_data = []
+                for e in filtered_entries:
+                    rows_data.append({
+                        "Index Row": e.row_number,
+                        "Course Code": e.course_code,
+                        "Course Title": e.course_title,
+                        "Department": e.department,
+                        "Facilitator": e.faculty,
+                        "Document Status": e.availability_status,
+                        "Link / Path": e.target_url_or_path or e.raw_reference or "None",
+                        "Audit Status": e.audit_status or "Not Audited",
+                        "Score %": f"{e.compliance_percentage}%" if e.compliance_percentage is not None else "-",
+                        "Detail / Deficiencies": e.error_detail or ("Compliant" if e.audit_status == "Compliant" else "")
+                    })
+
+                st.dataframe(pd.DataFrame(rows_data), use_container_width=True)
+                st.info("Tip: All audited courses are recorded in the central database. Switch to 'Portfolio Analytics & Leaderboard' for institutional rankings, BoS approvals, and department rollups.")
+
+            elif res.get("type") == "direct_batch":
+                aud_count = res.get("audited_count", 0)
+                st.markdown(f"#### Batch Audit Results ({aud_count} Courses)")
+                st.success(f"Successfully audited all {aud_count} standalone course TLEPs. Results recorded in central database.")
+                
+                current_audits = get_all_audits()
+                if current_audits:
+                    rollup_bytes = generate_consolidated_report(current_audits)
+                    st.download_button(
+                        label="Download Full Institutional Audit Rollup (.xlsx)",
+                        data=rollup_bytes,
+                        file_name="OOA_Institutional_TLEP_Rollup.xlsx",
+                        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                        type="primary"
+                    )
+                st.info("Tip: Switch to 'Portfolio Analytics & Leaderboard' to view department breakdowns and institutional performance.")
+
 

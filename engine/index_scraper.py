@@ -315,6 +315,21 @@ def resolve_and_download_index_documents(
                     entry.availability_status = "Available"
                     found = True
                     break
+            if not found and os.path.exists(base_dir):
+                target_bn = os.path.basename(entry.target_url_or_path or "").lower()
+                code_lower = entry.course_code.lower()
+                for root, _, files in os.walk(base_dir):
+                    for f in files:
+                        f_lower = f.lower()
+                        if (target_bn and f_lower == target_bn) or (code_lower and (f_lower == f"{code_lower}.xlsx" or f_lower == f"{code_lower}.docx" or f_lower.startswith(f"{code_lower}_"))):
+                            cand = os.path.join(root, f)
+                            if os.path.isfile(cand):
+                                entry.local_file_path = cand
+                                entry.availability_status = "Available"
+                                found = True
+                                break
+                    if found:
+                        break
             if not found:
                 entry.availability_status = "Missing Local File"
                 entry.error_detail = f"Referenced file not found in directory: {entry.target_url_or_path}"
@@ -322,6 +337,25 @@ def resolve_and_download_index_documents(
             
         # 2. Google Drive Link
         if entry.link_type == "gdrive_url":
+            # Check if file was already downloaded locally in base_dir
+            found_local = False
+            code_lower = entry.course_code.lower()
+            if os.path.exists(base_dir):
+                for root, _, files in os.walk(base_dir):
+                    for f in files:
+                        f_lower = f.lower()
+                        if code_lower and (f_lower == f"{code_lower}.xlsx" or f_lower == f"{code_lower}.docx" or f_lower.startswith(f"{code_lower}_")):
+                            cand = os.path.join(root, f)
+                            if os.path.isfile(cand):
+                                entry.local_file_path = cand
+                                entry.availability_status = "Available"
+                                found_local = True
+                                break
+                    if found_local:
+                        break
+            if found_local:
+                continue
+
             file_id = extract_file_id_from_drive_url(entry.target_url_or_path)
             if not file_id:
                 # Might be folder link
@@ -654,4 +688,162 @@ def generate_index_reconciliation_excel(inventory_summary: Dict[str, Any]) -> by
     buf = io.BytesIO()
     wb.save(buf)
     return buf.getvalue()
+
+
+def is_index_file(file_path: str) -> bool:
+    """
+    Determines if a document is an institutional curriculum/course index or roster,
+    rather than an individual course TLEP syllabus/session plan.
+    """
+    if not os.path.exists(file_path) or not os.path.isfile(file_path):
+        return False
+        
+    ext = os.path.splitext(file_path)[1].lower()
+    fname = os.path.basename(file_path).lower()
+    
+    # Filename keyword check
+    if any(k in fname for k in ["index", "catalog", "inventory", "roster", "course_list", "tlep_links", "master_list"]):
+        return True
+
+    if ext in [".xlsx", ".xls"]:
+        try:
+            wb = openpyxl.load_workbook(file_path, data_only=True, read_only=True)
+            sheet_names_lower = [s.lower() for s in wb.sheetnames]
+            
+            # If standard single-course TLEP sheets exist, it is a course TLEP, not an index
+            if any("session plan" in s for s in sheet_names_lower) or any("course details & syllabus" in s for s in sheet_names_lower):
+                return False
+                
+            for name in wb.sheetnames[:3]:
+                ws = wb[name]
+                header_detected = False
+                row_course_count = 0
+                for r_idx, row in enumerate(ws.iter_rows(max_row=25, values_only=True), 1):
+                    row_vals = [str(v or "").strip().lower() for v in row if v is not None]
+                    
+                    if any("code" in v or "course" in v or "subject" in v for v in row_vals) and \
+                       any("link" in v or "url" in v or "tlep" in v or "drive" in v or "faculty" in v or "facilitator" in v or "status" in v or "doc" in v for v in row_vals):
+                        header_detected = True
+                        continue
+                        
+                    if header_detected:
+                        if any(re.match(r"^[A-Z]{2,5}\s*\d{2,4}", str(v).strip()) for v in row if v is not None):
+                            row_course_count += 1
+                            
+                if header_detected and row_course_count >= 1:
+                    return True
+        except Exception:
+            pass
+
+    elif ext == ".docx":
+        try:
+            doc = Document(file_path)
+            for table in doc.tables:
+                if len(table.rows) >= 2:
+                    header = [c.text.strip().lower() for c in table.rows[0].cells]
+                    if any("code" in h or "course" in h for h in header) and any("link" in h or "url" in h or "tlep" in h or "status" in h for h in header):
+                        return True
+        except Exception:
+            pass
+
+    return False
+
+
+def audit_directory_or_batch(
+    files_or_dir: Any,
+    base_dir: Optional[str] = None,
+    gdrive_connector: Optional[GoogleDriveConnector] = None,
+    mode: str = "auto",  # "auto", "index", "courses"
+    progress_callback = None,
+    api_key: Optional[str] = None,
+    db_path: str = "data/tlep_audit.db"
+) -> Dict[str, Any]:
+    """
+    Unified Ingestion & Inventory Reconciliation Engine.
+    Handles any combination of:
+    - Master Index spreadsheets / catalogs (.xlsx, .docx)
+    - Standalone Course TLEP files (.xlsx, .docx, .pdf)
+    - Directories or ZIPs containing mixed indexes and course files.
+    """
+    from engine.batch_processor import process_batch_files
+    
+    # 1. Resolve list of files and base directory
+    if isinstance(files_or_dir, str):
+        if os.path.isdir(files_or_dir):
+            base_dir = files_or_dir
+            all_files = []
+            for root, _, fnames in os.walk(files_or_dir):
+                for fn in fnames:
+                    ext = os.path.splitext(fn)[1].lower()
+                    if ext in [".xlsx", ".xls", ".docx", ".pdf"] and not fn.startswith("~$"):
+                        all_files.append(os.path.join(root, fn))
+        else:
+            all_files = [files_or_dir]
+            if not base_dir:
+                base_dir = os.path.dirname(os.path.abspath(files_or_dir))
+    else:
+        all_files = list(files_or_dir)
+        if not base_dir and all_files:
+            base_dir = os.path.dirname(os.path.abspath(all_files[0]))
+
+    if not all_files:
+        return {
+            "type": "empty",
+            "message": "No supported files (.xlsx, .docx, .pdf) detected.",
+            "audited_count": 0
+        }
+
+    # 2. Identify index files vs course files
+    index_files = []
+    course_files = []
+    
+    if mode == "index":
+        index_files = [f for f in all_files if os.path.splitext(f)[1].lower() in [".xlsx", ".xls", ".docx"]]
+        course_files = [f for f in all_files if f not in index_files]
+    elif mode == "courses":
+        course_files = all_files
+    else:  # "auto"
+        for f in all_files:
+            if is_index_file(f):
+                index_files.append(f)
+            else:
+                course_files.append(f)
+
+    # 3. If index files found: Reconcile Index Inventory
+    if index_files:
+        primary_index = index_files[0]
+        summary = audit_index_inventory(
+            index_file_path=primary_index,
+            base_dir=base_dir,
+            gdrive_connector=gdrive_connector,
+            progress_callback=progress_callback,
+            api_key=api_key,
+            db_path=db_path
+        )
+        return {
+            "type": "index_inventory",
+            "primary_index_path": primary_index,
+            "all_index_paths": index_files,
+            "inventory_summary": summary,
+            "audited_count": summary.get("total_audited", 0),
+            "total_listed": summary.get("total_listed_in_index", 0),
+            "available_count": summary.get("total_documents_available", 0),
+            "missing_count": summary.get("total_documents_missing", 0),
+            "inaccessible_count": summary.get("total_inaccessible", 0)
+        }
+
+    # 4. If no index files: Audit all courses directly
+    else:
+        results = process_batch_files(
+            course_files,
+            progress_callback=progress_callback,
+            api_key=api_key,
+            db_path=db_path
+        )
+        return {
+            "type": "direct_batch",
+            "results": results,
+            "audited_count": len(results),
+            "course_files": course_files
+        }
 

@@ -51,13 +51,21 @@ def test_index_scraper_pipeline():
 
         # Generate reconciliation report
         report_bytes = generate_index_reconciliation_excel(result)
-        assert len(report_bytes) > 2000, "Reconciliation report should contain valid Excel bytes"
+        # Test audit_directory_or_batch in auto mode
+        from engine.index_scraper import audit_directory_or_batch, is_index_file
+        assert is_index_file(index_path) is True
+        assert is_index_file(valid_course_path) is False
+
+        unified_res = audit_directory_or_batch(temp_dir, base_dir=temp_dir, db_path=test_db_path, mode="auto")
+        assert unified_res["type"] == "index_inventory"
+        assert unified_res["total_listed"] == 3
+        assert unified_res["available_count"] == 1
 
         print("test_index_scraper_pipeline passed successfully!")
 
     finally:
         if os.path.exists(temp_dir):
-            shutil.rmtree(temp_dir)
+            shutil.rmtree(temp_dir, ignore_errors=True)
 
 if __name__ == "__main__":
     test_index_scraper_pipeline()

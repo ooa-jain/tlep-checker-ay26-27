@@ -32,6 +32,44 @@ def extract_folder_id_from_url(url: str) -> Optional[str]:
     return None
 
 
+def parse_drive_url_type(url: str) -> Tuple[Optional[str], str]:
+    """
+    Parses Google Drive / Docs / Sheets URL.
+    Returns (resource_id, resource_type) where resource_type is:
+    'folder', 'spreadsheet', 'document', 'file', or 'unknown'.
+    """
+    url_clean = url.strip()
+    
+    # 1. Folder check
+    folder_match = re.search(r"drive\.google\.com/drive/(?:u/\d+/)?folders/([a-zA-Z0-9_-]+)", url_clean)
+    if folder_match:
+        return folder_match.group(1), "folder"
+    if re.search(r"drive\.google\.com/folderview\?id=([a-zA-Z0-9_-]+)", url_clean):
+        m = re.search(r"drive\.google\.com/folderview\?id=([a-zA-Z0-9_-]+)", url_clean)
+        return m.group(1), "folder"
+        
+    # 2. Spreadsheet check
+    sheet_match = re.search(r"docs\.google\.com/spreadsheets/d/([a-zA-Z0-9_-]+)", url_clean)
+    if sheet_match:
+        return sheet_match.group(1), "spreadsheet"
+        
+    # 3. Document check
+    doc_match = re.search(r"docs\.google\.com/document/d/([a-zA-Z0-9_-]+)", url_clean)
+    if doc_match:
+        return doc_match.group(1), "document"
+        
+    # 4. File check
+    file_match = re.search(r"drive\.google\.com/file/d/([a-zA-Z0-9_-]+)", url_clean)
+    if file_match:
+        return file_match.group(1), "file"
+        
+    # 5. Raw 25+ char ID fallback (assumed folder)
+    if re.match(r"^[a-zA-Z0-9_-]{25,}$", url_clean):
+        return url_clean, "folder"
+        
+    return None, "unknown"
+
+
 class GoogleDriveConnector:
     """Manages connection and file download from Google Drive."""
     
@@ -110,23 +148,95 @@ class GoogleDriveConnector:
         with open(destination_path, "wb") as f:
             f.write(request.execute())
             
-    def sync_and_download_folder(
+    def export_or_download_single_resource(self, resource_id: str, resource_type: str, dest_dir: str) -> str:
+        """Downloads or exports an individual Google Drive resource (Sheet, Doc, or File)."""
+        os.makedirs(dest_dir, exist_ok=True)
+        
+        # 1. Google Spreadsheet -> .xlsx
+        if resource_type == "spreadsheet":
+            dest_path = os.path.join(dest_dir, f"drive_sheet_{resource_id}.xlsx")
+            if self.service:
+                request = self.service.files().export_media(
+                    fileId=resource_id,
+                    mimeType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                )
+                with open(dest_path, "wb") as f:
+                    f.write(request.execute())
+                return dest_path
+            else:
+                # Public export fallback
+                url = f"https://docs.google.com/spreadsheets/d/{resource_id}/export?format=xlsx"
+                resp = requests.get(url, timeout=20)
+                if resp.status_code == 200 and len(resp.content) > 200:
+                    with open(dest_path, "wb") as f:
+                        f.write(resp.content)
+                    return dest_path
+                raise PermissionError("Unable to export Google Sheet. Provide credentials or verify link sharing.")
+
+        # 2. Google Doc -> .docx
+        elif resource_type == "document":
+            dest_path = os.path.join(dest_dir, f"drive_doc_{resource_id}.docx")
+            if self.service:
+                request = self.service.files().export_media(
+                    fileId=resource_id,
+                    mimeType="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                )
+                with open(dest_path, "wb") as f:
+                    f.write(request.execute())
+                return dest_path
+            else:
+                url = f"https://docs.google.com/document/d/{resource_id}/export?format=docx"
+                resp = requests.get(url, timeout=20)
+                if resp.status_code == 200 and len(resp.content) > 200:
+                    with open(dest_path, "wb") as f:
+                        f.write(resp.content)
+                    return dest_path
+                raise PermissionError("Unable to export Google Doc. Provide credentials or verify link sharing.")
+
+        # 3. Direct File
+        else:
+            dest_path = os.path.join(dest_dir, f"drive_file_{resource_id}.xlsx")
+            if self.service:
+                request = self.service.files().get_media(fileId=resource_id)
+                with open(dest_path, "wb") as f:
+                    f.write(request.execute())
+                return dest_path
+            else:
+                url = f"https://drive.google.com/uc?export=download&id={resource_id}"
+                resp = requests.get(url, timeout=20)
+                if resp.status_code == 200 and len(resp.content) > 200:
+                    with open(dest_path, "wb") as f:
+                        f.write(resp.content)
+                    return dest_path
+                raise PermissionError("Unable to download Google Drive file. Provide credentials or verify link sharing.")
+
+    def fetch_drive_resource(
         self,
-        folder_id: str,
+        url_or_id: str,
         target_dir: str,
         include_subfolders: bool = True,
-        progress_callback=None
-    ) -> List[str]:
-        """Downloads all supported files from Google Drive to target local directory."""
-        files = self.list_folder_files(folder_id, include_subfolders=include_subfolders)
-        downloaded_paths = []
-        tot = len(files)
-        
-        for idx, f in enumerate(files, 1):
-            if progress_callback:
-                progress_callback(idx, tot, f['name'])
-            dest = os.path.join(target_dir, f['rel_path'])
-            self.download_file(f['id'], dest)
-            downloaded_paths.append(dest)
-            
-        return downloaded_paths
+        progress_callback = None
+    ) -> Tuple[str, List[str]]:
+        """
+        Intelligently resolves Google Drive URL or ID (folder vs spreadsheet vs doc vs file).
+        Returns (resource_type, downloaded_file_paths).
+        """
+        r_id, r_type = parse_drive_url_type(url_or_id)
+        if not r_id:
+            raise ValueError(f"Could not parse valid Google Drive ID from: {url_or_id}")
+
+        if r_type == "folder":
+            downloaded = self.sync_and_download_folder(
+                folder_id=r_id,
+                target_dir=target_dir,
+                include_subfolders=include_subfolders,
+                progress_callback=progress_callback
+            )
+            return ("folder", downloaded)
+        else:
+            single_path = self.export_or_download_single_resource(
+                resource_id=r_id,
+                resource_type=r_type,
+                dest_dir=target_dir
+            )
+            return (r_type, [single_path])
