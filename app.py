@@ -14,6 +14,7 @@ from engine.scoring import aggregate_area_breakdown
 from engine.simplifier import simplify_finding
 from engine.batch_processor import process_batch_files, extract_and_process_zip
 from engine.db import get_all_audits, get_audit_summary_by_department
+from engine.index_scraper import audit_index_inventory, generate_index_reconciliation_excel
 from models.schemas import StatusEnum
 
 # Page Configuration
@@ -573,7 +574,11 @@ else:
     </div>
     """, unsafe_allow_html=True)
 
-    p_tab1, p_tab2 = st.tabs(["Portfolio Analytics & Leaderboard", "Batch Ingestion (Google Drive & ZIP)"])
+    p_tab1, p_tab2, p_tab3 = st.tabs([
+        "Portfolio Analytics & Leaderboard", 
+        "Batch Ingestion (Google Drive & ZIP)",
+        "Index Scraping & Inventory Reconciliation"
+    ])
 
     # Batch Ingestion Tab
     with p_tab2:
@@ -826,3 +831,148 @@ else:
                     mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                     type="secondary"
                 )
+
+    # TAB 3: Master Index & Inventory Reconciliation
+    with p_tab3:
+        st.markdown("#### Master Index File Scraping & Inventory Reconciliation")
+        st.caption(
+            "Upload a departmental curriculum master index or course catalog (.xlsx or .docx). "
+            "The system scrapes embedded hyperlinks, local references, and Google Drive links, checks document availability, "
+            "and audits all accessible course TLEPs against the official 49-parameter checklist."
+        )
+
+        idx_file = st.file_uploader(
+            "Upload Master Index File (.xlsx, .xls, .docx)",
+            type=["xlsx", "xls", "docx"],
+            help="Upload an index workbook or table containing course codes and TLEP links."
+        )
+
+        col_ix1, col_ix2 = st.columns([2, 1])
+        with col_ix1:
+            idx_drive_key = st.text_input(
+                "Google Drive API Key (Optional)",
+                type="password",
+                help="Optional: If links point to Google Drive files requiring API authentication."
+            )
+        with col_ix2:
+            st.write("")
+            st.write("")
+            execute_idx_btn = st.button("EXECUTE INDEX SCRAPE & AUDIT", type="primary", use_container_width=True)
+
+        if execute_idx_btn and idx_file:
+            progress_bar = st.progress(0.0)
+            status_box = st.empty()
+
+            suffix = os.path.splitext(idx_file.name)[1]
+            with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tmp_idx:
+                tmp_idx.write(idx_file.getbuffer())
+                tmp_idx_path = tmp_idx.name
+
+            try:
+                def on_idx_progress(cur, tot, desc):
+                    progress_bar.progress(cur / tot)
+                    status_box.text(f"Auditing Course Document ({cur}/{tot}): {desc}")
+
+                drive_conn = None
+                if idx_drive_key:
+                    drive_conn = GoogleDriveConnector(api_key=idx_drive_key)
+
+                summary = audit_index_inventory(
+                    index_file_path=tmp_idx_path,
+                    gdrive_connector=drive_conn,
+                    progress_callback=on_idx_progress,
+                    api_key=api_key_input
+                )
+                st.session_state["index_inventory_summary"] = summary
+                status_box.success("Index reconciliation and automated compliance audit completed successfully.")
+            except Exception as e:
+                status_box.error(f"Error processing index file: {str(e)}")
+            finally:
+                if os.path.exists(tmp_idx_path):
+                    os.remove(tmp_idx_path)
+
+        if "index_inventory_summary" in st.session_state:
+            inv = st.session_state["index_inventory_summary"]
+            entries = inv.get("entries", [])
+
+            tot_listed = inv.get("total_listed_in_index", 0)
+            tot_avail = inv.get("total_documents_available", 0)
+            tot_missing = inv.get("total_documents_missing", 0)
+            tot_inacc = inv.get("total_inaccessible", 0)
+            tot_audited = inv.get("total_audited", 0)
+            sub_rate = inv.get("submission_rate_pct", 0.0)
+
+            st.markdown(f"""
+            <div class="kpi-container">
+                <div class="kpi-card">
+                    <div class="kpi-label">Courses in Index</div>
+                    <div class="kpi-value">{tot_listed}</div>
+                    <div class="kpi-sub">Total Cataloged</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Documents Available</div>
+                    <div class="kpi-value" style="color: #15803D;">{tot_avail}</div>
+                    <div class="kpi-sub">Ready & Audited</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Missing / Not Submitted</div>
+                    <div class="kpi-value" style="color: #B91C1C;">{tot_missing}</div>
+                    <div class="kpi-sub">Pending Facilitator</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Inaccessible Links</div>
+                    <div class="kpi-value" style="color: #B45309;">{tot_inacc}</div>
+                    <div class="kpi-sub">Access / URL Error</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Submission Rate</div>
+                    <div class="kpi-value">{sub_rate}%</div>
+                    <div class="kpi-sub">Department Intake</div>
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
+
+            reconciliation_bytes = generate_index_reconciliation_excel(inv)
+            st.download_button(
+                label="Download Index Reconciliation & Compliance Report (.xlsx)",
+                data=reconciliation_bytes,
+                file_name="OOA_Index_Inventory_Reconciliation.xlsx",
+                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                type="primary"
+            )
+
+            st.divider()
+
+            # Filter table
+            st.markdown("#### Course Document Reconciliation Table")
+            inv_filter = st.radio(
+                "Filter Inventory Records:",
+                ["All Courses", "Documents Available", "Missing / Not Submitted", "Inaccessible Links"],
+                horizontal=True
+            )
+
+            filtered_entries = entries
+            if inv_filter == "Documents Available":
+                filtered_entries = [e for e in entries if e.availability_status == "Available"]
+            elif inv_filter == "Missing / Not Submitted":
+                filtered_entries = [e for e in entries if "Missing" in e.availability_status]
+            elif inv_filter == "Inaccessible Links":
+                filtered_entries = [e for e in entries if e.availability_status not in ["Available"] and "Missing" not in e.availability_status]
+
+            rows_data = []
+            for e in filtered_entries:
+                rows_data.append({
+                    "Index Row": e.row_number,
+                    "Course Code": e.course_code,
+                    "Course Title": e.course_title,
+                    "Department": e.department,
+                    "Facilitator": e.faculty,
+                    "Document Status": e.availability_status,
+                    "Link / Path": e.target_url_or_path or e.raw_reference or "None",
+                    "Audit Status": e.audit_status or "Not Audited",
+                    "Score %": f"{e.compliance_percentage}%" if e.compliance_percentage is not None else "-",
+                    "Detail / Deficiencies": e.error_detail or ("Compliant" if e.audit_status == "Compliant" else "")
+                })
+
+            st.dataframe(pd.DataFrame(rows_data), use_container_width=True)
+

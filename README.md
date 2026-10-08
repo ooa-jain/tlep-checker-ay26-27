@@ -47,6 +47,7 @@ tlep-checker/
 │   ├── cross_validation.py     # Relational graph consistency engine
 │   ├── hours_validation.py     # 12-parameter learning hours & credit validator
 │   ├── scoring.py              # Official scoring & area-wise aggregator
+│   ├── index_scraper.py        # Master index scraper & document inventory engine
 │   └── reviewer.py             # End-to-end master review pipeline
 ├── integrations/
 │   └── google_drive.py         # Google Drive folder syncer and batch reader
@@ -105,6 +106,12 @@ tlep-checker/
   - Connects to shared Google Drive folder URLs, scans subfolders for Department/Programme structures, and downloads supported files.
   - Feeds directly into the exact same 49-parameter review pipeline and consolidated rollup generator.
   - Verified via [`tests/test_gdrive.py`](file:///C:/coding/tlep%20checker/tests/test_gdrive.py).
+- [x] **Step 15: Index Scraper & Document Inventory Reconciliation Engine**
+  - Implemented [`engine/index_scraper.py`](file:///C:/coding/tlep%20checker/engine/index_scraper.py).
+  - Automatically parses curriculum index / catalog documents (`.xlsx`, `.docx`), scrapes embedded hyperlinks, Google Drive links, and local file paths.
+  - Performs real-time document inventory reconciliation (Documents Available vs Missing / Not Submitted vs Inaccessible Links).
+  - Automatically downloads remote files, audits every accessible document against all 49 parameters, and exports a dedicated 3-sheet **Inventory & Compliance Reconciliation Workbook**.
+  - Verified via [`tests/test_index_scraper.py`](file:///C:/coding/tlep%20checker/tests/test_index_scraper.py).
 
 ---
 
