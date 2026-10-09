@@ -142,7 +142,7 @@ def evaluate_deterministic_parameter(
         
         if ca_ese_val:
             val_clean = ca_ese_val.replace(" ", "")
-            if val_clean in ["70:30", "30:70"]:
+            if val_clean in ["70:30", "30:70", "50:50"]:
                 status = StatusEnum.COMPLIANT
                 score = 2
                 reason = f"CA : ESE scheme is stated correctly as '{val_clean}'."
@@ -150,14 +150,14 @@ def evaluate_deterministic_parameter(
             else:
                 status = StatusEnum.NON_COMPLIANT
                 score = 0
-                reason = f"Invalid CA : ESE scheme found: '{ca_ese_val}'. Only 70:30 or 30:70 are permitted."
-                action_req = "Correct CA : ESE ratio to either 70:30 or 30:70."
+                reason = f"Invalid CA : ESE scheme found: '{ca_ese_val}'. Only 70:30, 30:70, or 50:50 are permitted."
+                action_req = "Correct CA : ESE ratio to 70:30, 30:70, or 50:50."
                 evidence_list.append(EvidenceItem(text=f"Invalid ratio: {ca_ese_val}", location="Course Information"))
         else:
             status = StatusEnum.NEEDS_REVISION
             score = 1
             reason = "CA : ESE ratio is not explicitly stated in Course Information."
-            action_req = "Specify CA : ESE ratio (must be 70:30 or 30:70)."
+            action_req = "Specify CA : ESE ratio (must be 70:30, 30:70, or 50:50)."
             evidence_list.append(EvidenceItem(text="CA:ESE ratio missing", location="Course Information"))
 
     elif p_id == 8:  # Pass / ESE marks
