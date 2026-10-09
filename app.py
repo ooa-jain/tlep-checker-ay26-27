@@ -1060,7 +1060,6 @@ else:
                         data=rollup_bytes,
                         file_name="OOA_Institutional_TLEP_Rollup.xlsx",
                         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                         type="primary"
                     )
                     
@@ -1075,6 +1074,7 @@ else:
                         )
 
                 st.info("Tip: Switch to 'Portfolio Analytics & Leaderboard' to view department breakdowns and institutional performance.")
+
 
 
 
