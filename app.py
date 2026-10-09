@@ -629,18 +629,17 @@ if mode == "Single Course Review":
                     if filter_choice in filter_map:
                         display_findings = [f for f in display_findings if f.status == filter_map[filter_choice]]
                     
+                    table_data = []
                     for f in display_findings:
-                        status_color = "green" if f.status == StatusEnum.COMPLIANT else ("orange" if f.status == StatusEnum.NEEDS_REVISION else "red")
-                        with st.expander(f"**#{f.parameter_id} [{f.review_area}] {f.parameter}** — :{status_color}[{f.status.value}] ({f.score if f.score is not None else 'NA'} pts)"):
-                            st.markdown(f"**Official Criterion:** {f.criterion}")
-                            st.markdown(f"**Audit Finding:** {f.reason}")
-                            if f.action_required:
-                                st.error(f"**Action Required:** {f.action_required}")
-                            st.caption(f"Priority: {f.priority.value} | Validation: {f.validation_type.value}")
-                            if f.evidence:
-                                st.markdown("**Evidence in Document:**")
-                                for ev in f.evidence:
-                                    st.code(f"Location: {ev.location}\nText: {ev.text}", language="text")
+                        table_data.append({
+                            "ID": f.parameter_id,
+                            "Area": f.review_area,
+                            "Parameter (Pointer)": f.parameter,
+                            "Status": f.status.value,
+                            "Remark (Observation)": f.reason,
+                            "Required Action": f.action_required if f.action_required else "-"
+                        })
+                    st.dataframe(pd.DataFrame(table_data), use_container_width=True)
 
             # TAB 2: Hours & Credits
             with tab_hours:
