@@ -12,7 +12,7 @@ import io
 import re
 from typing import List, Dict, Any
 
-__all__ = ["generate_excel_report", "generate_consolidated_report"]
+__all__ = ["generate_excel_report", "generate_consolidated_report", "generate_multiple_reports_zip"]
 
 
 def generate_excel_report(result: TLEPReviewResult, output_path: str = None) -> bytes:
@@ -431,3 +431,17 @@ def generate_consolidated_report(records: List[Dict[str, Any]], output_path: str
             f.write(report_bytes)
             
     return report_bytes
+
+import zipfile
+
+def generate_multiple_reports_zip(results: List[TLEPReviewResult]) -> bytes:
+    buffer = io.BytesIO()
+    with zipfile.ZipFile(buffer, 'w', zipfile.ZIP_DEFLATED) as zf:
+        for res in results:
+            excel_bytes = generate_excel_report(res)
+            # Create a safe filename
+            safe_name = re.sub(r'[\\/*?:""<>|]', '_', res.file_name)
+            filename = f"OOA_TLEP_Audit_{safe_name}_{res.review_id}.xlsx"
+            zf.writestr(filename, excel_bytes)
+    return buffer.getvalue()
+

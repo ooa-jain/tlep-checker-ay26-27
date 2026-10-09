@@ -44,8 +44,8 @@ def extract_hierarchy_from_path(file_path: str) -> Dict[str, str]:
 
 def process_single_file_batch(
     file_path: str,
-    api_key: Optional[str] = None,
-    db_path: str = "data/tlep_audit.db"
+    db_path: str = "data/tlep_audit.db",
+    api_key: Optional[str] = None
 ) -> Dict[str, Any]:
     """Processes one course TLEP and saves to DB."""
     path_meta = extract_hierarchy_from_path(file_path)
@@ -62,6 +62,7 @@ def process_single_file_batch(
     course_title = result.normalized_tlep.course_info.course_title or os.path.splitext(os.path.basename(file_path))[0]
     
     audit_record = {
+        "full_result": result,
         "review_id": result.review_id,
         "file_name": os.path.basename(file_path),
         "file_path": file_path,
@@ -91,8 +92,8 @@ def process_single_file_batch(
 def process_batch_files(
     file_paths: List[str],
     progress_callback: Optional[Callable[[int, int, str], None]] = None,
-    api_key: Optional[str] = None,
-    db_path: str = "data/tlep_audit.db"
+    db_path: str = "data/tlep_audit.db",
+    api_key: Optional[str] = None
 ) -> List[Dict[str, Any]]:
     """Runs batch audit sequentially across multiple files."""
     results = []
@@ -103,7 +104,7 @@ def process_batch_files(
             progress_callback(idx, total, os.path.basename(fpath))
             
         try:
-            record = process_single_file_batch(fpath, api_key=api_key, db_path=db_path)
+            record = process_single_file_batch(fpath, db_path=db_path, api_key=api_key)
             record["status_flag"] = "SUCCESS"
             results.append(record)
         except Exception as e:
@@ -136,7 +137,6 @@ def process_batch_files(
 def extract_and_process_zip(
     zip_path: str,
     progress_callback: Optional[Callable[[int, int, str], None]] = None,
-    api_key: Optional[str] = None
 ) -> List[Dict[str, Any]]:
     """Unpacks a zip containing department folder trees and reviews all courses."""
     temp_extract_dir = os.path.join("temp_batches", datetime.now().strftime("%Y%m%d_%H%M%S"))
@@ -152,5 +152,9 @@ def extract_and_process_zip(
             if ext in [".xlsx", ".xls", ".docx", ".pdf"] and not f.startswith("~$"):
                 supported_files.append(os.path.join(root, f))
                 
-    results = process_batch_files(supported_files, progress_callback, api_key=api_key)
+    results = process_batch_files(supported_files, progress_callback)
     return results
+
+
+
+

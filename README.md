@@ -115,6 +115,16 @@ tlep-checker/
 
 ---
 
+
+- [x] **Step 16: AI Semantic Enrichment (Secondary Layer)**
+  - Upgraded AI integration to correctly parse structural context and pass to gemini-1.5-pro.
+  - Ensures Hardcoded Rule Engine is always the primary source of truth for audit status and scores.
+  - AI acts only as a qualitative enrichment layer, appending academic feedback to deterministic findings.
+- [x] **Step 17: Concurrent Multiple Report Export**
+  - Added capability to generate a ZIP archive containing all individual 6-sheet Course Audit Reports.
+  - Available after batch ingestion or index reconciliation, directly in the UI alongside the master rollup.
+
+
 ## Cloud Deployment & Institutional Access
 
 The repository is published on GitHub:
@@ -142,3 +152,4 @@ Or start manually in your terminal:
 ```powershell
 streamlit run app.py
 ```
+

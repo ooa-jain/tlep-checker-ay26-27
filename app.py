@@ -9,7 +9,7 @@ import os
 import tempfile
 import pandas as pd
 from engine.reviewer import review_tlep_document
-from reports.excel_report import generate_excel_report, generate_consolidated_report
+from reports.excel_report import generate_excel_report, generate_consolidated_report, generate_multiple_reports_zip
 from engine.scoring import aggregate_area_breakdown
 from engine.simplifier import simplify_finding
 from engine.batch_processor import process_batch_files, extract_and_process_zip
@@ -300,13 +300,13 @@ with st.sidebar:
     st.markdown("**Standards:** `49 Official Criteria`")
     st.markdown("**Audit Engine:** `Deterministic + AI Hybrid`")
     
+    
     with st.expander("Advanced AI Settings"):
         api_key_input = st.text_input(
-            "API Key (Optional)",
+            "Gemini API Key (Optional)",
             type="password",
-            help="Optional: If blank, system executes using high-speed deterministic rules and academic heuristic algorithms."
+            help="Provides deep semantic analysis using Gemini 1.5 Pro. If blank, system falls back to strict heuristic rules."
         )
-    
     st.divider()
     st.caption("Verified OOA Template Baseline • Zero Fabricated Data")
     if st.button("LOCK PORTAL", use_container_width=True):
@@ -845,14 +845,12 @@ else:
                                 p_bar.progress(cur / tot)
                                 status_box.text(f"Auditing ({cur}/{tot}): {fname}")
                                 
-                            unified_result = audit_directory_or_batch(
+                            unified_result = audit_directory_or_batch(api_key=api_key_input,
                                 files_or_dir=downloaded_files,
                                 base_dir=temp_sync_dir,
                                 gdrive_connector=connector,
                                 mode=mode_options_map[selected_mode_label],
-                                progress_callback=on_audit_prog,
-                                api_key=api_key_input
-                            )
+                                progress_callback=on_audit_prog)
                             p_bar.progress(1.0)
                             st.session_state["unified_batch_result"] = unified_result
                             status_box.success("Google Drive ingestion and compliance reconciliation completed successfully.")
@@ -923,14 +921,12 @@ else:
                         
                     drive_conn = GoogleDriveConnector(api_key=up_drive_key) if up_drive_key else GoogleDriveConnector()
                     
-                    unified_result = audit_directory_or_batch(
+                    unified_result = audit_directory_or_batch(api_key=api_key_input,
                         files_or_dir=scan_target,
                         base_dir=scan_target,
                         gdrive_connector=drive_conn,
                         mode=mode_options_map[selected_up_mode_label],
-                        progress_callback=on_upload_prog,
-                        api_key=api_key_input
-                    )
+                        progress_callback=on_upload_prog)
                     progress_bar.progress(1.0)
                     st.session_state["unified_batch_result"] = unified_result
                     status_text.success("Batch ingestion and document audit completed successfully.")
@@ -1007,6 +1003,17 @@ else:
                             use_container_width=True
                         )
 
+                # Zip Download
+                audited_results = [e.audit_result for e in entries if hasattr(e, 'audit_result') and e.audit_result]
+                if audited_results:
+                    st.download_button(
+                        label="Download All Individual Course Audit Reports (.zip)",
+                        data=generate_multiple_reports_zip(audited_results),
+                        file_name="OOA_Individual_Audit_Reports.zip",
+                        mime="application/zip",
+                        type="secondary",
+                        use_container_width=True
+                    )
                 st.markdown("#### Course Document Reconciliation Table")
                 inv_filter = st.radio(
                     "Filter Inventory Records:",
@@ -1053,8 +1060,23 @@ else:
                         data=rollup_bytes,
                         file_name="OOA_Institutional_TLEP_Rollup.xlsx",
                         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                         type="primary"
                     )
+                    
+                    full_results = [r.get("full_result") for r in res.get("direct_batch_results", []) if r.get("full_result")]
+                    if full_results:
+                        st.download_button(
+                            label="Download All Individual Course Audit Reports (.zip)",
+                            data=generate_multiple_reports_zip(full_results),
+                            file_name="OOA_Individual_Audit_Reports.zip",
+                            mime="application/zip",
+                            type="secondary"
+                        )
+
                 st.info("Tip: Switch to 'Portfolio Analytics & Leaderboard' to view department breakdowns and institutional performance.")
+
+
+
 
 

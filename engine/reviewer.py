@@ -45,7 +45,7 @@ def review_tlep_document(
         if val_type == "deterministic":
             finding = evaluate_deterministic_parameter(p_meta, tlep, cross_val_data, approved_reference)
         else:
-            finding = evaluate_academic_parameter(p_meta, tlep, cross_val_data, api_key)
+            finding = evaluate_academic_parameter(p_meta, tlep, cross_val_data, api_key=api_key)
         findings.append(finding)
         
     # 4. Hours Validation Table
@@ -120,7 +120,7 @@ def review_tlep_document(
         file_name=file_name,
         review_date=review_date,
         checklist_version="AY 2026–27",
-        model_used="Hybrid (Rule Engine + AI Academic Review)",
+        model_used="Hybrid (Rule Engine + AI Pro)" if api_key else "Deterministic Rule Engine",
         total_parameters=scores["total_parameters"],
         compliant_count=scores["compliant_count"],
         needs_revision_count=scores["needs_revision_count"],
@@ -140,3 +140,4 @@ def review_tlep_document(
         department_action_plan=action_plan,
         normalized_tlep=tlep
     )
+

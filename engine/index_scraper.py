@@ -418,8 +418,8 @@ def audit_index_inventory(
     base_dir: Optional[str] = None,
     gdrive_connector: Optional[GoogleDriveConnector] = None,
     progress_callback = None,
-    api_key: Optional[str] = None,
-    db_path: str = "data/tlep_audit.db"
+    db_path: str = "data/tlep_audit.db",
+    api_key: Optional[str] = None
 ) -> Dict[str, Any]:
     """
     Parses index file, downloads referenced course files, audits accessible courses,
@@ -755,7 +755,6 @@ def audit_directory_or_batch(
     gdrive_connector: Optional[GoogleDriveConnector] = None,
     mode: str = "auto",  # "auto", "index", "courses"
     progress_callback = None,
-    api_key: Optional[str] = None,
     db_path: str = "data/tlep_audit.db"
 ) -> Dict[str, Any]:
     """
@@ -817,7 +816,7 @@ def audit_directory_or_batch(
             base_dir=base_dir,
             gdrive_connector=gdrive_connector,
             progress_callback=progress_callback,
-            api_key=api_key,
+            
             db_path=db_path
         )
         return {
@@ -837,7 +836,7 @@ def audit_directory_or_batch(
         results = process_batch_files(
             course_files,
             progress_callback=progress_callback,
-            api_key=api_key,
+            
             db_path=db_path
         )
         return {
@@ -846,4 +845,6 @@ def audit_directory_or_batch(
             "audited_count": len(results),
             "course_files": course_files
         }
+
+
 

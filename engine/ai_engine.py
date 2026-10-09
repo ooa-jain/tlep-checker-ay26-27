@@ -37,17 +37,19 @@ def evaluate_academic_parameter(
     priority = PriorityEnum(param_meta["priority"])
     val_type = ValidationTypeEnum(param_meta["validation_type"])
     
-    # Try calling LLM if API key is available
-    active_key = api_key or os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY") or os.environ.get("OPENAI_API_KEY")
+    # 1. ALWAYS run the hardcoded heuristic first (Primary Rule)
+    heuristic_finding = _evaluate_heuristic_academic(param_meta, tlep, cross_val_data)
     
+    # 2. AI is Secondary: Only use it to enrich the explanation, without overriding the hardcoded status
+    active_key = api_key or os.environ.get("GEMINI_API_KEY")
     if active_key:
         try:
-            return _call_llm_for_parameter(param_meta, tlep, cross_val_data, active_key)
-        except Exception as e:
-            # Fall back to academic heuristic engine on API failure
+            enriched_finding = _call_llm_for_parameter(param_meta, tlep, cross_val_data, active_key, heuristic_finding)
+            return enriched_finding
+        except Exception:
             pass
-
-    return _evaluate_heuristic_academic(param_meta, tlep, cross_val_data)
+            
+    return heuristic_finding
 
 
 def _evaluate_heuristic_academic(
@@ -547,79 +549,75 @@ def _evaluate_heuristic_academic(
     )
 
 
+
+
+
+
 def _call_llm_for_parameter(
     param_meta: Dict[str, Any],
     tlep: NormalizedTLEP,
     cross_val_data: Dict[str, Any],
-    api_key: str
+    api_key: str,
+    heuristic_finding: ParameterFinding
 ) -> ParameterFinding:
-    """Invokes LLM via google-generativeai or openai client if available."""
     try:
         import google.generativeai as genai
+        import json
+        import re
         genai.configure(api_key=api_key)
-        model = genai.GenerativeModel("gemini-1.5-flash")
+        model = genai.GenerativeModel("gemini-1.5-pro")
+        
+        context_parts = []
+        context_parts.append(f"Course: {tlep.course_info.course_title} ({tlep.course_info.course_code})")
+        if tlep.course_outcomes:
+            context_parts.append("COURSE OUTCOMES:")
+            for co in tlep.course_outcomes:
+                context_parts.append(f"- {co.id}: {co.statement} [BTL: {co.btl}]")
+        if tlep.sessions:
+            context_parts.append("SESSION PLAN:")
+            for s in tlep.sessions[:20]:
+                context_parts.append(f"- Session {s.session_number}: {s.topic} (Hours: {s.hours}, COs: {s.co_mapped})")
+        if tlep.assessments:
+            context_parts.append("ASSESSMENT SCHEME:")
+            for a in tlep.assessments:
+                context_parts.append(f"- {a.component_name} (Weight: {a.weightage}%, COs: {a.co_mapped})")
+        
+        context_parts.append(f"RAW TEXT EXCERPT:\n{tlep.raw_text[:15000]}")
+        tlep_context = "\n".join(context_parts)
         
         prompt = f"""
-You are an OOA academic quality reviewer for Academic Year 2026–27.
-Review the supplied TLEP against the specified official checklist criterion.
+You are an AI assistant augmenting a deterministic academic rule engine.
+The deterministic engine has ALREADY evaluated the following parameter and assigned a strict status.
+YOUR JOB is ONLY to provide additional qualitative academic context, observations, or refined advice. You MUST NOT change the status or score.
 
-PARAMETER ID: {param_meta['parameter_id']}
-REVIEW AREA: {param_meta['review_area']}
 PARAMETER: {param_meta['parameter']}
-OFFICIAL CRITERION: {param_meta['criterion']}
-PRIORITY: {param_meta['priority']}
+CRITERION: {param_meta['criterion']}
 
-EXTRACTED TLEP SUMMARY:
-- Course: {tlep.course_info.course_title} ({tlep.course_info.course_code})
-- Academic Year: {tlep.course_info.academic_year}
-- Credits: {tlep.course_info.credits}, LTPE: {tlep.course_info.ltpe}
-- Course Outcomes: {[c.statement for c in tlep.course_outcomes[:6]]}
-- Total Sessions: {len(tlep.sessions)}
-- Assessments: {[a.component_name for a in tlep.assessments]}
-- Cross-Validation Flags: {cross_val_data.get('flags', [])}
+HARDCODED RULE ENGINE RESULT (DO NOT OVERRIDE THIS):
+- Status: {heuristic_finding.status.value}
+- Base Reason: {heuristic_finding.reason}
+- Action Required: {heuristic_finding.action_required}
 
-DOCUMENT TEXT EXCERPT:
-{tlep.raw_text[:2500]}
+TLEP CONTEXT:
+{tlep_context}
 
 Return STRICT JSON ONLY matching:
 {{
-  "status": "Compliant|Needs Revision|Major Revision|Non-Compliant|NA",
-  "score": 2 (if Compliant) | 1 (if Needs Revision) | 0 (if Major/Non-Compliant) | null (if NA),
-  "evidence": [
-    {{"text": "...", "location": "..."}}
-  ],
-  "reason": "...",
-  "action_required": "...",
-  "confidence": 0.95
+  "ai_enriched_reason": "The base reason, plus your deeper semantic academic observations (e.g. noting if Bloom's verbs are truly aligned, or if rubrics are actually well-formed).",
+  "ai_enriched_action": "The base action, refined with specific examples from the text if applicable."
 }}
 """
         response = model.generate_content(prompt)
         text = response.text.strip()
-        # Clean json
-        clean_text = re.sub(r"^```json\s*", "", text)
-        clean_text = re.sub(r"^```\s*", "", clean_text)
-        clean_text = re.sub(r"\s*```$", "", clean_text).strip()
+        clean_text = re.sub(r"^`json\s*", "", text)
+        clean_text = re.sub(r"^`\s*", "", clean_text)
+        clean_text = re.sub(r"\s*`$", "", clean_text).strip()
         data = json.loads(clean_text)
         
-        status_val = StatusEnum(data["status"])
-        score_val = 2 if status_val == StatusEnum.COMPLIANT else (1 if status_val == StatusEnum.NEEDS_REVISION else (0 if status_val in [StatusEnum.MAJOR_REVISION, StatusEnum.NON_COMPLIANT] else None))
+        # Enforce Hardcoded Rule Baseline
+        heuristic_finding.reason = data.get("ai_enriched_reason", heuristic_finding.reason)
+        heuristic_finding.action_required = data.get("ai_enriched_action", heuristic_finding.action_required)
         
-        ev_items = [EvidenceItem(text=e.get("text", ""), location=e.get("location", "")) for e in data.get("evidence", [])]
-        
-        return ParameterFinding(
-            parameter_id=param_meta["parameter_id"],
-            review_area=param_meta["review_area"],
-            parameter=param_meta["parameter"],
-            criterion=param_meta["criterion"],
-            priority=PriorityEnum(param_meta["priority"]),
-            validation_type=ValidationTypeEnum(param_meta["validation_type"]),
-            status=status_val,
-            score=score_val,
-            evidence=ev_items,
-            reason=data.get("reason", ""),
-            action_required=data.get("action_required", ""),
-            confidence=float(data.get("confidence", 0.9))
-        )
+        return heuristic_finding
     except Exception:
-        # Fall back to heuristic
-        return _evaluate_heuristic_academic(param_meta, tlep, cross_val_data)
+        return heuristic_finding
