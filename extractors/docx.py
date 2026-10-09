@@ -62,29 +62,29 @@ def extract_docx_tlep(file_path: str) -> NormalizedTLEP:
     for p in doc.paragraphs:
         txt = p.text.strip()
         txt_l = txt.lower()
-        if "course code" in txt_l and not course_info.course_code:
+        if any(x in txt_l for x in ["course code", "subject code", "course id", "module code"]) and not course_info.course_code:
             parts = re.split(r"[:\-]", txt, maxsplit=1)
             if len(parts) > 1:
                 course_info.course_code = parts[1].strip()
-        if "course title" in txt_l or "course name" in txt_l:
+        if any(x in txt_l for x in ["course title", "course name", "subject name", "module title", "module name"]):
             parts = re.split(r"[:\-]", txt, maxsplit=1)
             if len(parts) > 1 and not course_info.course_title:
                 course_info.course_title = parts[1].strip()
-        if "semester" in txt_l and not course_info.semester:
+        if any(x in txt_l for x in ["semester", "term", "sem"]) and not course_info.semester:
             parts = re.split(r"[:\-]", txt, maxsplit=1)
             if len(parts) > 1:
                 course_info.semester = parts[1].strip()
-        if ("academic year" in txt_l or "ay " in txt_l) and not course_info.academic_year:
+        if any(x in txt_l for x in ["academic year", "ay ", "a.y", "session year"]) and not course_info.academic_year:
             parts = re.split(r"[:\-]", txt, maxsplit=1)
             if len(parts) > 1:
                 course_info.academic_year = parts[1].strip()
-        if "credits" in txt_l and not course_info.credits:
+        if any(x in txt_l for x in ["credits", "credit", "total credits", "course credits"]) and not course_info.credits:
             parts = re.split(r"[:\-]", txt, maxsplit=1)
             if len(parts) > 1:
                 m = re.search(r"\d+(\.\d+)?", parts[1])
                 if m:
                     course_info.credits = float(m.group(0))
-        if ("l-t-p-e" in txt_l or "ltpe" in txt_l) and not course_info.ltpe:
+        if any(x in txt_l for x in ["l-t-p-e", "ltpe", "l:t:p:e", "l t p e", "l/t/p/e"]) and not course_info.ltpe:
             parts = re.split(r"[:\-]", txt, maxsplit=1)
             if len(parts) > 1:
                 course_info.ltpe = parts[1].strip()
@@ -97,20 +97,20 @@ def extract_docx_tlep(file_path: str) -> NormalizedTLEP:
             for idx, c in enumerate(cells):
                 cl = c.lower()
                 next_c = cells[idx + 1] if idx + 1 < len(cells) else ""
-                if ("course code" in cl or "subject code" in cl) and not course_info.course_code:
+                if any(x in cl for x in ["course code", "subject code", "course id", "module code"]) and not course_info.course_code:
                     course_info.course_code = next_c or c.split(":")[-1].strip()
-                if ("course title" in cl or "course name" in cl) and not course_info.course_title:
+                if any(x in cl for x in ["course title", "course name", "subject name", "module title", "module name"]) and not course_info.course_title:
                     course_info.course_title = next_c or c.split(":")[-1].strip()
-                if "semester" in cl and not course_info.semester:
+                if any(x in cl for x in ["semester", "term", "sem"]) and not course_info.semester:
                     course_info.semester = next_c or c.split(":")[-1].strip()
-                if ("academic year" in cl or "ay " in cl) and not course_info.academic_year:
+                if any(x in cl for x in ["academic year", "ay ", "a.y", "session year"]) and not course_info.academic_year:
                     course_info.academic_year = next_c or c.split(":")[-1].strip()
-                if ("credits" in cl or "credit" in cl) and not course_info.credits:
+                if any(x in cl for x in ["credits", "credit", "total credits", "course credits"]) and not course_info.credits:
                     val = next_c or c.split(":")[-1].strip()
                     m = re.search(r"\d+(\.\d+)?", val)
                     if m:
                         course_info.credits = float(m.group(0))
-                if ("l-t-p-e" in cl or "ltpe" in cl) and not course_info.ltpe:
+                if any(x in cl for x in ["l-t-p-e", "ltpe", "l:t:p:e", "l t p e", "l/t/p/e"]) and not course_info.ltpe:
                     course_info.ltpe = next_c or c.split(":")[-1].strip()
 
     # 2. Extract Course Outcomes
@@ -151,20 +151,22 @@ def extract_docx_tlep(file_path: str) -> NormalizedTLEP:
             if any("session" in c for c in cells) and (any("topic" in c for c in cells) or any("pedagogy" in c for c in cells)):
                 header_idx = r_idx
                 for c_i, c_val in enumerate(cells):
-                    if "session" in c_val or "sl" in c_val:
+                    if any(x in c_val for x in ["session", "sl", "s.no", "serial", "lec"]):
                         col_map["session_no"] = c_i
-                    elif "module" in c_val or "unit" in c_val:
+                    elif any(x in c_val for x in ["module", "unit", "chapter"]):
                         col_map["module"] = c_i
-                    elif "topic" in c_val or "portion" in c_val:
+                    elif any(x in c_val for x in ["topic", "portion", "content", "syllabus", "coverage"]):
                         col_map["topic"] = c_i
-                    elif "co" in c_val:
+                    elif any(x in c_val for x in ["co", "course outcome", "mapped co"]):
                         col_map["co"] = c_i
-                    elif "pedagogy" in c_val or "activity" in c_val:
+                    elif any(x in c_val for x in ["pedagogy", "activity", "method", "teaching", "strategy"]):
                         col_map["pedagogy"] = c_i
-                    elif "mode" in c_val or "delivery" in c_val:
+                    elif any(x in c_val for x in ["mode", "delivery", "platform"]):
                         col_map["mode"] = c_i
-                    elif "reading" in c_val or "reference" in c_val:
+                    elif any(x in c_val for x in ["reading", "reference", "material", "book"]):
                         col_map["readings"] = c_i
+                    elif any(x in c_val for x in ["hour", "duration", "time", "period"]):
+                        col_map["hours"] = c_i
                 break
                 
         if header_idx != -1:

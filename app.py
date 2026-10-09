@@ -289,26 +289,13 @@ with st.sidebar:
     </div>
     """, unsafe_allow_html=True)
     
-    mode = st.radio(
-        "Navigation Mode:",
-        ["Single Course Review", "Institutional Portfolio (2,000+ Courses)"],
-        index=0
-    )
-    
     st.divider()
     st.markdown("**Academic Year:** `AY 2026–27`")
     st.markdown("**Standards:** `49 Official Criteria`")
-    st.markdown("**Audit Engine:** `Deterministic + AI Hybrid`")
-    
-    
-    with st.expander("Advanced AI Settings"):
-        api_key_input = st.text_input(
-            "Gemini API Key (Optional)",
-            type="password",
-            help="Provides deep semantic analysis using Gemini 1.5 Pro. If blank, system falls back to strict heuristic rules."
-        )
+    st.markdown("**Audit Engine:** `Deterministic Rule Engine`")
     st.divider()
     st.caption("Verified OOA Template Baseline • Zero Fabricated Data")
+    api_key_input = None
     if st.button("LOCK PORTAL", use_container_width=True):
         st.session_state["authenticated"] = False
         st.rerun()
@@ -329,6 +316,14 @@ st.markdown("""
     </div>
 </div>
 """, unsafe_allow_html=True)
+
+mode = st.radio(
+    "Select Operating Mode:",
+    ["Single Course Review", "Institutional Portfolio (2,000+ Courses)"],
+    horizontal=True,
+    label_visibility="collapsed"
+)
+st.markdown("<br>", unsafe_allow_html=True)
 
 # =========================================================================
 # MODE 1: SINGLE COURSE TLEP REVIEW
@@ -830,25 +825,13 @@ else:
             with col_gd2:
                 inc_subfolders = st.checkbox("Include subfolders (Dept/Prog)", value=True)
                 
-            with st.expander("Drive Credentials (Optional for Public Folders & Sheets)"):
-                gdrive_api_key = st.text_input("Google Drive API Key", type="password")
-                sa_file = st.file_uploader("Or Upload Service Account JSON", type=["json"], key="gd_sa_json")
-                
+            st.markdown("<br>", unsafe_allow_html=True)
             if st.button("INGEST & RECONCILE FROM GOOGLE DRIVE", type="primary"):
                 if not gdrive_url.strip():
                     st.error("Please enter a valid Google Drive link.")
                 else:
-                    sa_path = None
-                    if sa_file:
-                        sa_tmp = tempfile.NamedTemporaryFile(delete=False, suffix=".json")
-                        sa_tmp.write(sa_file.getbuffer())
-                        sa_path = sa_tmp.name
-                        
                     try:
-                        connector = GoogleDriveConnector(
-                            service_account_json_path=sa_path,
-                            api_key=gdrive_api_key or os.environ.get("GOOGLE_DRIVE_API_KEY")
-                        )
+                        connector = GoogleDriveConnector()
                         
                         status_box = st.empty()
                         p_bar = st.progress(0.0)
@@ -890,9 +873,6 @@ else:
                         st.error(f"Access Denied: {str(pe)}")
                     except Exception as ex:
                         st.error(f"Error accessing Google Drive: {str(ex)}")
-                    finally:
-                        if sa_path and os.path.exists(sa_path):
-                            os.remove(sa_path)
 
         # Source 2: Upload Multiple Files, Indexes, or ZIP
         else:
@@ -924,11 +904,7 @@ else:
                     help="Auto-Detect automatically checks uploaded files for index spreadsheets with course links."
                 )
             with col_up2:
-                up_drive_key = st.text_input(
-                    "Drive API Key (Optional)",
-                    type="password",
-                    help="Optional: If index files contain Google Drive links requiring API access."
-                )
+                st.markdown("<br>", unsafe_allow_html=True)
 
             if batch_upload:
                 if st.button("INGEST & RECONCILE BATCH NOW", type="primary"):
@@ -960,7 +936,7 @@ else:
                         progress_bar.progress(cur / tot)
                         status_text.text(f"Auditing & Reconciling ({cur}/{tot}): {fname}")
                         
-                    drive_conn = GoogleDriveConnector(api_key=up_drive_key) if up_drive_key else GoogleDriveConnector()
+                    drive_conn = GoogleDriveConnector()
                     
                     unified_result = audit_directory_or_batch(api_key=api_key_input,
                         files_or_dir=scan_target,

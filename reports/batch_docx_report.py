@@ -58,16 +58,7 @@ def generate_programme_executive_docx(results) -> bytes:
     needs_rev = len(df[df["Status"] == "Needs Revision"])
     major_rev = len(df[df["Status"].isin(["Major Revision", "Non-Compliant"])])
     
-    # Summary Statistics text
-    stats_p = doc.add_paragraph()
-    stats_p.add_run("PROGRAMME STATISTICS SUMMARY\n").bold = True
-    stats_p.add_run(f"Total Courses Audited: {total_courses}\n")
-    stats_p.add_run(f"Average Compliance Score: {avg_score:.1f}%\n")
-    stats_p.add_run(f"Fully Compliant (Ready for BoS): {compliant}\n")
-    stats_p.add_run(f"Needs Minor Revision: {needs_rev}\n")
-    stats_p.add_run(f"Requires Major Rework: {major_rev}\n")
-    
-    # 1. Status Distribution Chart
+    # 1. Status Distribution Chart (Top)
     plt.figure(figsize=(6, 4))
     status_counts = df["Status"].value_counts()
     colors = {"Compliant": "#16A34A", "Needs Revision": "#CA8A04", "Major Revision": "#DC2626", "Non-Compliant": "#991B1B"}
@@ -81,6 +72,17 @@ def generate_programme_executive_docx(results) -> bytes:
     
     doc.add_paragraph("1. Compliance Status Distribution").runs[0].bold = True
     doc.add_picture(buf1, width=Inches(4.5))
+    doc.add_paragraph()
+
+    # Summary Statistics text
+    stats_p = doc.add_paragraph()
+    stats_p.add_run("PROGRAMME STATISTICS SUMMARY\n").bold = True
+    stats_p.add_run(f"Total Courses Audited: {total_courses}\n")
+    stats_p.add_run(f"Average Compliance Score: {avg_score:.1f}%\n")
+    stats_p.add_run(f"Fully Compliant (Ready for BoS): {compliant}\n")
+    stats_p.add_run(f"Needs Minor Revision: {needs_rev}\n")
+    stats_p.add_run(f"Requires Major Rework: {major_rev}\n")
+    doc.add_paragraph()
     
     # 2. UG vs PG Breakdown Chart
     plt.figure(figsize=(5, 4))

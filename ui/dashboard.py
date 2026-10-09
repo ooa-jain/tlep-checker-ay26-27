@@ -71,14 +71,24 @@ def render_batch_dashboard(results):
         status_counts = df["Status"].value_counts().reset_index()
         status_counts.columns = ["Status", "Count"]
         
-        chart1 = alt.Chart(status_counts).mark_arc(innerRadius=50).encode(
-            theta=alt.Theta(field="Count", type="quantitative"),
-            color=alt.Color(field="Status", type="nominal", 
-                            scale=alt.Scale(domain=["Compliant", "Needs Revision", "Major Revision", "Non-Compliant"],
-                                            range=["#16A34A", "#CA8A04", "#DC2626", "#991B1B"])),
-            tooltip=["Status", "Count"]
-        ).properties(height=300)
-        st.altair_chart(chart1, use_container_width=True)
+        import plotly.express as px
+        color_discrete_map = {
+            "Compliant": "#16A34A", 
+            "Needs Revision": "#CA8A04", 
+            "Major Revision": "#DC2626", 
+            "Non-Compliant": "#991B1B"
+        }
+        fig = px.pie(
+            status_counts, 
+            values="Count", 
+            names="Status", 
+            hole=0.5,
+            color="Status",
+            color_discrete_map=color_discrete_map
+        )
+        fig.update_layout(margin=dict(t=0, b=0, l=0, r=0), height=300)
+        st.plotly_chart(fig, use_container_width=True)
+        
         
     with c2:
         st.markdown("**UG vs PG Course Distribution**")

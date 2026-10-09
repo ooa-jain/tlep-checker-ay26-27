@@ -449,6 +449,17 @@ def audit_index_inventory(
             try:
                 # Execute official 49-parameter audit
                 audit_res = review_tlep_document(entry.local_file_path, api_key=api_key)
+                
+                # Override missing metadata from the Master Index
+                if audit_res and audit_res.normalized_tlep and audit_res.normalized_tlep.course_info:
+                    c_info = audit_res.normalized_tlep.course_info
+                    if not c_info.department or c_info.department.lower() in ["general", "unassigned", "unknown"]:
+                        if entry.department and entry.department.lower() not in ["general", "unassigned", "unknown"]:
+                            c_info.department = entry.department
+                    if not c_info.programme or c_info.programme.lower() in ["undergraduate", "unassigned", "unknown", ""]:
+                        if entry.programme and entry.programme.lower() not in ["undergraduate", "unassigned", "unknown", ""]:
+                            c_info.programme = entry.programme
+
                 entry.audit_result = audit_res
                 entry.compliance_percentage = audit_res.compliance_percentage
                 entry.audit_status = audit_res.overall_status.value
@@ -838,7 +849,8 @@ def audit_directory_or_batch(
             course_files,
             progress_callback=progress_callback,
             api_key=api_key,
-            db_path=db_path
+            db_path=db_path,
+            base_dir=base_dir
         )
         return {
             "type": "direct_batch",

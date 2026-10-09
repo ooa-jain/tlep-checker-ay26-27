@@ -66,31 +66,31 @@ def extract_excel_tlep(file_path: str) -> NormalizedTLEP:
                 next_val = cells[c_idx + 1] if c_idx + 1 < len(cells) and cells[c_idx + 1] else ""
                 
                 # Course Code
-                if ("course code" in c_lower or "subject code" in c_lower) and not course_info.course_code:
+                if any(x in c_lower for x in ["course code", "subject code", "course id", "module code"]) and not course_info.course_code:
                     val = next_val if next_val else cell_str.split(":")[-1].strip()
                     if val and val != cell_str:
                         course_info.course_code = val
                         
                 # Course Title
-                if ("course title" in c_lower or "course name" in c_lower or "subject name" in c_lower) and not course_info.course_title:
+                if any(x in c_lower for x in ["course title", "course name", "subject name", "module title", "module name"]) and not course_info.course_title:
                     val = next_val if next_val else cell_str.split(":")[-1].strip()
                     if val and val != cell_str:
                         course_info.course_title = val
                         
                 # Semester
-                if "semester" in c_lower and not course_info.semester:
+                if any(x in c_lower for x in ["semester", "term", "sem"]) and not course_info.semester:
                     val = next_val if next_val else cell_str.split(":")[-1].strip()
                     if val and val != cell_str:
                         course_info.semester = val
                         
                 # Academic Year
-                if ("academic year" in c_lower or "ay " in c_lower or "a.y" in c_lower) and not course_info.academic_year:
+                if any(x in c_lower for x in ["academic year", "ay ", "a.y", "a.y.", "session year"]) and not course_info.academic_year:
                     val = next_val if next_val else cell_str.split(":")[-1].strip()
                     if val and val != cell_str:
                         course_info.academic_year = val
                         
                 # Credits
-                if c_lower in ["credits", "credit", "total credits", "credits:"] and not course_info.credits:
+                if c_lower in ["credits", "credit", "total credits", "credits:", "course credits", "credit points"] and not course_info.credits:
                     val = next_val if next_val else cell_str.split(":")[-1].strip()
                     try:
                         m = re.search(r"\d+(\.\d+)?", val)
@@ -100,13 +100,13 @@ def extract_excel_tlep(file_path: str) -> NormalizedTLEP:
                         pass
                         
                 # L-T-P-E
-                if "l-t-p-e" in c_lower or "ltpe" in c_lower or "l:t:p:e" in c_lower:
+                if any(x in c_lower for x in ["l-t-p-e", "ltpe", "l:t:p:e", "l t p e", "l/t/p/e"]) and not course_info.ltpe:
                     val = next_val if next_val else cell_str.split(":")[-1].strip()
                     if val and val != cell_str:
                         course_info.ltpe = val
                         
                 # CA:ESE
-                if "ca:ese" in c_lower or "ca : ese" in c_lower or "cie:see" in c_lower:
+                if any(x in c_lower for x in ["ca:ese", "ca : ese", "cie:see", "cie : see", "ca/ese", "cie/see", "ca-ese"]) and not course_info.ca_ese:
                     val = next_val if next_val else cell_str.split(":")[-1].strip()
                     if val and val != cell_str:
                         course_info.ca_ese = val
@@ -207,21 +207,21 @@ def extract_excel_tlep(file_path: str) -> NormalizedTLEP:
             if any("session" in c for c in cells) and (any("topic" in c for c in cells) or any("pedagogy" in c for c in cells)):
                 header_row_idx = r_idx
                 for c_i, c_val in enumerate(cells):
-                    if "session" in c_val or "sl" in c_val:
+                    if any(x in c_val for x in ["session", "sl", "s.no", "serial", "lec"]):
                         col_map["session_no"] = c_i
-                    elif "module" in c_val or "unit" in c_val:
+                    elif any(x in c_val for x in ["module", "unit", "chapter"]):
                         col_map["module"] = c_i
-                    elif "topic" in c_val or "portion" in c_val or "content" in c_val:
+                    elif any(x in c_val for x in ["topic", "portion", "content", "syllabus", "coverage"]):
                         col_map["topic"] = c_i
-                    elif "co" in c_val:
+                    elif any(x in c_val for x in ["co", "course outcome", "mapped co"]):
                         col_map["co"] = c_i
-                    elif "pedagogy" in c_val or "activity" in c_val or "method" in c_val:
+                    elif any(x in c_val for x in ["pedagogy", "activity", "method", "teaching", "strategy"]):
                         col_map["pedagogy"] = c_i
-                    elif "mode" in c_val or "delivery" in c_val:
+                    elif any(x in c_val for x in ["mode", "delivery", "platform"]):
                         col_map["mode"] = c_i
-                    elif "reading" in c_val or "reference" in c_val:
+                    elif any(x in c_val for x in ["reading", "reference", "material", "book"]):
                         col_map["readings"] = c_i
-                    elif "hour" in c_val or "duration" in c_val:
+                    elif any(x in c_val for x in ["hour", "duration", "time", "period"]):
                         col_map["hours"] = c_i
                 break
                 

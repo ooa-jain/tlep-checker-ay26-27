@@ -13,12 +13,23 @@ from engine.db import save_audit_result
 from models.schemas import TLEPReviewResult, StatusEnum
 
 
-def extract_hierarchy_from_path(file_path: str) -> Dict[str, str]:
+def extract_hierarchy_from_path(file_path: str, base_dir: Optional[str] = None) -> Dict[str, str]:
     """
-    Infers Department, Programme, and Semester from standard directory hierarchy:
-    e.g. /Root/Department_of_Computer_Science/BTech_CSE/Semester_6/CS601.xlsx
+    Infers Department, Programme, and Semester from standard directory hierarchy.
     """
-    parts = os.path.normpath(file_path).split(os.sep)
+    if base_dir and file_path.startswith(base_dir):
+        rel_path = os.path.relpath(file_path, base_dir)
+    else:
+        # Clean out temporary directories from the path if base_dir is not provided
+        rel_path = file_path
+        for temp_marker in ["extracted", "tlep_batch_upload", "tlep_gdrive_sync", "temp_batches"]:
+            if temp_marker in rel_path.lower():
+                # Get the part of the path after the temp marker
+                idx = rel_path.lower().find(temp_marker) + len(temp_marker)
+                rel_path = rel_path[idx:].lstrip(os.sep)
+                break
+                
+    parts = os.path.normpath(rel_path).split(os.sep)
     school = "Unassigned"
     dept = "Unassigned"
     prog = "Unassigned"
@@ -29,7 +40,7 @@ def extract_hierarchy_from_path(file_path: str) -> Dict[str, str]:
         dept = parts[-4].replace("_", " ")
         prog = parts[-3].replace("_", " ")
         sem = parts[-2].replace("_", " ")
-    elif len(parts) >= 4:
+    elif len(parts) == 4:
         dept = parts[-4].replace("_", " ")
         prog = parts[-3].replace("_", " ")
         sem = parts[-2].replace("_", " ")
@@ -45,10 +56,11 @@ def extract_hierarchy_from_path(file_path: str) -> Dict[str, str]:
 def process_single_file_batch(
     file_path: str,
     db_path: str = "data/tlep_audit.db",
-    api_key: Optional[str] = None
+    api_key: Optional[str] = None,
+    base_dir: Optional[str] = None
 ) -> Dict[str, Any]:
     """Processes one course TLEP and saves to DB."""
-    path_meta = extract_hierarchy_from_path(file_path)
+    path_meta = extract_hierarchy_from_path(file_path, base_dir)
     
     # Execute full 49-parameter review
     result: TLEPReviewResult = review_tlep_document(file_path, api_key=api_key)
@@ -93,7 +105,8 @@ def process_batch_files(
     file_paths: List[str],
     progress_callback: Optional[Callable[[int, int, str], None]] = None,
     db_path: str = "data/tlep_audit.db",
-    api_key: Optional[str] = None
+    api_key: Optional[str] = None,
+    base_dir: Optional[str] = None
 ) -> List[Dict[str, Any]]:
     """Runs batch audit sequentially across multiple files."""
     results = []
@@ -104,7 +117,7 @@ def process_batch_files(
             progress_callback(idx, total, os.path.basename(fpath))
             
         try:
-            record = process_single_file_batch(fpath, db_path=db_path, api_key=api_key)
+            record = process_single_file_batch(fpath, db_path=db_path, api_key=api_key, base_dir=base_dir)
             record["status_flag"] = "SUCCESS"
             results.append(record)
         except Exception as e:
@@ -152,7 +165,7 @@ def extract_and_process_zip(
             if ext in [".xlsx", ".xls", ".docx", ".pdf"] and not f.startswith("~$"):
                 supported_files.append(os.path.join(root, f))
                 
-    results = process_batch_files(supported_files, progress_callback)
+    results = process_batch_files(supported_files, progress_callback, base_dir=temp_extract_dir)
     return results
 
 
