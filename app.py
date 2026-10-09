@@ -1143,6 +1143,7 @@ else:
                 st.success(f"Successfully audited all {aud_count} standalone course TLEPs. Results recorded in central database.")
                 
                 current_audits = get_all_audits()
+                full_results = []
                 if current_audits:
                     rollup_bytes = generate_consolidated_report(current_audits)
                     st.download_button(
