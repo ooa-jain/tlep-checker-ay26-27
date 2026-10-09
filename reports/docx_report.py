@@ -64,6 +64,38 @@ def generate_executive_narrative_docx(result) -> bytes:
     doc.paragraphs[-1].alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
     doc.add_paragraph()
     
+    # Generate Area Breakdown Bar Chart
+    from engine.scoring import aggregate_area_breakdown
+    area_summary = aggregate_area_breakdown(result.parameter_findings)
+    df_areas = pd.DataFrame(area_summary)
+    df_areas['Short Area'] = df_areas['review_area'].apply(lambda x: x.split("–")[0].strip() if "–" in x else (x.split("-")[0].strip() if "-" in x else x))
+    df_areas = df_areas.sort_values(by='compliance_pct', ascending=True)
+    
+    plt.figure(figsize=(6, 3.5))
+    # Map colors: <70 red, 70-85 yellow, 85+ green
+    bar_colors = ['#DC2626' if p < 70 else ('#CA8A04' if p < 85 else '#16A34A') for p in df_areas['compliance_pct']]
+    bars = plt.barh(df_areas['Short Area'], df_areas['compliance_pct'], color=bar_colors)
+    plt.title("Area-Wise Compliance (%)", pad=15, fontsize=11, fontweight='bold', color='#0F172A')
+    plt.xlim(0, 115)
+    plt.gca().spines['top'].set_visible(False)
+    plt.gca().spines['right'].set_visible(False)
+    plt.gca().spines['bottom'].set_visible(False)
+    plt.gca().xaxis.set_visible(False)
+    plt.tick_params(left=False)
+    
+    for bar in bars:
+        width = bar.get_width()
+        plt.text(width + 2, bar.get_y() + bar.get_height()/2, f'{width:.1f}%', va='center', fontsize=9, fontweight='bold', color='#334155')
+        
+    buf2 = io.BytesIO()
+    plt.savefig(buf2, format='png', bbox_inches='tight', dpi=300, transparent=True)
+    buf2.seek(0)
+    plt.close()
+    
+    doc.add_picture(buf2, width=Inches(5.0))
+    doc.paragraphs[-1].alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+    doc.add_paragraph()
+    
     doc.add_paragraph("Remarks").runs[0].bold = True
     
     def get_finding(param_id):

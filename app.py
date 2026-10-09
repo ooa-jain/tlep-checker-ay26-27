@@ -445,9 +445,10 @@ if mode == "Single Course Review":
             """, unsafe_allow_html=True)
 
             # UI Chart and Export Buttons
-            c_chart, c_export = st.columns([1.5, 1])
+            # UI Charts and Export Buttons
+            c_chart1, c_chart2, c_export = st.columns([1, 1.5, 0.8])
             
-            with c_chart:
+            with c_chart1:
                 status_counts = pd.Series([f.status.value for f in result.parameter_findings]).value_counts().reset_index()
                 status_counts.columns = ["Status", "Count"]
                 import plotly.express as px
@@ -458,7 +459,7 @@ if mode == "Single Course Review":
                     "Non-Compliant": "#991B1B",
                     "NA": "#64748B"
                 }
-                fig = px.pie(
+                fig1 = px.pie(
                     status_counts, 
                     values="Count", 
                     names="Status", 
@@ -467,9 +468,39 @@ if mode == "Single Course Review":
                     color_discrete_map=color_discrete_map,
                     title="<b>Parameter Compliance Status</b>"
                 )
-                fig.update_traces(textposition='inside', textinfo='percent+label', marker=dict(line=dict(color='#FFFFFF', width=2)))
-                fig.update_layout(margin=dict(t=40, b=20, l=0, r=0), height=300, showlegend=False)
-                st.plotly_chart(fig, use_container_width=True)
+                fig1.update_traces(textposition='inside', textinfo='percent+label', marker=dict(line=dict(color='#FFFFFF', width=2)))
+                fig1.update_layout(margin=dict(t=40, b=10, l=0, r=0), height=300, showlegend=False)
+                st.plotly_chart(fig1, use_container_width=True)
+
+            with c_chart2:
+                area_summary = aggregate_area_breakdown(result.parameter_findings)
+                df_areas = pd.DataFrame(area_summary)
+                # Keep Area names short for the chart axis
+                df_areas['Short Area'] = df_areas['review_area'].apply(lambda x: x.split("–")[0].strip() if "–" in x else (x.split("-")[0].strip() if "-" in x else x))
+                
+                fig2 = px.bar(
+                    df_areas, 
+                    x="compliance_pct", 
+                    y="Short Area", 
+                    orientation='h',
+                    title="<b>Area-Wise Compliance (%)</b>",
+                    text="compliance_pct",
+                    color="compliance_pct",
+                    color_continuous_scale=["#DC2626", "#CA8A04", "#16A34A"],
+                    range_color=[0, 100]
+                )
+                fig2.update_traces(texttemplate='%{text}%', textposition='outside')
+                fig2.update_layout(
+                    margin=dict(t=40, b=10, l=0, r=20), 
+                    height=300, 
+                    xaxis_title=None, 
+                    yaxis_title=None, 
+                    showlegend=False,
+                    coloraxis_showscale=False,
+                    xaxis=dict(range=[0, 115], showgrid=False, zeroline=False, showticklabels=False),
+                    yaxis={'categoryorder':'total ascending'}
+                )
+                st.plotly_chart(fig2, use_container_width=True)
 
             with c_export:
                 st.markdown("<br><br>", unsafe_allow_html=True)
