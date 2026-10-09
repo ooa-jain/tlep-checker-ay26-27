@@ -26,6 +26,27 @@ def generate_executive_narrative_docx(result) -> bytes:
     
     doc.add_paragraph()
     
+    # Generate Pie Chart for Parameter Statuses
+    import matplotlib.pyplot as plt
+    import pandas as pd
+    
+    status_counts = pd.Series([f.status.value for f in result.parameter_findings]).value_counts()
+    colors = {"Compliant": "#16A34A", "Needs Revision": "#CA8A04", "Major Revision": "#DC2626", "Non-Compliant": "#991B1B", "NA": "#64748B"}
+    plot_colors = [colors.get(s, "#888888") for s in status_counts.index]
+    
+    plt.figure(figsize=(5, 3.5))
+    plt.pie(status_counts.values, labels=status_counts.index, autopct='%1.1f%%', startangle=140, colors=plot_colors)
+    plt.title("Parameter Compliance Status")
+    
+    buf1 = io.BytesIO()
+    plt.savefig(buf1, format='png', bbox_inches='tight')
+    buf1.seek(0)
+    plt.close()
+    
+    doc.add_picture(buf1, width=Inches(4.5))
+    doc.paragraphs[-1].alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+    doc.add_paragraph()
+    
     doc.add_paragraph("Remarks").runs[0].bold = True
     
     def get_finding(param_id):
