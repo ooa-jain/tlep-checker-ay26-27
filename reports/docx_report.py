@@ -109,16 +109,16 @@ def generate_executive_narrative_docx(result) -> bytes:
     f_resources = get_finding(33)
     
     remarks = [
-        f"The TLEP is structured with a {contact_hours}-hour session-wise plan. {f_modules.reason if f_modules else 'Module coverage needs verification.'}",
-        f"{f_pedagogy.reason if f_pedagogy else 'Pedagogical methods should be clearly indicated.'}",
-        f"{f_co.reason if f_co else 'Course Outcomes alignment requires review.'}",
-        f"{f_copo.reason if f_copo else 'CO-PO mappings need validation and justification.'}",
-        f"{f_assess.reason if f_assess else 'Assessment structure requires clearer component breakdown.'}",
-        "The practical and experiential learning components should be explicitly reflected in the teaching-learning plan.",
-        "Evidence of student feedback analysis and resulting improvements should be incorporated.",
-        "A formal continuous-improvement record linking previous course review actions is not fully evidenced.",
-        f"{f_resources.reason if f_resources else 'Learning resources are adequate at a basic level, but standardizing references is recommended.'}",
-        "Overall, the TLEP demonstrates a teaching-learning foundation but requires targeted revision in areas marked for action."
+        f"Teaching & Learning Plan: {f_modules.action_required if f_modules and f_modules.action_required else 'Ensure module coverage is properly distributed across sessions.'}",
+        f"Pedagogy: {f_pedagogy.action_required if f_pedagogy and f_pedagogy.action_required else 'Clearly indicate pedagogical methods for each session.'}",
+        f"Course Outcomes: {f_co.action_required if f_co and f_co.action_required else 'Review and properly align Course Outcomes.'}",
+        f"CO-PO Mapping: {f_copo.action_required if f_copo and f_copo.action_required else 'Validate and justify CO-PO mappings.'}",
+        f"Assessment: {f_assess.action_required if f_assess and f_assess.action_required else 'Define assessment structure and component breakdown clearly.'}",
+        "Practical Learning: Explicitly incorporate experiential learning components into the teaching plan.",
+        "Feedback Analysis: Incorporate evidence of student feedback analysis and resulting improvements.",
+        "Continuous Improvement: Document a formal continuous-improvement record linking previous course review actions.",
+        f"Learning Resources: {f_resources.action_required if f_resources and f_resources.action_required else 'Standardize and update learning references.'}",
+        "General: Address all highlighted parameters to achieve full compliance before final submission."
     ]
     
     for i, rmk in enumerate(remarks, 1):

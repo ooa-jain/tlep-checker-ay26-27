@@ -648,16 +648,16 @@ def generate_executive_narrative(result, api_key: str = None) -> str:
     f_assess = get_finding(39)
     f_resources = get_finding(33)
     
-    rmk_1 = f"The TLEP is structured with a {contact_hours}-hour session-wise plan. {f_modules.reason if f_modules else 'Module coverage needs verification.'}"
-    rmk_2 = f"{f_pedagogy.reason if f_pedagogy else 'Pedagogical methods should be clearly indicated.'}"
-    rmk_3 = f"{f_co.reason if f_co else 'Course Outcomes alignment requires review.'}"
-    rmk_4 = f"{f_copo.reason if f_copo else 'CO-PO mappings need validation and justification.'}"
-    rmk_5 = f"{f_assess.reason if f_assess else 'Assessment structure requires clearer component breakdown.'}"
-    rmk_6 = "The practical and experiential learning components should be explicitly reflected in the teaching-learning plan."
-    rmk_7 = "Evidence of student feedback analysis and resulting improvements should be incorporated."
-    rmk_8 = "A formal continuous-improvement record linking previous course review actions is not fully evidenced."
-    rmk_9 = f"{f_resources.reason if f_resources else 'Learning resources are adequate at a basic level, but standardizing references is recommended.'}"
-    rmk_10 = "Overall, the TLEP demonstrates a teaching-learning foundation but requires targeted revision in areas marked for action."
+    rmk_1 = f"Teaching & Learning Plan: {f_modules.action_required if f_modules and f_modules.action_required else 'Ensure module coverage is properly distributed across sessions.'}"
+    rmk_2 = f"Pedagogy: {f_pedagogy.action_required if f_pedagogy and f_pedagogy.action_required else 'Clearly indicate pedagogical methods for each session.'}"
+    rmk_3 = f"Course Outcomes: {f_co.action_required if f_co and f_co.action_required else 'Review and properly align Course Outcomes.'}"
+    rmk_4 = f"CO-PO Mapping: {f_copo.action_required if f_copo and f_copo.action_required else 'Validate and justify CO-PO mappings.'}"
+    rmk_5 = f"Assessment: {f_assess.action_required if f_assess and f_assess.action_required else 'Define assessment structure and component breakdown clearly.'}"
+    rmk_6 = "Practical Learning: Explicitly incorporate experiential learning components into the teaching plan."
+    rmk_7 = "Feedback Analysis: Incorporate evidence of student feedback analysis and resulting improvements."
+    rmk_8 = "Continuous Improvement: Document a formal continuous-improvement record linking previous course review actions."
+    rmk_9 = f"Learning Resources: {f_resources.action_required if f_resources and f_resources.action_required else 'Standardize and update learning references.'}"
+    rmk_10 = "General: Address all highlighted parameters to achieve full compliance before final submission."
 
     action = "Return for targeted revision." if result.overall_status.value in ["Needs Revision", "Major Revision", "Non-Compliant"] else "Approved without major revisions."
     
