@@ -1056,6 +1056,9 @@ else:
                         use_container_width=True
                     )
                 st.markdown("#### Course Document Reconciliation Table")
+                if audited_results:
+                    from ui.dashboard import render_batch_dashboard
+                    render_batch_dashboard(audited_results)
                 inv_filter = st.radio(
                     "Filter Inventory Records:",
                     ["All Courses", "Documents Available", "Missing / Not Submitted", "Inaccessible Links"],
@@ -1114,6 +1117,10 @@ else:
                             type="secondary"
                         )
 
+                if full_results:
+                    from ui.dashboard import render_batch_dashboard
+                    render_batch_dashboard(full_results)
+                    
                 st.info("Tip: Switch to 'Portfolio Analytics & Leaderboard' to view department breakdowns and institutional performance.")
 
 
