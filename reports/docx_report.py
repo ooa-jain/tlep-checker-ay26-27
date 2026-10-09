@@ -35,11 +35,28 @@ def generate_executive_narrative_docx(result) -> bytes:
     plot_colors = [colors.get(s, "#888888") for s in status_counts.index]
     
     plt.figure(figsize=(5, 3.5))
-    plt.pie(status_counts.values, labels=status_counts.index, autopct='%1.1f%%', startangle=140, colors=plot_colors)
-    plt.title("Parameter Compliance Status")
+    
+    # Clean donut chart styling
+    wedges, texts, autotexts = plt.pie(
+        status_counts.values, 
+        labels=status_counts.index, 
+        autopct='%1.1f%%', 
+        startangle=140, 
+        colors=plot_colors,
+        wedgeprops=dict(width=0.45, edgecolor='white', linewidth=2),
+        textprops=dict(color='#1E293B', fontsize=9, fontweight='500')
+    )
+    
+    # Make percentages bold and white if inside dark slices, or just dark bold
+    for autotext in autotexts:
+        autotext.set_color('white')
+        autotext.set_weight('bold')
+        autotext.set_fontsize(8)
+
+    plt.title("Parameter Compliance Status", pad=15, fontsize=11, fontweight='bold', color='#0F172A')
     
     buf1 = io.BytesIO()
-    plt.savefig(buf1, format='png', bbox_inches='tight')
+    plt.savefig(buf1, format='png', bbox_inches='tight', dpi=300, transparent=True)
     buf1.seek(0)
     plt.close()
     
