@@ -1055,6 +1055,15 @@ else:
                         type="secondary",
                         use_container_width=True
                     )
+                    from reports.batch_docx_report import generate_programme_executive_docx
+                    st.download_button(
+                        label="Download Programme Executive Report with Charts (.docx)",
+                        data=generate_programme_executive_docx(audited_results),
+                        file_name="OOA_Programme_Executive_Report.docx",
+                        mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                        type="secondary",
+                        use_container_width=True
+                    )
                 st.markdown("#### Course Document Reconciliation Table")
                 if audited_results:
                     from ui.dashboard import render_batch_dashboard
@@ -1114,6 +1123,14 @@ else:
                             data=generate_multiple_reports_zip(full_results),
                             file_name="OOA_Individual_Audit_Reports.zip",
                             mime="application/zip",
+                            type="secondary"
+                        )
+                        from reports.batch_docx_report import generate_programme_executive_docx
+                        st.download_button(
+                            label="Download Programme Executive Report with Charts (.docx)",
+                            data=generate_programme_executive_docx(full_results),
+                            file_name="OOA_Programme_Executive_Report.docx",
+                            mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
                             type="secondary"
                         )
 
