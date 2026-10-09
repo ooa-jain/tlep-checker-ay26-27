@@ -158,3 +158,8 @@ Or start manually in your terminal:
 streamlit run app.py
 ```
 
+
+### Recent Updates
+1. **Executive Summary Feature:** Added automated Executive Narrative generation matching the TLEP REVIEW REMARKS format using the Gemini Pro API.
+2. **UI Integration:** Integrated the generated executive narrative into a prominent tab in the Streamlit UI.
+3. **Caching & Concurrency fixes:** Fixed Streamlit caching causing duplicate outputs, corrected batch processor AI context propagation, and patched the Google Drive connector missing attribute issue.

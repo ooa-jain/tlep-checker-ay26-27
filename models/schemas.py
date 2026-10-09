@@ -203,4 +203,5 @@ class TLEPReviewResult(BaseModel):
     copo_review_rows: List[CopoReviewRow] = Field(default_factory=list)
     critical_issues: List[Dict[str, str]] = Field(default_factory=list)
     department_action_plan: List[Dict[str, str]] = Field(default_factory=list)
+    executive_summary: Optional[str] = None
     normalized_tlep: Optional[NormalizedTLEP] = None

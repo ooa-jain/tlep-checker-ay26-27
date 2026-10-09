@@ -462,13 +462,21 @@ if mode == "Single Course Review":
             st.write("")
 
             # Progressive Tabs
-            tab_plain, tab_hours, tab_outcomes, tab_full_audit, tab_areas = st.tabs([
+            tab_exec, tab_plain, tab_hours, tab_outcomes, tab_full_audit, tab_areas = st.tabs([
+                "Executive Narrative",
                 "Faculty Action Checklist",
                 "Learning Hours & Credits",
                 "Outcome & Assessment Alignment",
                 "Official 49-Parameter Audit",
                 "Area Breakdown"
             ])
+
+            # TAB 0: Executive Narrative
+            with tab_exec:
+                if getattr(result, "executive_summary", None):
+                    st.markdown(result.executive_summary)
+                else:
+                    st.info("Executive narrative summary is not available. Please ensure a valid API key was provided during the audit.")
 
             actionable_findings = [f for f in result.parameter_findings if f.status in [StatusEnum.NEEDS_REVISION, StatusEnum.MAJOR_REVISION, StatusEnum.NON_COMPLIANT]]
 

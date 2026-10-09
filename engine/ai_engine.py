@@ -624,3 +624,84 @@ Return STRICT JSON ONLY matching:
         return heuristic_finding
     except Exception:
         return heuristic_finding
+
+
+def generate_executive_narrative(result, api_key: str) -> str:
+    """
+    Generates an executive narrative summary matching the specific format requested.
+    """
+    if not api_key:
+        return "No API key provided. Cannot generate executive narrative."
+
+    try:
+        import google.generativeai as genai
+        import json
+        import re
+        genai.configure(api_key=api_key)
+        model = genai.GenerativeModel("gemini-1.5-pro")
+
+        # Gather context
+        course_title = result.tlep.course_info.course_title or "Unknown"
+        course_code = result.tlep.course_info.course_code or "Unknown"
+        programme = getattr(result.tlep.course_info, 'programme', "Unknown Programme")
+        credits_count = result.tlep.course_info.credits or "Unknown"
+        ltpe = getattr(result.tlep.course_info, 'ltpe', "Unknown")
+        contact_hours = sum(s.hours for s in result.tlep.sessions)
+
+        # Gather findings to highlight
+        critical_issues = [f for f in result.critical_issues]
+        findings_summary = []
+        for finding in result.findings:
+            if finding.status.value != "Compliant":
+                findings_summary.append(f"- {finding.parameter}: {finding.reason} ({finding.status.value})")
+
+        prompt = f"""
+You are an expert academic reviewer. Your task is to generate a final, unified "Executive Narrative Report" for a syllabus document based on the provided review findings.
+You MUST follow the EXACT formatting below. Do NOT add any extra conversational text. Make sure to use Markdown properly for the Lead Team Quick View table.
+
+TLEP REVIEW REMARKS
+Sample Review: {{course_title}} ({{course_code}})
+Programme: {{programme}}    Credits: {{credits_count}}    L-T-P-E: {{ltpe}}    Contact Hours: {{contact_hours}}
+Overall Status    Attention Required    Targeted Revision
+
+Remarks
+1. [Insightful remark about structure/hours/modules]
+2. [Remark about pedagogy/active learning]
+3. [Remark about COs and alignment]
+4. [Remark about CO-PO mapping]
+5. [Remark about assessment structure]
+6. [Remark about practical component if applicable, else another key area]
+7. [Remark about feedback/continuous improvement]
+8. [Another remark about continuous improvement or resources]
+9. [Remark about learning resources]
+10. [Overall concluding remark summarizing the state and required revisions]
+
+Recommended Action
+[1 paragraph stating whether to Return for targeted revision or Accept, and the critical issues to address]
+
+Lead Team Quick View
+| Area | Observation | Priority |
+|---|---|---|
+| Teaching-Learning Plan | [Brief observation] | [Strength/Minor/Major/Critical] |
+| OBE Mapping | [Brief observation] | [Strength/Minor/Major/Critical] |
+| Assessment Alignment | [Brief observation] | [Strength/Minor/Major/Critical] |
+| Feedback & Analysis | [Brief observation] | [Strength/Minor/Major/Critical] |
+| Continuous Improvement | [Brief observation] | [Strength/Minor/Major/Critical] |
+
+Source: Submitted Teaching-Learning & Evaluation Plan – {{course_title}}, {{programme}}, Course Code {{course_code}}.
+
+<FINDINGS>
+Critical Issues:
+{{critical_issues}}
+
+Issues Found:
+{{chr(10).join(findings_summary[:20])}}
+</FINDINGS>
+
+Generate the report adhering strictly to the EXACT format provided above. Ensure exactly 10 numbered remarks.
+"""
+        response = model.generate_content(prompt)
+        return response.text.strip()
+    except Exception as e:
+        return f"Error generating executive narrative: {{str(e)}}"
+

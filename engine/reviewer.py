@@ -115,7 +115,7 @@ def review_tlep_document(
     review_id = str(uuid.uuid4())[:8]
     review_date = datetime.now().strftime("%Y-%m-%d %H:%M")
     
-    return TLEPReviewResult(
+    result = TLEPReviewResult(
         review_id=review_id,
         file_name=file_name,
         review_date=review_date,
@@ -140,4 +140,10 @@ def review_tlep_document(
         department_action_plan=action_plan,
         normalized_tlep=tlep
     )
+
+    if api_key:
+        from engine.ai_engine import generate_executive_narrative
+        result.executive_summary = generate_executive_narrative(result, api_key)
+
+    return result
 
