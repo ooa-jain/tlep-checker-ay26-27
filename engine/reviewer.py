@@ -141,7 +141,9 @@ def review_tlep_document(
     )
 
     from engine.ai_engine import generate_executive_narrative
+    from reports.docx_report import generate_executive_narrative_docx
     result.executive_summary = generate_executive_narrative(result, api_key)
+    result.executive_summary_docx = generate_executive_narrative_docx(result)
 
     return result
 

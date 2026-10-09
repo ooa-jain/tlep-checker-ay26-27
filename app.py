@@ -450,13 +450,13 @@ if mode == "Single Course Review":
             """, unsafe_allow_html=True)
 
             # Export Button
-            if getattr(result, "executive_summary", None):
-                report_bytes = result.executive_summary.encode('utf-8')
+            if getattr(result, "executive_summary_docx", None):
+                report_bytes = result.executive_summary_docx
                 st.download_button(
-                    label="Download Executive Narrative Report (.md)",
+                    label="Download Executive Narrative Report (.docx)",
                     data=report_bytes,
-                    file_name=f"Executive_Narrative_{result.file_name}_{result.review_id}.md",
-                    mime="text/markdown",
+                    file_name=f"Executive_Narrative_{result.file_name}_{result.review_id}.docx",
+                    mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
                     type="primary"
                 )
             else:

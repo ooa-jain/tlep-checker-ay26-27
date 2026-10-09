@@ -439,9 +439,9 @@ def generate_multiple_reports_zip(results: List[TLEPReviewResult]) -> bytes:
     with zipfile.ZipFile(buffer, 'w', zipfile.ZIP_DEFLATED) as zf:
         for res in results:
             safe_name = re.sub(r'[\\/*?:""<>|]', '_', res.file_name)
-            if getattr(res, "executive_summary", None):
-                report_bytes = res.executive_summary.encode('utf-8')
-                filename = f"Executive_Narrative_{safe_name}_{res.review_id}.md"
+            if getattr(res, "executive_summary_docx", None):
+                report_bytes = res.executive_summary_docx
+                filename = f"Executive_Narrative_{safe_name}_{res.review_id}.docx"
             else:
                 report_bytes = generate_excel_report(res)
                 filename = f"OOA_TLEP_Audit_{safe_name}_{res.review_id}.xlsx"

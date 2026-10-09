@@ -124,17 +124,17 @@ def parse_index_excel(file_path: str) -> List[IndexCourseEntry]:
     # Locate header row
     for r_idx, row in enumerate(sheet.iter_rows(values_only=False), 1):
         texts = [str(c.value or "").strip().lower() for c in row]
-        if any("course" in t or "code" in t or "subject" in t for t in texts):
+        if any("course" in t or "code" in t or "subject" in t or "name" in t or "department" in t or "title" in t or "link" in t for t in texts):
             header_row_idx = r_idx
             for c_idx, cell in enumerate(row):
                 val = str(cell.value or "").strip().lower()
                 if "code" in val:
                     col_map["code"] = c_idx
-                elif "title" in val or "name" in val or "subject" in val:
+                elif "title" in val or "name" in val or "subject" in val or "course" in val:
                     col_map["title"] = c_idx
                 elif "dept" in val or "department" in val:
                     col_map["dept"] = c_idx
-                elif "prog" in val:
+                elif "prog" in val or "programme" in val:
                     col_map["prog"] = c_idx
                 elif "sem" in val:
                     col_map["sem"] = c_idx
@@ -702,7 +702,7 @@ def is_index_file(file_path: str) -> bool:
     fname = os.path.basename(file_path).lower()
     
     # Filename keyword check
-    if any(k in fname for k in ["index", "catalog", "inventory", "roster", "course_list", "tlep_links", "master_list"]):
+    if any(k in fname for k in ["index", "catalog", "inventory", "roster", "course_list", "tlep_links", "master_list", "tracker", "master"]):
         return True
 
     if ext in [".xlsx", ".xls"]:
@@ -721,13 +721,13 @@ def is_index_file(file_path: str) -> bool:
                 for r_idx, row in enumerate(ws.iter_rows(max_row=25, values_only=True), 1):
                     row_vals = [str(v or "").strip().lower() for v in row if v is not None]
                     
-                    if any("code" in v or "course" in v or "subject" in v for v in row_vals) and \
+                    if not header_detected and any("code" in v or "course" in v or "subject" in v or "name" in v or "department" in v or "dept" in v or "title" in v for v in row_vals) and \
                        any("link" in v or "url" in v or "tlep" in v or "drive" in v or "faculty" in v or "facilitator" in v or "status" in v or "doc" in v for v in row_vals):
                         header_detected = True
                         continue
                         
                     if header_detected:
-                        if any(re.match(r"^[A-Z]{2,5}\s*\d{2,4}", str(v).strip()) for v in row if v is not None):
+                        if any(re.match(r"^[A-Z]{2,5}\s*\d{2,4}", str(v).strip()) for v in row if v is not None) or any("http" in str(v).lower() or ".xls" in str(v).lower() or ".doc" in str(v).lower() or ".pdf" in str(v).lower() for v in row if v is not None):
                             row_course_count += 1
                             
                 if header_detected and row_course_count >= 1:
@@ -741,7 +741,7 @@ def is_index_file(file_path: str) -> bool:
             for table in doc.tables:
                 if len(table.rows) >= 2:
                     header = [c.text.strip().lower() for c in table.rows[0].cells]
-                    if any("code" in h or "course" in h for h in header) and any("link" in h or "url" in h or "tlep" in h or "status" in h for h in header):
+                    if any("code" in h or "course" in h or "name" in h or "department" in h or "title" in h for h in header) and any("link" in h or "url" in h or "tlep" in h or "status" in h for h in header):
                         return True
         except Exception:
             pass

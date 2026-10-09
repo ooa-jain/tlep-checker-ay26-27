@@ -204,4 +204,5 @@ class TLEPReviewResult(BaseModel):
     critical_issues: List[Dict[str, str]] = Field(default_factory=list)
     department_action_plan: List[Dict[str, str]] = Field(default_factory=list)
     executive_summary: Optional[str] = None
+    executive_summary_docx: Optional[bytes] = None
     normalized_tlep: Optional[NormalizedTLEP] = None
