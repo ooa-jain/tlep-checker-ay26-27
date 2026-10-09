@@ -631,12 +631,12 @@ def generate_executive_narrative(result, api_key: str = None) -> str:
     Generates an executive narrative summary deterministically matching the specific format.
     No AI key is required.
     """
-    course_title = result.tlep.course_info.course_title or "Unknown Course"
-    course_code = result.tlep.course_info.course_code or "Unknown Code"
-    programme = getattr(result.tlep.course_info, 'programme', "Unknown Programme")
-    credits_count = result.tlep.course_info.credits or "Unknown"
-    ltpe = getattr(result.tlep.course_info, 'ltpe', "Unknown")
-    contact_hours = sum(s.hours for s in result.tlep.sessions)
+    course_title = result.normalized_tlep.course_info.course_title or "Unknown Course"
+    course_code = result.normalized_tlep.course_info.course_code or "Unknown Code"
+    programme = getattr(result.normalized_tlep.course_info, 'programme', "Unknown Programme")
+    credits_count = result.normalized_tlep.course_info.credits or "Unknown"
+    ltpe = getattr(result.normalized_tlep.course_info, 'ltpe', "Unknown")
+    contact_hours = sum(s.hours for s in result.normalized_tlep.sessions)
     
     def get_finding(param_id):
         return next((f for f in result.parameter_findings if getattr(f, 'parameter_id', None) == param_id), None)
