@@ -123,6 +123,11 @@ tlep-checker/
 - [x] **Step 17: Concurrent Multiple Report Export**
   - Added capability to generate a ZIP archive containing all individual 6-sheet Course Audit Reports.
   - Available after batch ingestion or index reconciliation, directly in the UI alongside the master rollup.
+- [x] **Step 18: Bugfixes & Optimization (Pointers & Cache)**
+  - Enforced bullet-point (pointers) outputs in the AI engine and explicitly restricted generic summaries.
+  - Resolved `GoogleDriveConnector` attribute error by implementing the missing `sync_and_download_folder` method.
+  - Fixed Streamlit `st.session_state` caching issues where older single/batch TLEP results lingered inappropriately on new file uploads.
+  - Ensure API Key propagates reliably into the Batch and Index scraping pipelines to activate full AI processing across large portfolios.
 
 
 ## Cloud Deployment & Institutional Access

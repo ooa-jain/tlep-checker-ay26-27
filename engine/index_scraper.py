@@ -755,7 +755,8 @@ def audit_directory_or_batch(
     gdrive_connector: Optional[GoogleDriveConnector] = None,
     mode: str = "auto",  # "auto", "index", "courses"
     progress_callback = None,
-    db_path: str = "data/tlep_audit.db"
+    db_path: str = "data/tlep_audit.db",
+    api_key: Optional[str] = None
 ) -> Dict[str, Any]:
     """
     Unified Ingestion & Inventory Reconciliation Engine.
@@ -816,7 +817,7 @@ def audit_directory_or_batch(
             base_dir=base_dir,
             gdrive_connector=gdrive_connector,
             progress_callback=progress_callback,
-            
+            api_key=api_key,
             db_path=db_path
         )
         return {
@@ -836,7 +837,7 @@ def audit_directory_or_batch(
         results = process_batch_files(
             course_files,
             progress_callback=progress_callback,
-            
+            api_key=api_key,
             db_path=db_path
         )
         return {

@@ -590,7 +590,10 @@ You are an AI assistant augmenting a deterministic academic rule engine.
 The deterministic engine has ALREADY evaluated the following parameter and assigned a strict status.
 YOUR JOB is ONLY to provide additional qualitative academic context, observations, or refined advice. You MUST NOT change the status or score.
 
-PARAMETER: {param_meta['parameter']}
+CRITICAL INSTRUCTION: You must provide your analysis exclusively as concise bullet points (pointers). Do NOT provide large paragraphs of textual content.
+CRITICAL INSTRUCTION 2: You MUST focus your feedback EXCLUSIVELY on the parameter mentioned below. Do NOT provide a generic summary of the entire syllabus.
+
+PARAMETER TO FOCUS ON: {param_meta['parameter']}
 CRITERION: {param_meta['criterion']}
 
 HARDCODED RULE ENGINE RESULT (DO NOT OVERRIDE THIS):
@@ -603,8 +606,8 @@ TLEP CONTEXT:
 
 Return STRICT JSON ONLY matching:
 {{
-  "ai_enriched_reason": "The base reason, plus your deeper semantic academic observations (e.g. noting if Bloom's verbs are truly aligned, or if rubrics are actually well-formed).",
-  "ai_enriched_action": "The base action, refined with specific examples from the text if applicable."
+  "ai_enriched_reason": "Provide your analysis as a list of bullet points (pointers). Keep it concise. Focus EXCLUSIVELY on the parameter mentioned above.",
+  "ai_enriched_action": "Provide actionable steps as a list of bullet points (pointers). Keep it concise. Focus EXCLUSIVELY on the parameter mentioned above."
 }}
 """
         response = model.generate_content(prompt)

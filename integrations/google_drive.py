@@ -210,6 +210,26 @@ class GoogleDriveConnector:
                     return dest_path
                 raise PermissionError("Unable to download Google Drive file. Provide credentials or verify link sharing.")
 
+    def sync_and_download_folder(
+        self,
+        folder_id: str,
+        target_dir: str,
+        include_subfolders: bool = True,
+        progress_callback = None
+    ) -> List[str]:
+        """Lists and downloads all supported files in a folder."""
+        files = self.list_folder_files(folder_id, include_subfolders)
+        downloaded_paths = []
+        
+        for idx, f in enumerate(files):
+            dest_path = os.path.join(target_dir, f["rel_path"])
+            if progress_callback:
+                progress_callback(idx + 1, len(files), f["name"])
+            self.download_file(f["id"], dest_path)
+            downloaded_paths.append(dest_path)
+            
+        return downloaded_paths
+
     def fetch_drive_resource(
         self,
         url_or_id: str,

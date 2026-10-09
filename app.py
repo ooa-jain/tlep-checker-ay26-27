@@ -348,6 +348,11 @@ if mode == "Single Course Review":
     )
 
     if uploaded_file is not None:
+        if "uploaded_file_name" in st.session_state and st.session_state["uploaded_file_name"] != uploaded_file.name:
+            if "last_result" in st.session_state:
+                del st.session_state["last_result"]
+            st.session_state["uploaded_file_name"] = uploaded_file.name
+
         col_btn, _ = st.columns([1.5, 4])
         with col_btn:
             check_clicked = st.button("EXECUTE COMPLIANCE AUDIT", use_container_width=True, type="primary")
@@ -788,6 +793,14 @@ else:
                 placeholder="https://drive.google.com/drive/folders/1A2B... or https://docs.google.com/spreadsheets/d/1X2Y..."
             )
             
+            if "last_gdrive_url" not in st.session_state:
+                st.session_state["last_gdrive_url"] = ""
+                
+            if gdrive_url != st.session_state["last_gdrive_url"]:
+                st.session_state["last_gdrive_url"] = gdrive_url
+                if "unified_batch_result" in st.session_state:
+                    del st.session_state["unified_batch_result"]
+            
             col_gd1, col_gd2 = st.columns([2, 1])
             with col_gd1:
                 selected_mode_label = st.selectbox(
@@ -873,6 +886,16 @@ else:
                 accept_multiple_files=True,
                 key="batch_file_uploader"
             )
+            
+            # Clear batch cache if file uploader state changes
+            if "last_batch_files" not in st.session_state:
+                st.session_state["last_batch_files"] = []
+                
+            current_batch_names = [f.name for f in batch_upload] if batch_upload else []
+            if current_batch_names != st.session_state["last_batch_files"]:
+                st.session_state["last_batch_files"] = current_batch_names
+                if "unified_batch_result" in st.session_state:
+                    del st.session_state["unified_batch_result"]
             
             col_up1, col_up2 = st.columns([2, 1])
             with col_up1:
@@ -1063,7 +1086,7 @@ else:
                         type="primary"
                     )
                     
-                    full_results = [r.get("full_result") for r in res.get("direct_batch_results", []) if r.get("full_result")]
+                    full_results = [r.get("full_result") for r in res.get("results", []) if r.get("full_result")]
                     if full_results:
                         st.download_button(
                             label="Download All Individual Course Audit Reports (.zip)",
