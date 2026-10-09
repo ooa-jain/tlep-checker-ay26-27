@@ -450,14 +450,24 @@ if mode == "Single Course Review":
             """, unsafe_allow_html=True)
 
             # Export Button
-            report_bytes = generate_excel_report(result)
-            st.download_button(
-                label="Download Official 6-Sheet Audit Report (.xlsx)",
-                data=report_bytes,
-                file_name=f"OOA_TLEP_Audit_{result.file_name}_{result.review_id}.xlsx",
-                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                type="primary"
-            )
+            if getattr(result, "executive_summary", None):
+                report_bytes = result.executive_summary.encode('utf-8')
+                st.download_button(
+                    label="Download Executive Narrative Report (.md)",
+                    data=report_bytes,
+                    file_name=f"Executive_Narrative_{result.file_name}_{result.review_id}.md",
+                    mime="text/markdown",
+                    type="primary"
+                )
+            else:
+                report_bytes = generate_excel_report(result)
+                st.download_button(
+                    label="Download Official Audit Report (.xlsx)",
+                    data=report_bytes,
+                    file_name=f"OOA_TLEP_Audit_{result.file_name}_{result.review_id}.xlsx",
+                    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                    type="primary"
+                )
 
             st.write("")
 

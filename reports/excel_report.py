@@ -438,10 +438,13 @@ def generate_multiple_reports_zip(results: List[TLEPReviewResult]) -> bytes:
     buffer = io.BytesIO()
     with zipfile.ZipFile(buffer, 'w', zipfile.ZIP_DEFLATED) as zf:
         for res in results:
-            excel_bytes = generate_excel_report(res)
-            # Create a safe filename
             safe_name = re.sub(r'[\\/*?:""<>|]', '_', res.file_name)
-            filename = f"OOA_TLEP_Audit_{safe_name}_{res.review_id}.xlsx"
-            zf.writestr(filename, excel_bytes)
+            if getattr(res, "executive_summary", None):
+                report_bytes = res.executive_summary.encode('utf-8')
+                filename = f"Executive_Narrative_{safe_name}_{res.review_id}.md"
+            else:
+                report_bytes = generate_excel_report(res)
+                filename = f"OOA_TLEP_Audit_{safe_name}_{res.review_id}.xlsx"
+            zf.writestr(filename, report_bytes)
     return buffer.getvalue()
 
