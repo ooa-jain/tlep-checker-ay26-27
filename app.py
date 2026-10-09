@@ -528,12 +528,11 @@ if mode == "Single Course Review":
             st.write("")
 
             # Progressive Tabs
-            tab_exec, tab_plain, tab_hours, tab_outcomes, tab_full_audit, tab_areas = st.tabs([
+            tab_exec, tab_audit_actions, tab_hours, tab_outcomes, tab_areas = st.tabs([
                 "Executive Narrative",
-                "Faculty Action Checklist",
+                "Audit & Action Checklist",
                 "Learning Hours & Credits",
                 "Outcome & Assessment Alignment",
-                "Official 49-Parameter Audit",
                 "Area Breakdown"
             ])
 
@@ -546,63 +545,102 @@ if mode == "Single Course Review":
 
             actionable_findings = [f for f in result.parameter_findings if f.status in [StatusEnum.NEEDS_REVISION, StatusEnum.MAJOR_REVISION, StatusEnum.NON_COMPLIANT]]
 
-            # TAB 1: Faculty Action Checklist
-            with tab_plain:
-                st.markdown("#### Priority Department Action Items")
-                st.caption("Consolidated actionable list for the course facilitator and department head.")
+            # MERGED TAB: Audit & Actions
+            with tab_audit_actions:
+                st.markdown("#### Comprehensive Quality Audit & Action Plan")
+                view_mode = st.radio("View Mode:", ["🚨 Faculty Action Checklist (Actionable Items)", "📋 Official 49-Parameter Log (All Items)"], horizontal=True, label_visibility="collapsed")
+                st.write("")
+                if "Faculty Action" in view_mode:
+                    st.markdown("##### Priority Department Action Items")
+                    st.caption("Consolidated actionable list for the course facilitator and department head.")
                 
-                simplified_items = [simplify_finding(f) for f in actionable_findings]
-                if not simplified_items:
-                    st.success("Complete Compliance: No corrective actions are required for this course.")
-                else:
-                    high_fixes = [item for item in simplified_items if item["priority"] == "High" or item["status"] in ["Major Revision", "Non-Compliant"]]
-                    other_fixes = [item for item in simplified_items if item not in high_fixes]
+                    simplified_items = [simplify_finding(f) for f in actionable_findings]
+                    if not simplified_items:
+                        st.success("Complete Compliance: No corrective actions are required for this course.")
+                    else:
+                        high_fixes = [item for item in simplified_items if item["priority"] == "High" or item["status"] in ["Major Revision", "Non-Compliant"]]
+                        other_fixes = [item for item in simplified_items if item not in high_fixes]
                     
-                    if high_fixes:
-                        st.markdown("##### Critical Blockers (Must Fix for BoS Sign-Off)")
-                        for fix in high_fixes:
-                            st.markdown(f"""
-                            <div class="action-card action-card-high">
-                                <div class="action-card-header">
-                                    <span class="action-card-title">{fix['friendly_name']} (Parameter #{fix['parameter_id']})</span>
-                                    <span class="badge-urgent">Critical Blocker</span>
-                                </div>
-                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 8px;">
-                                    <div>
-                                        <div style="font-size: 0.8rem; font-weight: 700; color: #64748B; text-transform: uppercase;">Observation / Deficiency</div>
-                                        <div style="font-size: 0.95rem; color: #334155; margin-top: 2px;">{fix['what_is_wrong']}</div>
-                                        <div style="font-size: 0.8rem; color: #94A3B8; margin-top: 4px;">Location: <code>{fix['where']}</code></div>
+                        if high_fixes:
+                            st.markdown("##### Critical Blockers (Must Fix for BoS Sign-Off)")
+                            for fix in high_fixes:
+                                st.markdown(f"""
+                                <div class="action-card action-card-high">
+                                    <div class="action-card-header">
+                                        <span class="action-card-title">{fix['friendly_name']} (Parameter #{fix['parameter_id']})</span>
+                                        <span class="badge-urgent">Critical Blocker</span>
                                     </div>
-                                    <div style="background: #F8FAFC; border-radius: 8px; padding: 10px 14px; border: 1px dashed #CBD5E1;">
-                                        <div style="font-size: 0.8rem; font-weight: 700; color: #0284C7; text-transform: uppercase;">Required Action</div>
-                                        <div style="font-size: 0.95rem; font-weight: 600; color: #0F172A; margin-top: 2px;">{fix['what_to_do']}</div>
+                                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 8px;">
+                                        <div>
+                                            <div style="font-size: 0.8rem; font-weight: 700; color: #64748B; text-transform: uppercase;">Observation / Deficiency</div>
+                                            <div style="font-size: 0.95rem; color: #334155; margin-top: 2px;">{fix['what_is_wrong']}</div>
+                                            <div style="font-size: 0.8rem; color: #94A3B8; margin-top: 4px;">Location: <code>{fix['where']}</code></div>
+                                        </div>
+                                        <div style="background: #F8FAFC; border-radius: 8px; padding: 10px 14px; border: 1px dashed #CBD5E1;">
+                                            <div style="font-size: 0.8rem; font-weight: 700; color: #0284C7; text-transform: uppercase;">Required Action</div>
+                                            <div style="font-size: 0.95rem; font-weight: 600; color: #0F172A; margin-top: 2px;">{fix['what_to_do']}</div>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            """, unsafe_allow_html=True)
+                                """, unsafe_allow_html=True)
                             
-                    if other_fixes:
-                        st.markdown("##### Recommended Adjustments (Quality Refinements)")
-                        for fix in other_fixes:
-                            st.markdown(f"""
-                            <div class="action-card">
-                                <div class="action-card-header">
-                                    <span class="action-card-title">{fix['friendly_name']} (Parameter #{fix['parameter_id']})</span>
-                                    <span class="badge-minor">Minor Adjustment</span>
-                                </div>
-                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 8px;">
-                                    <div>
-                                        <div style="font-size: 0.8rem; font-weight: 700; color: #64748B; text-transform: uppercase;">Observation / Deficiency</div>
-                                        <div style="font-size: 0.95rem; color: #334155; margin-top: 2px;">{fix['what_is_wrong']}</div>
-                                        <div style="font-size: 0.8rem; color: #94A3B8; margin-top: 4px;">Location: <code>{fix['where']}</code></div>
+                        if other_fixes:
+                            st.markdown("##### Recommended Adjustments (Quality Refinements)")
+                            for fix in other_fixes:
+                                st.markdown(f"""
+                                <div class="action-card">
+                                    <div class="action-card-header">
+                                        <span class="action-card-title">{fix['friendly_name']} (Parameter #{fix['parameter_id']})</span>
+                                        <span class="badge-minor">Minor Adjustment</span>
                                     </div>
-                                    <div style="background: #F8FAFC; border-radius: 8px; padding: 10px 14px; border: 1px dashed #CBD5E1;">
-                                        <div style="font-size: 0.8rem; font-weight: 700; color: #0284C7; text-transform: uppercase;">Required Action</div>
-                                        <div style="font-size: 0.95rem; font-weight: 600; color: #0F172A; margin-top: 2px;">{fix['what_to_do']}</div>
+                                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 8px;">
+                                        <div>
+                                            <div style="font-size: 0.8rem; font-weight: 700; color: #64748B; text-transform: uppercase;">Observation / Deficiency</div>
+                                            <div style="font-size: 0.95rem; color: #334155; margin-top: 2px;">{fix['what_is_wrong']}</div>
+                                            <div style="font-size: 0.8rem; color: #94A3B8; margin-top: 4px;">Location: <code>{fix['where']}</code></div>
+                                        </div>
+                                        <div style="background: #F8FAFC; border-radius: 8px; padding: 10px 14px; border: 1px dashed #CBD5E1;">
+                                            <div style="font-size: 0.8rem; font-weight: 700; color: #0284C7; text-transform: uppercase;">Required Action</div>
+                                            <div style="font-size: 0.95rem; font-weight: 600; color: #0F172A; margin-top: 2px;">{fix['what_to_do']}</div>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            """, unsafe_allow_html=True)
+                                """, unsafe_allow_html=True)
+
+                else:
+                    st.markdown("##### Complete 49-Parameter Quality Assurance Audit")
+                    st.caption("Official review criteria, traceable evidence locations, scoring, and confidence.")
+                
+                    filter_choice = st.radio(
+                        "Filter by Status:",
+                        ["All 49", "Compliant (Pass)", "Needs Revision (Minor)", "Major Revision (Blocker)", "Non-Compliant", "NA"],
+                        horizontal=True
+                    )
+                
+                    filter_map = {
+                        "Compliant (Pass)": StatusEnum.COMPLIANT,
+                        "Needs Revision (Minor)": StatusEnum.NEEDS_REVISION,
+                        "Major Revision (Blocker)": StatusEnum.MAJOR_REVISION,
+                        "Non-Compliant": StatusEnum.NON_COMPLIANT,
+                        "NA": StatusEnum.NA
+                    }
+                
+                    display_findings = result.parameter_findings
+                    if filter_choice in filter_map:
+                        display_findings = [f for f in display_findings if f.status == filter_map[filter_choice]]
+                    
+                    for f in display_findings:
+                        status_color = "green" if f.status == StatusEnum.COMPLIANT else ("orange" if f.status == StatusEnum.NEEDS_REVISION else "red")
+                        with st.expander(f"**#{f.parameter_id} [{f.review_area}] {f.parameter}** — :{status_color}[{f.status.value}] ({f.score if f.score is not None else 'NA'} pts)"):
+                            st.markdown(f"**Official Criterion:** {f.criterion}")
+                            st.markdown(f"**Audit Finding:** {f.reason}")
+                            if f.action_required:
+                                st.error(f"**Action Required:** {f.action_required}")
+                            st.caption(f"Priority: {f.priority.value} | Validation: {f.validation_type.value}")
+                            if f.evidence:
+                                st.markdown("**Evidence in Document:**")
+                                for ev in f.evidence:
+                                    st.code(f"Location: {ev.location}\nText: {ev.text}", language="text")
 
             # TAB 2: Hours & Credits
             with tab_hours:
@@ -642,42 +680,6 @@ if mode == "Single Course Review":
                     st.dataframe(pd.DataFrame(co_matrix), use_container_width=True)
                 else:
                     st.info("No Course Outcomes detected in the document to analyze.")
-
-            # TAB 4: Official 49-Parameter Audit
-            with tab_full_audit:
-                st.markdown("#### Complete 49-Parameter Quality Assurance Audit")
-                st.caption("Official review criteria, traceable evidence locations, scoring, and confidence.")
-                
-                filter_choice = st.radio(
-                    "Filter by Status:",
-                    ["All 49", "Compliant (Pass)", "Needs Revision (Minor)", "Major Revision (Blocker)", "Non-Compliant", "NA"],
-                    horizontal=True
-                )
-                
-                filter_map = {
-                    "Compliant (Pass)": StatusEnum.COMPLIANT,
-                    "Needs Revision (Minor)": StatusEnum.NEEDS_REVISION,
-                    "Major Revision (Blocker)": StatusEnum.MAJOR_REVISION,
-                    "Non-Compliant": StatusEnum.NON_COMPLIANT,
-                    "NA": StatusEnum.NA
-                }
-                
-                display_findings = result.parameter_findings
-                if filter_choice in filter_map:
-                    display_findings = [f for f in display_findings if f.status == filter_map[filter_choice]]
-                    
-                for f in display_findings:
-                    status_color = "green" if f.status == StatusEnum.COMPLIANT else ("orange" if f.status == StatusEnum.NEEDS_REVISION else "red")
-                    with st.expander(f"**#{f.parameter_id} [{f.review_area}] {f.parameter}** — :{status_color}[{f.status.value}] ({f.score if f.score is not None else 'NA'} pts)"):
-                        st.markdown(f"**Official Criterion:** {f.criterion}")
-                        st.markdown(f"**Audit Finding:** {f.reason}")
-                        if f.action_required:
-                            st.error(f"**Action Required:** {f.action_required}")
-                        st.caption(f"Priority: {f.priority.value} | Validation: {f.validation_type.value}")
-                        if f.evidence:
-                            st.markdown("**Evidence in Document:**")
-                            for ev in f.evidence:
-                                st.code(f"Location: {ev.location}\nText: {ev.text}", language="text")
 
             # TAB 5: Area Breakdown
             with tab_areas:
