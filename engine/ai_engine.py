@@ -626,82 +626,81 @@ Return STRICT JSON ONLY matching:
         return heuristic_finding
 
 
-def generate_executive_narrative(result, api_key: str) -> str:
+def generate_executive_narrative(result, api_key: str = None) -> str:
     """
-    Generates an executive narrative summary matching the specific format requested.
+    Generates an executive narrative summary deterministically matching the specific format.
+    No AI key is required.
     """
-    if not api_key:
-        return "No API key provided. Cannot generate executive narrative."
+    course_title = result.tlep.course_info.course_title or "Unknown Course"
+    course_code = result.tlep.course_info.course_code or "Unknown Code"
+    programme = getattr(result.tlep.course_info, 'programme', "Unknown Programme")
+    credits_count = result.tlep.course_info.credits or "Unknown"
+    ltpe = getattr(result.tlep.course_info, 'ltpe', "Unknown")
+    contact_hours = sum(s.hours for s in result.tlep.sessions)
+    
+    def get_finding(param_id):
+        return next((f for f in result.parameter_findings if getattr(f, 'parameter_id', None) == param_id), None)
+        
+    f_modules = get_finding(18)
+    f_pedagogy = get_finding(26)
+    f_co = get_finding(10)
+    f_copo = get_finding(15)
+    f_assess = get_finding(39)
+    f_resources = get_finding(33)
+    
+    rmk_1 = f"The TLEP is structured with a {contact_hours}-hour session-wise plan. {f_modules.reason if f_modules else 'Module coverage needs verification.'}"
+    rmk_2 = f"{f_pedagogy.reason if f_pedagogy else 'Pedagogical methods should be clearly indicated.'}"
+    rmk_3 = f"{f_co.reason if f_co else 'Course Outcomes alignment requires review.'}"
+    rmk_4 = f"{f_copo.reason if f_copo else 'CO-PO mappings need validation and justification.'}"
+    rmk_5 = f"{f_assess.reason if f_assess else 'Assessment structure requires clearer component breakdown.'}"
+    rmk_6 = "The practical and experiential learning components should be explicitly reflected in the teaching-learning plan."
+    rmk_7 = "Evidence of student feedback analysis and resulting improvements should be incorporated."
+    rmk_8 = "A formal continuous-improvement record linking previous course review actions is not fully evidenced."
+    rmk_9 = f"{f_resources.reason if f_resources else 'Learning resources are adequate at a basic level, but standardizing references is recommended.'}"
+    rmk_10 = "Overall, the TLEP demonstrates a teaching-learning foundation but requires targeted revision in areas marked for action."
 
-    try:
-        import google.generativeai as genai
-        import json
-        import re
-        genai.configure(api_key=api_key)
-        model = genai.GenerativeModel("gemini-1.5-pro")
+    action = "Return for targeted revision." if result.overall_status.value in ["Needs Revision", "Major Revision", "Non-Compliant"] else "Approved without major revisions."
+    
+    def get_priority(findings_list):
+        for f in findings_list:
+            if f and f.status.value in ["Major Revision", "Non-Compliant"]: return "Critical"
+        for f in findings_list:
+            if f and f.status.value == "Needs Revision": return "Major"
+        return "Strength"
 
-        # Gather context
-        course_title = result.tlep.course_info.course_title or "Unknown"
-        course_code = result.tlep.course_info.course_code or "Unknown"
-        programme = getattr(result.tlep.course_info, 'programme', "Unknown Programme")
-        credits_count = result.tlep.course_info.credits or "Unknown"
-        ltpe = getattr(result.tlep.course_info, 'ltpe', "Unknown")
-        contact_hours = sum(s.hours for s in result.tlep.sessions)
+    pri_tl = get_priority([f_modules, f_pedagogy])
+    pri_obe = get_priority([f_co, f_copo])
+    pri_assess = get_priority([f_assess])
 
-        # Gather findings to highlight
-        critical_issues = [f for f in result.critical_issues]
-        findings_summary = []
-        for finding in result.findings:
-            if finding.status.value != "Compliant":
-                findings_summary.append(f"- {finding.parameter}: {finding.reason} ({finding.status.value})")
-
-        prompt = f"""
-You are an expert academic reviewer. Your task is to generate a final, unified "Executive Narrative Report" for a syllabus document based on the provided review findings.
-You MUST follow the EXACT formatting below. Do NOT add any extra conversational text. Make sure to use Markdown properly for the Lead Team Quick View table.
-
-TLEP REVIEW REMARKS
-Sample Review: {{course_title}} ({{course_code}})
-Programme: {{programme}}    Credits: {{credits_count}}    L-T-P-E: {{ltpe}}    Contact Hours: {{contact_hours}}
-Overall Status    Attention Required    Targeted Revision
+    narrative = f"""TLEP REVIEW REMARKS
+Sample Review: {course_title} ({course_code})
+Programme: {programme}    Credits: {credits_count}    L-T-P-E: {ltpe}    Contact Hours: {contact_hours}
+Overall Status    {result.overall_status.value.upper()}
 
 Remarks
-1. [Insightful remark about structure/hours/modules]
-2. [Remark about pedagogy/active learning]
-3. [Remark about COs and alignment]
-4. [Remark about CO-PO mapping]
-5. [Remark about assessment structure]
-6. [Remark about practical component if applicable, else another key area]
-7. [Remark about feedback/continuous improvement]
-8. [Another remark about continuous improvement or resources]
-9. [Remark about learning resources]
-10. [Overall concluding remark summarizing the state and required revisions]
+1. {rmk_1}
+2. {rmk_2}
+3. {rmk_3}
+4. {rmk_4}
+5. {rmk_5}
+6. {rmk_6}
+7. {rmk_7}
+8. {rmk_8}
+9. {rmk_9}
+10. {rmk_10}
 
 Recommended Action
-[1 paragraph stating whether to Return for targeted revision or Accept, and the critical issues to address]
+{action}
 
 Lead Team Quick View
 | Area | Observation | Priority |
 |---|---|---|
-| Teaching-Learning Plan | [Brief observation] | [Strength/Minor/Major/Critical] |
-| OBE Mapping | [Brief observation] | [Strength/Minor/Major/Critical] |
-| Assessment Alignment | [Brief observation] | [Strength/Minor/Major/Critical] |
-| Feedback & Analysis | [Brief observation] | [Strength/Minor/Major/Critical] |
-| Continuous Improvement | [Brief observation] | [Strength/Minor/Major/Critical] |
+| Teaching-Learning Plan | Session planning and pedagogy review. | {pri_tl} |
+| OBE Mapping | CO formulation and PO mapping review. | {pri_obe} |
+| Assessment Alignment | Component mapping and rubrics review. | {pri_assess} |
+| Feedback & Analysis | Feedback analysis and action taken. | Critical |
+| Continuous Improvement | Formal improvement cycle documentation. | Critical |
 
-Source: Submitted Teaching-Learning & Evaluation Plan – {{course_title}}, {{programme}}, Course Code {{course_code}}.
-
-<FINDINGS>
-Critical Issues:
-{{critical_issues}}
-
-Issues Found:
-{{chr(10).join(findings_summary[:20])}}
-</FINDINGS>
-
-Generate the report adhering strictly to the EXACT format provided above. Ensure exactly 10 numbered remarks.
+Source: Submitted Teaching-Learning & Evaluation Plan - {course_title}, {programme}, Course Code {course_code}.
 """
-        response = model.generate_content(prompt)
-        return response.text.strip()
-    except Exception as e:
-        return f"Error generating executive narrative: {{str(e)}}"
-
+    return narrative.strip()

@@ -486,7 +486,7 @@ if mode == "Single Course Review":
                 if getattr(result, "executive_summary", None):
                     st.markdown(result.executive_summary)
                 else:
-                    st.info("Executive narrative summary is not available. Please ensure a valid API key was provided during the audit.")
+                    st.info("Executive narrative summary is not available.")
 
             actionable_findings = [f for f in result.parameter_findings if f.status in [StatusEnum.NEEDS_REVISION, StatusEnum.MAJOR_REVISION, StatusEnum.NON_COMPLIANT]]
 

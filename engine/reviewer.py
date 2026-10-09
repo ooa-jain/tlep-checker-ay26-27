@@ -137,13 +137,11 @@ def review_tlep_document(
         hours_validation_rows=hours_rows,
         copo_review_rows=copo_rows,
         critical_issues=critical_issues,
-        department_action_plan=action_plan,
         normalized_tlep=tlep
     )
 
-    if api_key:
-        from engine.ai_engine import generate_executive_narrative
-        result.executive_summary = generate_executive_narrative(result, api_key)
+    from engine.ai_engine import generate_executive_narrative
+    result.executive_summary = generate_executive_narrative(result, api_key)
 
     return result
 
