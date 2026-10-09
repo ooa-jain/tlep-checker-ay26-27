@@ -444,26 +444,56 @@ if mode == "Single Course Review":
             </div>
             """, unsafe_allow_html=True)
 
-            # Export Button
-            if getattr(result, "executive_summary_docx", None):
-                report_bytes = result.executive_summary_docx
-                st.download_button(
-                    label="Download Executive Narrative Report (.docx)",
-                    data=report_bytes,
-                    file_name=f"Executive_Narrative_{result.file_name}_{result.review_id}.docx",
-                    mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                    type="primary"
+            # UI Chart and Export Buttons
+            c_chart, c_export = st.columns([1.5, 1])
+            
+            with c_chart:
+                status_counts = pd.Series([f.status.value for f in result.parameter_findings]).value_counts().reset_index()
+                status_counts.columns = ["Status", "Count"]
+                import plotly.express as px
+                color_discrete_map = {
+                    "Compliant": "#16A34A", 
+                    "Needs Revision": "#CA8A04", 
+                    "Major Revision": "#DC2626", 
+                    "Non-Compliant": "#991B1B",
+                    "NA": "#64748B"
+                }
+                fig = px.pie(
+                    status_counts, 
+                    values="Count", 
+                    names="Status", 
+                    hole=0.45,
+                    color="Status",
+                    color_discrete_map=color_discrete_map,
+                    title="<b>Parameter Compliance Status</b>"
                 )
-            else:
-                report_bytes = generate_excel_report(result)
-                st.download_button(
-                    label="Download Official Audit Report (.xlsx)",
-                    data=report_bytes,
-                    file_name=f"OOA_TLEP_Audit_{result.file_name}_{result.review_id}.xlsx",
-                    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                    type="primary"
-                )
+                fig.update_traces(textposition='inside', textinfo='percent+label', marker=dict(line=dict(color='#FFFFFF', width=2)))
+                fig.update_layout(margin=dict(t=40, b=20, l=0, r=0), height=300, showlegend=False)
+                st.plotly_chart(fig, use_container_width=True)
 
+            with c_export:
+                st.markdown("<br><br>", unsafe_allow_html=True)
+                if getattr(result, "executive_summary_docx", None):
+                    report_bytes = result.executive_summary_docx
+                    st.download_button(
+                        label="Download Executive Narrative Report (.docx)",
+                        data=report_bytes,
+                        file_name=f"Executive_Narrative_{result.file_name}_{result.review_id}.docx",
+                        mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                        type="primary",
+                        use_container_width=True
+                    )
+                else:
+                    report_bytes = generate_excel_report(result)
+                    st.download_button(
+                        label="Download Official Audit Report (.xlsx)",
+                        data=report_bytes,
+                        file_name=f"OOA_TLEP_Audit_{result.file_name}_{result.review_id}.xlsx",
+                        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                        type="primary",
+                        use_container_width=True
+                    )
+            
             st.write("")
 
             # Progressive Tabs
